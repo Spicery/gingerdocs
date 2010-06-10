@@ -163,28 +163,37 @@ Definitions typically introduce assign-protected variables.
 
 [*.*] Examples:
 		
+	
+	### Note that var/val introduces a query in Ginger. The '=' operator
+	### is a query operator whose LHS is a pattern. Identifiers are
+	### parsed as pattern-variables within a pattern, taking on the
+	### default protection of the var/val.
 	var x = 99;
 	<dec><var name="x"/><int value="99"/></dec>
 	
-	[ val x, val y, val z : bool ] = f();
+	### The identifiers can given overrides for protection or type.
+	val [ x, var y, z : bool ] = f();
 	<dec>
 		<app>
 			<id name="newList">
 			<seq>
 				<var name="x" protected="true"/>
-				<var name="y" protected="true"/>
+				<var name="y" protected="false"/>
 				<var name="z" type="bool" protected="true"/>
 			</seq>
 		</app>
 		<app><id name="f"/></app>
 	</dec>
 	
-	_ : int = p();		### Ensure that p returns a single value which is an integer.
+	### Ensure that p returns a single value which is an integer.
+	val _ : int = p();		
 	<dec>
-		<var type="int"/>
+		<var type="int" protected="true"/>
 		<app><id name="p"/></app>		
 	</dec>
 	
+	### The 'define' form also introduces an implicit PATTERN = EXPR
+	### bindings where EXPR will be the arguments to the function.
 	define K( x )( y ) ==> x enddefine;
 	<dec><var name="K"/><fn name="K"><var name="x"/><fn><var name="y"/><id name="x"/></fn></fn></dec>
 	
