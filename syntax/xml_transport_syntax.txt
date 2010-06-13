@@ -88,7 +88,6 @@ CONSTANT ::=
 	<string value="qwertyuiop"/>	
 	<char value="A"/>
 	<sysfn value="+"/>
-	<float as="name" value="pi"/>			
 	
 N.B. Character sequences are multi-valued constants. They are represented as
 a sequence of characters.
@@ -159,32 +158,65 @@ APP ::=
 
 [*.*] SysApps
 
-SysApp's are function calls that the  user entitled to assume are
-as efficient as they can reasonably be made. In support of this,
-the compiler is authorised to make certain reasonable assumptions
-to help performance e.g. the call may be inlined, computed at compile-time, 
-overflow checking may be deferred until the end of the parent block, the garbage
-collector may be blocked, and so on. These assumptions do not include getting 
-the answer wrong.
+SysApp's are efficient variants of standard function calls. 
+They typically place serious restrictions on the pre-conditions
+and failing to satisfy those preconditions may corrupt the
+system (i.e. is undefined behaviour). This is the place where 
+it is necessary for users to read the small-print 
+on what the restrictions for correct use. N.B. They play the same
+role as Pop-11's fast operations.) 
 
-For built-in sysfns (those in package 'std') the following are entirely 
-equivalent.
+In return for , the user entitled to assume the call do their 
+job as efficiently as they can reasonably be made.
 
+In support of this, the devteam authorised to make reasonable 
+assumptions to help performance e.g. the call may be inlined, 
+computed at compile-time, overflow checking may be deferred 
+until the end of the parent block, no debug information may
+be avaiulable, the garbage collector may be blocked, and so on. 
+
+For all the built-in sysfns there is a corresponding safe routine
+(which appear in package 'std'). A correct program must work when
+any 'sysapp' is replaced by an 'app' to the safe routine. e.g.
+
+	### Best performance but may be undefined if the 
+	### preconditions are not met.
 	<sysapp name="foo"> ... </sysapp> 
-	<app><sysfn value="foo"/><seq>...</seq></app>
+	
+	### Has well-defined failure mode but will do the same
+	### as the sysapp if the preconditions are met.
 	<app><id name="foo" pkg="sys"/><seq>...</seq></app>
 
-SysApp is also the mechanism by which the a programmer can call out to 
-plug-ins. Those functions are not bound into the "std" namespace and
-hence the last form is not the same.
+SysApp's are guaranteed to exist for every sysfn and vice
+versa. Unlike sysapp's, sysfns are not guaranteed to be
+efficient but may be implemented behind the scenes as
+an function that invokes the sysapp.
 
-Furthermore <sysfn value=PLUG_IN/> may silently be transformed into
-a fairly inefficient form such as the one below. The entitlement to
-efficiency is for a call and not a reference.
-<fn>
-	<explode>x</explode>
-	<sysapp value=PLUG_IN><explode>x</explode></sysapp>
-</endfn>
+	### possible implementation of sysfn called 'foo'	
+	<fn title="foo">
+		<explode>x</explode>
+		<sysapp value="foo"><explode>x</explode></sysapp>
+	</fn>
+
+This highlights that the entitlement to efficiency is only
+assured for direct calls.
+	
+
+Such a form may silently be transformed into a relatively 
+inefficient form such as the one below. 
+
+	<fn>
+		<explode>x</explode>
+		<sysapp value="foo"><explode>x</explode></sysapp>
+	</fn>
+
+However it is guaranteed that direct calls of sysfns will
+be as efficient as sysapps.
+
+	### This form will be treated as identical to
+	### the one below. (The reverse is not true.)
+	<app><sysfn value="foo"/> ... </app>
+	<sysapp value="foo"> ... </sysapp>
 
 
 [*.*] Examples of SysApp's
