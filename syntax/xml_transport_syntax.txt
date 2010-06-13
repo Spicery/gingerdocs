@@ -215,7 +215,7 @@ be as efficient as sysapps.
 
 	### This form will be treated as identical to
 	### the one below. (The reverse is not true.)
-	<app><sysfn value="foo"/> ... </app>
+	<app><sysfn value="foo"/> ... </app> turns into
 	<sysapp value="foo"> ... </sysapp>
 
 
