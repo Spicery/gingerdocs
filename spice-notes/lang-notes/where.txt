@@ -1,0 +1,269 @@
+Re: For Loops > Where
+
+---------------------------------------------------------------------
+
+Delivered-To: steve@outstation.bel-epa.com
+Delivered-To: steve-wf@watchfield.com
+Date: Thu, 06 Jun 2002 10:51:33 +0100
+From: Mark Summers <msummers@openworld.co.uk>
+X-Accept-Language: en-us, en
+To: wf@watchfield.com
+Subject: [Fwd: Proposed extension to the MillScript language]
+Status:  U
+
+Steve,
+
+How are you getting on these days?
+
+I've sent you this in the hope that you might be able to "sanity check" my idea.
+
+Regards,
+
+-- 
+Mark Summers
+DEVELOPER
+Open World Ltd, The Old Malthouse, Clarence Street, Bath, BA1 5NS.
+Tel: +44 1225 444950			       Fax: +44 1225 336738
+http://www.openworld.org/
+
+CONFIDENTIALITY NOTICE
+The information contained in this message is confidential, intended only for
+the use of the individual or the entity named as recipient. If the reader of
+this message is not that recipient, you are notified that any dissemination,
+distribution or copy of this message is strictly prohibited. If you have
+received this message in error, please immediately notify us by telephone on the number above. Your co-operation is appreciated.
+
+
+
+
+
+
+>From - Thu Jun 06 10:25:23 2002
+X-Mozilla-Status2: 00800000
+Message-ID: <3CFF2A83.2020902@openworld.co.uk>
+Date: Thu, 06 Jun 2002 10:25:23 +0100
+From: Mark Summers <msummers@openworld.co.uk>
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.0rc3) Gecko/20020523
+X-Accept-Language: en-us, en
+MIME-Version: 1.0
+To: Kevin Rogers <krogers@openworld.co.uk>, Natasha Mandenaki
+ <nmandenaki@openworld.co.uk>
+Subject: Proposed extension to the MillScript language
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Hello,
+
+This is just an attempt to write down an idea that I have been thinking about for while.  The idea concerns the syntax of "for" loops in MillScript.
+
+Currently we write...
+
+for x in y do
+
+   ...
+
+endfor;
+
+...and quite often we need to write...
+
+for x in y do
+
+   if x /= "" then
+
+       ...
+
+   endif;
+
+endfor;
+
+... which could be shortened to...
+
+for x in y where x /= "" do
+
+   ...
+
+endfor;
+
+The above is the proposed extension.  The word "where" is used in preference over the word "while" since the similarly named "while" loop will stop as soon as the associated condition evaluates to false.  The "where" extension would simply cause the "for" loop to miss out the items for which the condition evaluated to false.  Perhaps a "while" variant of this syntax could be used in situations where the loop IS expected to terminate when the condition evaluates to false.
+
+Regards,
+
+-- 
+Mark Summers
+DEVELOPER
+Open World Ltd, The Old Malthouse, Clarence Street, Bath, BA1 5NS.
+Tel: +44 1225 444950			       Fax: +44 1225 336738
+http://www.openworld.org/
+
+CONFIDENTIALITY NOTICE
+The information contained in this message is confidential, intended only for
+the use of the individual or the entity named as recipient. If the reader of
+this message is not that recipient, you are notified that any dissemination,
+distribution or copy of this message is strictly prohibited. If you have
+received this message in error, please immediately notify us by telephone on the number above. Your co-operation is appreciated.
+
+
+---------------------------------------------------------------------
+To: Mark Summers <msummers@openworld.co.uk>
+From: Stephen Leach <sleach@openworld.org>
+Subject: Re: [Fwd: Proposed extension to the MillScript language]
+Cc: Chris Dollin:kers@hplb.hpl.hp.com, eh@electric-hedgehog.net;, amacaulay
+Bcc: 
+X-Attachments: 
+
+Hi Mark,
+
+I've sent you this in the hope that you might be able to "sanity check" my idea.
+
+Thanks for checking back!  As you probably know, I am working with Andy, Dan and Chris Dollin to complete a language specification for OpenSpice which is a massive extension to MillScript.  So any good ideas like this need to be raised as soon as possible so that we can make sure we can include them.
+
+
+For the benefit of Chris, Andy and Dan, here's a repeat of your suggestion:
+This is just an attempt to write down an idea that I have been thinking about for while.  The idea concerns the syntax of "for" loops in MillScript.
+
+Currently we write...
+
+for x in y do
+   ...
+endfor;
+
+...and quite often we need to write...
+
+for x in y do
+   if x /= "" then
+       ...
+   endif;
+endfor;
+
+... which could be shortened to...
+
+for x in y where x /= "" do
+   ...
+endfor;
+
+The above is the proposed extension.  The word "where" is used in preference over the word "while" since the similarly named "while" loop will stop as soon as the associated condition evaluates to false.  The "where" extension would simply cause the "for" loop to miss out the items for which the condition evaluated to false. 
+
+The short answer: I like this suggestion. 
+
+The long answer: this is going to take a bit of space.  So let me begin by digressing and answering the second part of your suggestion - which was this final line.
+
+Perhaps a "while" variant of this syntax could be used in situations where the loop IS expected to terminate when the condition evaluates to false.
+
+This is super-easy!  The OpenSpice loop syntax already includes using "while" in this way as a core part of the language - and adding this to MillScript would be a straightforward thing to do.  Also "until" is permitted as an alternative, meaning "while not".  So this is definitely on the existing language roadmap and I would suggest adding it as soon as you feel the urge to do so.
+
+To expand on this a little, you should aim to allow an arbitrary number of ForConditions after the bindings and, just prior to the 'endfor', a single, optional FinallyPart.  There's a short example below that will help clarify this.  Each ForCondition has one of these forms:
+
+    while <Expr>
+    while <Expr> else <Expr>     # else is interchangeable with then
+    until <Expr>
+    until <Expr> then <Expr>     # then is interchangeable with else
+
+Each ForCondition has the ability to terminate the loop when the condition evaluates to false (or true for 'until').  When the loop is terminated by a control condition, and only then, the optional then/else expression is evaluated (_outside_ of  the context of the loop).
+
+The FinallyPart is optional and looks like this
+
+    finally <Expr>
+
+The meaning of the finally part is this: if the loop is terminated normally, not by a ForCondition, the expression is evaluated (outside of the loop context, as well.)
+
+The intention of these "after loop" expressions is to enable you to deliver results based on how the loop terminated.  For example, here's how to write "isMember".
+
+    function isMember( x, list ) =>
+        for
+            i in list
+            until i = x then true
+        do
+        finally false
+        endfor
+    endfunction;
+
+
+OK, so onto the main part of the question: how about a filter on the loop variable using the keyword "where"?  I'll answer this one in two parts.  Firstly, in general, how should the scripting team proceed when they reckon a language extension would be helpful?  Secondly, what about this particular suggestion?
+
+In my experience, developing a programming language is best begun with debate.  Features of a language interact is such inobvious ways we always need to spend some time figuring out the best way to go forward.  So writing to me with this idea is the right way to get things going.  Furthermore, unlike any other programming language effort I know, we are always committed to making OpenSpice the best language (of its kind) we know how to - despite the fact that changes always make extra work.  So ideas get a good hearing.
+
+The next observation is that MillScript is not going to be a true subset of OpenSpice.  There are plenty of annoying differences.  BUT DO NOT DESPAIR!  THERE IS A MASTERPLAN!  Sorry about the capital letters but people always start squirming when you point out that a discrepancy is going to exist.
+
+The masterplan is this.  A core part of the Spice philosophy is that syntax is a cosmetic detail; there will be several surface syntaxes but one underlying (XML-based) logical syntax.  Programs (and comments) will be stored as XML objects and users will choose which syntax to work in as part of their individual preferences.  The programs will be rendered into their favourite syntax for browsing and editing and parsed back into the logical syntax for compilation.  The logical syntax will support sufficient annotations for the compiler to generate useful error messages (e.g. line numbers).
+
+In the near future, we will slightly compromise.  We will use the MillScript engine to host BOTH the current MillScript syntax and the (significantly superior) OpenSpice syntax i.e. there will be both a MillScript loader and an OpenSpice loader.  The scripting team will then be able to switch from one to the other at a time of their own choosing.  This obviously falls short of storing the programs in XML etc etc but is relatively simple to do and gets us to striking distance of the end-goal. 
+
+Why whitter on about this?  Because this liberation from a single concrete syntax means that, if necessary, we can independently progress MillScript and OpenSpice.  So if the scripting teams finds it necessary to introduce extensions on their own schedule, there is an underlying flexibility to support that.
+
+Onto your particular suggestion - to use "where <expr>" as an additional filter on the value of loop variables.  As you will see below, I am in agreement with this suggestion.
+
+By a happy coincidence, I wrote a proposal to add a powerful form of pattern matching into OpenSpice which embraces and extends this suggestion.  You can read the text of it at
+<http://www.watchfield.com/palantir/spice/notes/pattern.html>.  If you read this you will see that it is both a major language addition _and_ written in a spirit of speculation rather than expectation.  But I reckon its a runner.
+
+The core of the pattern matching extension is that the the "for" syntax becomes a way of iterating over the solutions of a match.  So
+    for i in L do <etc>
+becomes a shorthand for
+    for ..., i, ... matches L... do <etc>
+which is read as iterate over all the solutions to
+    <things>, i, <other things> matches <elements of L>
+Because one of the proposed pattern qualifiers is "where <expr>", which means constrain the solutions to those that satisfy the expression, it becomes OK to write
+    for i in L where i /= "" do <etc>
+with, amazingly, exactly the same meaning as you require.
+
+Since implementing the entire pattern matching proposal is very hard work and, even more pertinently, the specification has not been discussed by the OpenSpice team, it is not going to happen in a rush!  However, the proposal hangs together extremely well and, in my judgement, has the right "feel".  Let's digress for a while to examine "having the right feel"?
+
+To begin with, ever since we committed ourselves to developing a language with multiple-valued expressions I have been bothered about the "natural" meaning of
+    for i, j in L do <etc>
+Now this might seem like an odd question.  However, there are several kinds of loop idiom that Spice/MilLScript/OpenSpice does not capture very well (e.g. nested loops with early exits) and it is tempting to employ this shorthand for one of these idioms.  Now the pattern-matching proposal gives a definite and (luckily) useful meaning to it.  It reads as follows: iterate over all the solutions to
+    <things>, i, j, <other things> matches <elements of L>
+In other words, find all the pairs of successive elements in L.  And this is indeed one of the unhandled idioms.  And very useful it is as well!
+
+Here's another.  In the proposal I put forward "&" as a composition operator on matches.  In other words P & Q means find the all the solutions to P crossed with Q.  [Please note: although in MillScript the way to iterate over maps is "for i & j in map" this has not been adopted in OpenSpice.  This is quite a complicated topic in its own right, which I won't go into here, but means that "&" is available for use in OpenSpice.]  As a consequence, we can write
+    for i in A & j in B do
+        <statments>
+    endfor
+which is much the same as
+    for i in A do
+        for j in B do
+            <statements>
+        endfor
+    endfor
+except that we have avoided the nesting.  This gets very handy when we want to write an early exit.  For example, here's how to find the first non-empty string in a 2D array:
+    for
+        i from 1 to M &
+        j from 1 to N
+        until a[ i, j ] /= "" then a[ i, j ]
+    do
+    finally absent
+    endfor
+Unfamiliar?  Sure.  But just look at how we've managed to write an early exit from a doubly nested loop without a horrid labelled break or a tedious extra variable.  Here's the Java equivalent (approximately), which may make the barrier of unfamiliarity a little less off-putting
+    String answer = null;
+    for ( int i = 0; i < M; i++ ) {
+        for ( int j = 0; j < N; j++ ) {
+            if ( a[ i ][ j ].length() > 0 ) {
+                answer = a[ i ][ j ];
+                break outer;
+            }
+        }
+    }
+    outer:
+Is that good?  It makes me go YUCK!  And I was being super kind to Java by picking the one kind of loop ifor which it is concise!  If you write the equivalent of this
+    { for i in A & j in B where i = j do i endfor }
+you end up with bletcherous stuff like this:
+    final List answer = new ArrayList();   // whatever
+    final Iterator a_it = A.iterator();
+    while ( a_it.has_next() ) {
+        final Object i = a_it.next();
+        final Iterator b_it = B.iterator();
+        while ( b_it.has_next() ) {
+            final Object j = b_it.next();
+            if ( i.equals( j ) ) {
+                answer.add( i );
+            }
+        }
+    }
+My verdict?  Save this nonsense for people who have time to waste!!!
+
+The point of this long digression is to emphasize the effectiveness and attractiveness of treating for-loops as match iterators.  Since your suggestion to add "where" to loops fits in nicely with this approach, I am definitely in favour of it.  It is perfectly OK to add features on demand as long as we have an overall plan that assures us that they all make sense together.
+
+Even though the pattern matching proposal has not (yet) acquired a supporting consensus, it is consistent with the rest of the language, useful and intuitive.  It is sufficiently strong to use as an umbrella for particular features such as the "where <expr>" extension, in my judgement at least.  In short, it has legs.
+
+And since our long term plan is to make the presentation syntax a user-preference, the criterion for backwards compatibility is less restrictive.  If we make a few mistakes in developing the language, we retain the ability to subsequently change direction without incurring massive rework.
+
+-- 
+Steve

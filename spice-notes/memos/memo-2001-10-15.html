@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
+<html>
+<head>
+	<title>Spice Memo (15th October 2001)</title>
+	<meta name="generator" content="BBEdit 6.1.2">
+</head>
+<body bgcolor="#FFFFFF">
+
+<h1>Memo: Meeting, Monday 15th October 2001</h1>
+
+<h2>Participants</h2>
+<ul>
+<li>Chris Dollin (CJD)</li>
+<li>Steve Leach (SFKL)</li>
+</ul>
+
+<h2>Agenda</h2>
+<p>
+To resolve the issues that arise from symmetric multiple inheritance and symmetric multiple dispatch.  In effect this was a check back on the initial design decision to use symmetric inheritance and dispatch.
+</p>
+
+
+<h2>Discussion</h2>
+
+<ol type="1">
+
+<li>
+<p>
+We outlined the ambiguity that arise from symmetric multiple inheritance
+and symmetric multiple dispatch.
+</p>
+<ol type="a">
+<li>
+<p>Symmetric multiple inheritance gives rise to an ambiguity in
+this situation.
+</p>
+<pre>
+    define class A
+        define generic M() =&gt; "a" enddefine
+    enddefine
+
+    define class P extends A
+        define method M() =&gt; "p" enddefine
+    endclass
+
+    define class Q extends A
+        define method M() =&gt; "q" enddefine
+    enddefine
+
+    define class X extends P, Q
+    enddefine
+
+    # What happens now?
+    M( new X() )
+</pre>
+</li>
+<li>
+<p>Symmetric multiple dispatch gives rise to an ambiguity in this
+situation.</p>
+<pre>
+    define class A
+    enddefine
+
+    define class P extends A
+    endclass
+
+    define generic M( a:A, p:P ) =&gt; "1" enddefine
+
+    define generic M( p:P, a:A ) =&gt; "2" enddefine
+
+    # What happens now?
+    M( new P(), new P() )
+</pre>
+</li>
+</ol>
+</li>
+
+<li>
+<p>Closely related to these ambiguities is the technique used for
+method extension.  We outlined three techniques :-
+</p>
+<ol type="a">
+<li>
+<p>Before/after extensions.  The weakness of this technique is that
+method overriding does not affect the before/after extensions and
+that separate overrides need to be performed.  Naturally enough
+before/after extensions is a useful technique but we regard it as
+wholly unsuitable for implementing method extension.
+</p>
+</li>
+<li>
+<p>Call-next-method.  The weakness of this technique is that it
+exacerbates the ambiguous situations outlined in (1a) and (1b) above.
+</p>
+</li>
+<li>
+<p>Signature-based method selection.  The weakness of this
+technique is that it is an unstructured and potentially
+dangerous approach.  However, it does provide a basis for solving
+the ambiguities.
+</p>
+</li>
+</ol>
+</li>
+
+
+<li>
+<p>We agreed that our aims were to provide a means for programmers
+to resolve ambiguities that does not require a degree in comp.
+sci., that is reasonably elegant to use especially for the common
+case of (effectively) single inheritance and dispatch, and preserves
+inheritance transparency.
+</p>
+</li>
+
+<li>
+<p>After some debate we adopted the following hybrid between
+call-next-method and signature based method selection.  Within
+a method definition the keyword -super- is used to invoke the next
+most general version of the method i.e. call-next-method.  However,
+to resolve ambiguity it may be decorated with a signature to select
+a unique preference from the available choices.  (No spelling for
+this decoration was chosen and so, for the purposes of this memo,
+I shall write this as percent-decorated-brackets.)
+</p>
+<p>
+To illustrate this idea, here is how the technique resolves our
+two examples above.
+</p>
+<p>
+The resolution of situation (1a) is that the programmer is
+required to implement M for X and indicate preference.  e.g.
+</p>
+<pre>
+    define method M( x : X ) =&gt;
+        # Choose P's definition, not Q's.
+        super[% P %]( x )
+    enddefine
+</pre>
+<p>
+The resolution of situation (1b) is that the programmer is
+required to implement M for (P,P) and indicate preference e.g.
+</p>
+
+<pre>
+    define method M( p1 : P, p2 : P ) =&gt;
+        # Choose the definition whose first parameter is closest to A.
+        super[% A, _ %]( p1, p2 )
+    enddefine
+</pre>
+<p>
+Note that the "_" symbol may be used to indicate no preference for
+a particular argument position, and "_..." for variadic arguments.
+</p>
+</li>
+
+<li>
+<p>We think it should be an error for the signature-based preference
+mechanism to specify a signature that "skips" an intervening definition.
+However, there are further subtle problems that can arise here
+with respect to inheritance transparency.  i.e. when someone adds new
+intervening classes into the implementation of a class.  It is possible
+that the signature used for selection should be read in a more flexible
+fashion - choose the next method whose signature looks most like this.
+</p>
+</li>
+
+<li>
+<p>We note that this mechanism provides a way of resolving ambiguities
+due to symmetric multiple inheritance, symmetric multiple dispatch, and
+method extension.  Hurrah!
+</p>
+</li>
+</ol>
+
+<hr>
+<div align="right">
+<a href="mailto:palantir@watchfield.com">Steve Leach</a>, Oct 2001
+</div>
+
+</body>
+</html>

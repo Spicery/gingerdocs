@@ -1,0 +1,51 @@
+On Printing and Showing
+Message dated 28/July/03
+
+The latest addition to the JSpice interpreter are the 8 built-in functions
+
+    print( x1, ..., xN )         print items to stdout
+    show( x1, ..., xN )          debug-print items to stdout
+    
+    println( x1, ..., xN )       print items then a newline to stdout
+    showln( x1, ..., xN )        debug-print items then a newline to stdoout
+
+    printTo( w, x1, ..., xN )    print items to writer w
+    showTo( w, x1, ..., xN )     debug-print items to writer w
+    
+    printlnTo( w, x1, ..., xN )  print items then a newline to w
+    showlnTo( w, x1, ..., xN )   debug-print items then a newline to w
+
+This is a small family of functions for writing to standard-output (or
+arbitrary output-stream).  The "show" group are used for debugging
+and is intended for programmers.  The "print" group is used to 
+write text to the screen/file.
+
+To see the difference, consider printing/showing a String.  If you
+-show- a String you will want to see the double-quotes.  If you -print-
+a String you only want to see the contents.  Similarly, -show- a
+list and you'll see the enclosing braces and the comma-separated
+contents.  If you print a list you just get the recursively printed
+members.
+
+  Welcome to JSpice
+  :-) showln( "foo" );
+  "foo"
+  :-) println( "foo" );
+  foo
+  :-) showln( { 1, 2, 3 } );
+  {1, 2, 3}
+  :-) println( { 1, 2, 3 } );
+  123
+  :-) 
+
+Another key difference is that if you -show- several items they will
+be separated by commas but -print- has no separator.
+
+  :-) showln('abc' );
+  'a', 'b', 'c'
+  :-) println( 'abc' );
+  abc
+
+I believe that separating these two roles has been very beneficial.
+Trying to pack too much into a single way of printing doesn't
+work, as Java demonstrates so nicely!

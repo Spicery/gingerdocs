@@ -1,0 +1,67 @@
+Re:	Bunches
+
+In order to solve a variety of irritating problems with mutual 
+recursion, Chris and I decided to group sequences of defines 
+together into "bunches".  Name resolution crosses bunches.
+
+I am a bit inclined to say that mutually recursive defines should not
+be separated by semi-colons i.e. that a semi-colon forcibly ends a 
+bunch and permits immediate execution in an interactive context.  
+However, I haven't agreed this with Chris.
+
+--------------------------------------------------------------------
+Date:	08/Jul/04
+
+[1] The -define- construct now works in a nested context as well as at
+    top-level.  "Bunches" not implemented yet, though.
+    
+--------------------------------------------------------------------
+Date:	05/Sep/01
+
+SFKL was also interested in checking out a sceanrio with regard to
+the proposed interpretation of "top-level" binding.  In a previous memo, we
+agreed to unify the interpretation of bindings within a definition and 
+top-level.  The means CJD proposed to achieve this is that a sequence of
+"define" statements are mutually recursive.  This implicit "letrec" context 
+is broken by the first top-level expression (or the end of the statement
+context).  It is worth noting that neither of us is entirely sure whether
+val/var statements break the recursive context or not.
+
+[Now I come to write this up, surely we would have debated the use of
+	define val foo = E enddefine
+to ensure the continuation of the recursive context?  However I do not
+recall this.  Given the state of my memory at present this is somewhat
+inconclusive.]
+
+The scenario is illustrated by the following example.
+
+	package foo;
+	val foo = "foo";
+	endpackage;
+
+	package bar;
+	import foo;
+
+	val bar = foo;		# this _must_ be foo::foo
+
+	println( "end implicit letrec" );
+
+	val foo = "bar";	# but which is this?
+
+	endpackage;
+
+CJD responded definitely that the questioned definition should cause 
+a compile-time error along the lines of this (using MillScript's error 
+reporting format) :-
+ 
+MISHAP: 	Trying to redeclare implicitly declared identifier
+REASON: 	An imported identifier has been implicitly declared by 
+        	being referred to without "::"
+IDENTIFIER: 	foo
+IMPORTED FROM:	package foo
+SUGGESTION:	Use foo::foo instead of foo and so avoid the need for an
+                implicit declaration
+LINE:		12
+
+After some further discussion about the pros and cons of this approach
+SFKL finally saw sense and agreed.

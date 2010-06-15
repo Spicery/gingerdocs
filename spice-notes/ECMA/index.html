@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>Spice documentation</title>
+<style>
+  body { 
+    margin-left: 10%; 
+    margin-right: 10%; 
+    font-family: sans-serif
+  }
+  h1 { margin-left: -8% }
+  h2,h3,h4,h5,h6 { margin-left: -4% }
+  pre { color: green; font-family: fixed }
+  em { font-style: italic }
+  strong { text-transform: uppercase; font-weight: bold }
+  .note {font-style: italic; color: rgb(192, 101, 101) }
+  .footnote {font-size: 80% }
+  .issue {
+    color: navy;
+    font-family: "Comic Sans MS", sans-serif;
+    font-weight: normal
+  }
+  blockquote {
+    color: navy;
+    font-family: "Comic Sans MS", sans-serif;
+    font-weight: normal
+  }
+  table {
+    font-family: sans-serif;
+    font-size: 80%;
+    background: rgb(255,255,153)
+  }
+  td {
+    font-size: 80%
+  }
+  div.references { margin-left: 4%; margin-right: 4% }
+  div.box { border: solid; border-width: thin }
+  div.color {
+    background: rgb(204,204,255);
+    padding: 0.5em;
+    border: none
+  }
+  p.changed {
+    padding-left: 0.2em;
+    border-left-width: thin;
+    border-color: red
+  }
+  .dropcap {
+     float: left;
+     font: bold 1.4em "Times New Roman", serif;
+     color: rgb(51, 0, 102);
+     background: rgb(255, 255, 153)
+  }
+</style>
+</head>
+<body bgcolor="#FFFFE0" text="black">
+<h1 align="center">Spice documentation</h1>
+
+<p>I have pulled the following documents together as background
+information on Spice for ECMA TC39. I started work on Spice in 1997
+when I realized that CSS suffers from a lack of extensibility.
+Spice adds CSS style rules to ECMAScript to provide a powerful yet
+easy to write way to script Web-based applications using XML. HP
+submitted an early description of Spice to W3C in February. I was
+invited to present this work at the SGML UK meeting on style sheets
+and subsequently at the Developer's Day at the WWW'7 web conference
+in Australia.</p>
+
+<p>Following this I was lucky to get Chris Dollin and Steve Leach
+of HP Labs to help me refine the language and to apply their
+considerable experience with computer language design and compiler
+writing. Chris and Steve have worked hard on tackling the
+peformance scaling issues as well as innovative work on syntax that
+aims to avoid a number of common programming errors as well as
+adding a number of powerful features such as multiple dispatch,
+multi-valued expressions, unifying methods and properties etc.</p>
+
+<p>The documents linked below reflect our current view of Spice. I
+expect there are some inconsistencies, at least between what I have
+written and Chris and Steve's notes. They are strong on language
+design and weak on Web issues, whereas I am in the reverse
+position. I am very much looking forward to working with ECMA and
+mining our work on Spice as a basis for adding style rules and
+higher performance to ECMAScript. HP Labs is working on a full
+implementation and will make this available to others wishing to
+evaluate the changes under consideration.</p>
+
+<dl>
+<dt><a href="Spice-paper.html">Adding Style and Behaviour to XML
+pages with a dash of Spice</a></dt>
+
+<dd>An explanation of what motivatived the development of Spice and
+a comparison with other work. <em>Dave Raggett</em></dd>
+
+<dt><a href="spice-ecma-notes.html">Evolving ECMAScript to add
+style rules and boost performance</a></dt>
+
+<dd>A good starting point for understanding the additions proposed
+to ECMAScript. <em>Dave Raggett</em></dd>
+
+<dt><a href="rationale.html">Rational for differences between ECMA
+262 and Spice</a></dt>
+
+<dd>More information motivating the changes. <em>Chris Dollin &amp;
+Steve Leach</em></dd>
+
+<dt><a href="chatty.html">Further information on Spice
+details</a></dt>
+
+<dd>Covers the language details in a chatty style with examples in
+the syntax preferred by Chris and Steve. <em>Chris Dollin &amp;
+Steve Leach</em></dd>
+
+<dt><a href="manual.html">Spice Language Grammar</a></dt>
+
+<dd>Chris and Steve present a grammar for the details of Spice.
+<em>Chris Dollin &amp; Steve Leach</em></dd>
+</dl>
+
+<hr>Dave Raggett &lt;dsr@w3.org&gt; 27th September 1998
+</body>
+</html>
+

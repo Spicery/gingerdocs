@@ -1,0 +1,329 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
+<html>
+<head>
+    <title>Spice Memo (18th June 2001)</title>
+    <meta name="generator" content="BBEdit 6.1.2">
+</head>
+<body bgcolor="#FFFFFF">
+
+<h1>Memo: Meeting between Steve Leach (SFKL) and Chris Dollin (CJD), Wednesday 18th June 2001</h1>
+
+<p>
+<b>Prescript by SFKL:</b>
+This isn't a full set of notes - mainly cause my brain was on impulse power on Friday - but better than nothing.  I've also broken out of pure reporting mode and into general discourse at several points.  I hope that's OK but I don't have time to write two letters and do it properly.
+</p>
+
+<h2>1. Spelling Issues</h2>
+
+<p>
+We tackled some spelling issues.  We went through some of the options for maplets ( x &amp; y, x :&gt; y, x :- y ) and CJD nominated "--&gt;".  Unfortunately, SFKL found that this conflicted with the implementation of embedded XML comments.  After a separate phone call we settled on "==&gt;".  [<em><b>Aside:</b> I have taken the liberty of revising all memos to use the <tt>==&gt;</tt> notation. Indeed my general policy is to update all memos to use current syntax, to improve their readability. However, this documents the date we settled on the actual syntax.</em>]
+</p>
+<p>
+SFKL raised the issue of assignment syntax - how we have left-to-right, total-vs-partial and destructive-vs-nondestructive assignment but only three out of the 8 possible operators.  CJD cut through this by arguing for
+</p>
+<pre> 
+     x := y
+     y =: x
+     x &lt;- y
+     y -&gt; x
+     x &lt;&lt;- y
+     y -&gt;&gt; x
+</pre>
+<p>
+SFKL agreed.  
+</p>
+<p>
+However, SFKL notes that we still lack total-nondestructive assignment and proposes that we add
+</p>
+<pre>
+     x ::= y
+     y =:: x
+</pre>
+<p>
+to this list the R-to-L and L-to-R versions of this assignment.
+</p>
+
+<h2>2. Static types: Any Vs Every</h2>
+
+<p>
+The reason CJD called this meeting was to discuss static types.  However we didn't really get far.  We got sidetracked into a discussion about the meaning of type-checking - whether it was there to ensure the validity of the domain of discourse or whether it is simply a specialized system of 
+assertions. 
+</p>
+<p>
+A key question, raised by Waldemar, in the context of ECMAScript, is whether the following kind of 
+expression should raise a type error
+</p>
+<pre>
+     var x : Any
+     x + 1
+</pre>
+<p>
+or should we require a separate type
+</p>
+<pre>
+     var x : Every
+     x + 1
+</pre>
+<p>
+to make it legitimate.
+</p>
+<p>
+The argument is that if x is of type Any it cannot have the "+" method defined on it.   By contrast, Every is a type that inherits from every other type and therefore has all methods defined.
+</p>
+
+<p>
+At the table, SFKL argued that Every has no instances - which in retrospect he acknowledges to be incorrect (in a rather boring way) and also misses the point. The key issue whether a type-error is about the potential or actual omission of a method.  
+</p>
+
+<p>
+One's position on this is dictated by the aim of type-checking.  If the point of type-checking is to prove that type-errors cannot occur then we must adopt the conservative/constructivist position and reject programs we cannot prove safe.  If the point is to reject programs which inevitably lead to type-errors we can be more relaxed.
+</p>
+
+<p>
+More powerfully, however, SFKL points out that this line of thinking derives from the necessity (in Java and friends) to determine the type-context in order to perform name resolution.  Since Spice can perform name resolution without recourse to any type analysis, the idea that the method "+" is not defined on Any has no real force. 
+</p>
+
+<h2>3. Static Types: Parameterized Types</h2>
+
+<p>
+CJD raised the topic of parameterized types.  The knotty issue here is function types and subtyping.  From the viewpoint of type-checking, inheritance provides the basis of subtyping i.e.
+</p>
+<pre>
+    T isa U =&gt; T sub U
+</pre>
+<p>
+The notion of subtyping is essential to type-checking.  If we can establish subtyping relationships between run-time and compile-time types then we will have proven our program free of potential/actual type-errors (modulo run-time type casts).
+</p>
+<p>
+However, function types naturally follow the contravariance rule :-
+</p>
+<pre>
+    ( T -&gt; T' ) &lt;: ( U -&gt; U' ) &lt;=&gt; U &lt;: T &amp; T' &lt;: U'
+</pre>
+<p>
+or equivalently
+</p>
+<pre>
+    ( A -&gt; B ) &lt;: sub A -&gt; super B
+</pre>
+<p>
+This contrasts with, say tuples, which follow the covariance rule
+</p>
+<pre>
+    ( A x B ) &lt;: super A x super B
+</pre>
+<p>
+CJD introduced the type operator 
+</p>
+<pre>
+    X ^ Y = Z 
+</pre>
+<p>
+which means that Z is a/the supertype of X &amp; Y.  i.e.
+</p>
+<pre>
+    X ^ Y = Z  =^=  X &lt;: Z &amp; Y &lt;: Z
+</pre>
+<p>
+Note that Z is not unique.
+</p>
+<p>
+The question arises 
+<pre>
+    ( T -&gt; T' ) ^ ( U -&gt; U' ) =?= ( T ^ U ) -&gt; ( T' ^ U' )
+</pre>
+<p>
+We need to establish (by expanding definition of ^)
+</p>
+<pre>
+    ( T -&gt; T' ) &lt;: ( T ^ U ) -&gt; ( T' ^ U' ) &amp;
+    ( U -&gt; U' ) &lt;: ( T ^ U ) -&gt; ( T' ^ U' )
+</pre>
+<p>
+These are completely symmetrical so it suffices to prove just one of the conjuncts. To prove
+</p>
+<pre>
+    ( T -&gt; T' ) &lt;: ( T ^ U ) -&gt; ( T' ^ U' )
+</pre>
+<p>
+We must show, by an expansion of the contravariance rule, both
+</p>
+<pre>
+    T ^ U &lt;: T &amp;             # false
+    T' &lt;: T' ^ U'            # true
+</pre>
+<p>
+The former conjunct fails so the conjecture is disproved.  Fairly obviously we need the contravariant operator (v) which finds a subclass of both T' and U'.  Then we can write
+</p>
+<pre>
+    ( T -&gt; T' ) ^ ( U -&gt; U' ) = ( T v U ) -&gt; ( T' ^ U' )
+</pre>
+<p>Alternatively we can observe that the conjecture holds if we adopt covariance as the type rule.
+</p>
+
+
+<h2>4. Static Types: Parameterized Types and Assignment</h2>
+
+<p>
+A major problem with this kind of analysis is that updateable structures are not type covariant but invariant.  We would like to assume that
+</p>
+<pre>
+    T &lt;: U =&gt; List( T ) &lt;: List( U )
+</pre>
+<p>
+but if the list in question is updateable this is simply untrue.  
+</p>
+<p>
+The argument is that if List( T ) &lt;: List( U ) then we are going to allow
+</p>
+<pre>
+    t[ 1 ] := u where t : T, u : U
+</pre>
+<p>
+and then
+</p>
+<pre>
+    t[ 1 ] is no longer in T.
+</pre>
+
+<p>
+However, in Spice the updater of index is actually a function call.  So we have to rewrite 
+</p>
+<pre>
+    t[ 1 ] := u
+</pre>
+<p>
+into
+</p>
+<pre>
+    updater( index )( t, 1, s )
+    updater( index ) : List( * ) x Int x *
+</pre>
+<p>
+Needless to say, this is contravariant and this gets us a way out ... I think.  If this is correct we can go around using the covariance of Lists with impunity.
+</p>
+
+<h2>5. Static Types: Parameterized Types and Efficiency</h2>
+
+<p>
+The next question is whether or not we can efficiently implement parameterized types.  When one is casting down I think the answer is that every element of List( X ) must be checked against the subtype criterion - which is obviously inefficient!
+</p>
+
+<h2>6. Arithmetic</h2>
+
+<p>
+Our dialogue drifted into a discussion of compiling into machine arithmetic. The problem is that it is <em>not</em> enough to know the type of the target. e.g. The following cannot be computed using machine arithmetic.
+</p>
+<pre>
+    var x : Int = y : Int + 1;
+</pre>
+<p>
+SFKL proposed the idea of Int types with a postfix % operator.  The Int would be (conceptually) an object wrapper around an Int field.
+</p>
+<pre>
+    var x : Int = new Int( 0 );
+
+    # use machine arithmetic
+    x% := x% + 1;
+</pre>
+<p>
+CJD proposed the rather more cunning idea of modular arithmetic in disguise.  The postfix "modular arithmetic for numerical type N" might be written ":&gt;".
+</p>
+<pre>
+    var x = 0;
+    x := x + 1 :&gt; Int;    # use machine arithmetic
+</pre>
+<p>
+The elegant aspect of this idea is that it could be use with floating point types as well.
+</p>
+<pre>
+    var x = 99;
+    x := x + 1 :&gt; Float;  # floating point machine arithmetic allowed! 
+</pre>
+<p>
+The idea of a "calculator" mode was floated again.  This is a suggestive phrase that SFKL says is tricky to elegantly incorporate.  The most elegant ideas are too inflexible.
+</p>
+<p>
+The original idea was to be able to create a calculator object and then operate it by "pushing buttons".  e.g.
+</p>
+<pre>
+    var calc = new Calculator();
+    calc.push( 2 );
+    calc.push( 100 );
+    calc.x2y();
+    var result = calc.pop();
+</pre>
+<p>
+However the trouble with this is that it is simply syntactically too clumsy.     When trying to encode "complex" expressions such as
+</p>
+<pre>
+    A*x*x*y+B*x*y*y+C*x*x*x+D*y*y*y
+</pre>
+<p>
+we do not want to write
+</p>
+<pre>
+    function eqn( A, B, C, D ) =&gt;
+        fun( x, y ) =&gt;
+             var calc = new Calculator();
+             calc.push( x );
+             calc.push( y );
+             calc.mul();
+             calc.push( x );
+             calc.push( A );
+             calc.mul();
+             calc.push( B );
+             calc.push( y );
+             calc.mul();
+             calc.add();
+             calc.mul();
+             calc.push( x );
+             calc.cube();
+             calc.push( C );
+             calc.mul();
+             calc.push( y );
+             calc.cube();
+             calc.push( D );
+             calc.mul();
+             calc.add();
+             calc.add();
+             calc.pop()
+        endfun
+    endfunction
+</pre>
+<p>
+Apart from anything else, it is going to be a long time before this compiles into anything other than rubbish code - which rather defeats the object of the exercise.
+</p>
+
+<p>
+SFKL modified this later to the idea of a "Calculation" rather than a "Calculator".  By analogy with regular expressions one would write
+</p>
+<pre>
+    var calc = new Calculation( "A*x*x*y+B*x*y*y+C*x*x*x+D*y*y*y" );
+</pre>
+<p>
+This would compile a function which, when applied to a Map m, would pull out m[ `A` ], m[ `B` ], m[ `C` ], m[ `D` ], m[ `x` ], m[ `y` ] and compute the total.  Naturally enough, the (futile) hope would be that the compiler would avoid computing the map in a useful range of situations.
+</p>
+<p>
+Both CJD and SFKL generalized this idea to that of a calculator mode.  The most natural idea would be to have a new define form (an inline form is tempting but tricky to integrate nicely).
+</p>
+<pre>
+    # Note: The curried form used here was suggested a few months after
+    # this meeting. 
+    define calculation poly( A, B, C, D ) =&gt; ( x, y ) =&gt;
+        A*x*x*y + B*x*y*y + C*x*x*x + D*y*y*y
+    enddefine
+</pre>
+<p>
+The key idea is that inside a define-calculation a restricted version of the language would be in operation.     These restrictions would eliminate the need for any run-time type checking e.g. scalar vs vector vs matrix vs array arithmetic.  They would also allow pure arithmetic calculations to be performed in floating point registers (no indefinite arguments).  Calling one calculation routine from another would incur no translation overhead (although register save/restore would probably be inevitable).
+</p>
+<p>
+In my mind I imagine this is like having FORTRAN as a little sub-language.
+</p>
+<p>
+Having gone through the experience of implementing <em>autoimporting</em> in MillScript, SFKL now prefers to see the problem as one of implementing a sub-language suitable for floating point processing.   In this view, the main issues are communicating back to the host language.
+</p>
+
+</body>
+</html>

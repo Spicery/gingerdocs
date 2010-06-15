@@ -1,0 +1,12 @@
+
+
+define class Fred extends Foo, Bar;
+    slot foo = 3 * 4;
+enddefine;
+
+class Fred extends Foo, Bar
+    slot foo = 3 * 4;
+endclass;
+
+val foo = newSlot( "foo", fun() => 3 * 4 endfun );
+val Fred = newClass( { Foo, Bar }, { foo }, { fun() => 3 * 4 endfun } );

@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
+<html>
+<head>
+	<title>Palantir Memo</title>
+	<meta name="generator" content="BBEdit 6.1.2">
+</head>
+<body>
+<h1>Palantir Memo: On Predicates</h1>
+
+<p>
+Q: How can you determine the extent of a predicate?
+</p>
+
+
+<p>
+A: That's why we need the predicate "application" braces :-
+	append( ?x, ?y, ?z ) :- ...
+</p>
+
+<hr>
+
+
+<p>
+Q: Can we use Prolog-style upper case variables?
+</p>
+
+
+<p>
+A: No.  We sometimes need both "?x" and "x" in the same lexical scope.  Using "X" and "x" would be poor design.
+</p>
+
+<hr>
+
+
+<p>
+Q: Why don't we need "?x" variables when writing pattern-matching code such as
+</p>
+<pre>
+	let Pair( x, y ) := E in B
+</pre>
+
+<p>
+A: Insisting on a "?" prefix would be more general.  However, this is a 1-way unification and the extra generality makes it error prone.  Hence we have a simplified and more convenient approach for argument passing and let bindings.
+</p>
+
+<p>
+n.b. 1-way unification uses ":=" or "&lt;-".  2-way uses "=".
+</p>
+
+<hr>
+
+</body>
+</html>

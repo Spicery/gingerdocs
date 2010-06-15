@@ -1,0 +1,65 @@
+[An unfinished fragment for an article leading to Spice stylesheets]
+
+Taking this example a few steps too far, let us suppose we were doing 
+"real" web-publishing with this trivial example.  OK, I know it is bonkers,
+but it is small enough for us to keep track of everything that is going on.
+
+The first thing is that we would not build HTML directly.  Naturally we
+would design our application specific markup.  I suggest we write our
+program like this ...
+
+	<timeOfDayApp>
+		<welcome/>
+		<TodayIs/>
+		<list>
+			<item> <Day/> <Sep/>, getDayOfMonth() </item>
+			<item> <Year/> <Sep/>, getYear() </item>
+		</list>,
+		if timeOfDay() < 12hr then 
+			<MorningGreeting/>
+		else
+			<AfternoonGreeting/>
+		endif
+	</timeOfDayApp>
+
+We would then write an HTML transformation and a Localization transformation.
+The stylesheet area of Spice is incomplete.  So this is a brute force
+implementation that we can improve on easily when we add the unification
+code to Spice.  I write this out in full for gruesome completeness.
+
+	# Library function.
+	define function replaceTagName( r ) => e =>
+		new Element( r, e.attributes, e.children )
+	enddefine
+	
+	# Library function.  Functional programmers see combinator K.
+	define function replacement( x ) => _ =>
+		x
+	enddefine
+	
+	# A stylesheet is just a function based on this dictionary.
+	const hsheet = Dictionary( x => x );
+	
+	# Use implicit conversions.
+	`timeOfDayApp`.hsheet := `html`;
+	`welcome`.hsheet := <h1><Welcome/></h1>;
+	`todayIs`.hsheet := <p><TodayIs/></p>;
+	`list`.hsheet := `ul`;
+	`item`.hsheet := `li`;
+	
+	# Does the style-sheet work bottom up or top-down or run to exhaustion.
+	# It is your choice - or course!  Better write the library function for
+	# (say) bottom-up transformation.
+	
+	define bottomUpTransform( f, e ) =>
+		 Element(
+			 e.tagName,
+			 e.attributes,
+			 e.children @map bottomUpTransform( f, _ )
+		 ) @f
+	enddefine
+	
+	const hStyleSheet( e ) = bottomUpTransform( hsheet, _ );
+
+Then we would have to write out the Localization stylesheet for English,
+at least.

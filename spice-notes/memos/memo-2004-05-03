@@ -1,0 +1,225 @@
+= Design Meeting, 3rd May '04 =
+
+  * Location
+      * Cedar Close
+  * Attending
+      * ChrisDollin
+      * KevinRogers
+      * SteveLeach (scribe)
+  * Absent
+      * GrahamHiggins
+
+== Summary of Tasks & Follow-Ups ==
+
+    * SteveLeach to break out small topics for discussion from structure matching "umbrella" - and remind the group where the main discussion document resides.
+    
+    * SteveLeach to remind members where the DesignNotes/Rules document lives.
+    
+    * SteveLeach & ChrisDollin to edit the DesignNotes/DollinPrinciple page to reflect the excellent discussion.
+    
+    * ChrisDollin to write up function types proposal.
+    
+    * KevinRogers & SteveLeach to comment on revised reference manual.
+    
+    * SteveLeach to write up views on dynamic loading of code.
+
+
+== Summary of Resolutions ==
+    
+    * Type check failures do not prevent the programmer from trying to execute a program (in the interests of exploratory programming).
+    
+    * Type expressions will follow the same syntactic rules as ordinary expressions.
+
+
+== Update on Previous Tasks and Follow-Ups ==
+
+=== Revised Reference Manual ===
+
+'''Action''': ChrisDollin - to lead revised reference manual - to detail table of contents for next meeting.
+
+'''Status''': ChrisDollin prepared a first version, edited by SteveLeach to provide links, and then a ChrisDollin created a second version (without links!)  These are visible at ["RefManualContentsPage"] and ["RefManualExperimentalContents"].  
+
+=== Comms ===
+
+'''Action''': SteveLeach to discuss communication systems with GJH - mailing lists and archiving - instant conferencing (MUD/MOO?)
+
+'''Status''':  GJH & SteveLeach completed the configuration of three email lists later on the same day.  These are all documented on the Administration page - which is not visible unless you are logged in as an admin at ["Administration"].  All management facilities are protected under separate passwords. The email lists are all automatically managed, so hopefully will be low-maintenance from now on.
+
+SteveLeach has put some effort into preparing the website for wider distribution.  This includes sorting out the front page, various admin pages, and lots of background material.
+
+=== Structure Matching ===
+
+'''Action''': SteveLeach to lead discussion on structure matching - the discussion to be summarized for the next meeting.
+
+'''Status''':  SteveLeach prepared a long discussion document which can be read at ["DesignNotes/StructureMatching"].  This has not provoked any real discussion as yet.  SteveLeach proposes breaking out small points for discussion (and the discussion on types is one of
+these.)
+
+=== Design Rules ===
+
+'''Action''': SteveLeach to lead discussion of principles of Spice language design - a report to be available for next meeting
+
+'''Status''':  SteveLeach wrote up a list of bullet points.  Some discussion has was made on this and incorporated into the list.  More discussion to be done after reminding members of the location - which is ["DesignNotes/DesignRules"].
+
+=== Where ===
+
+'''Action''': SteveLeach to look for resolution on reserving "where" for future use.
+
+'''Status''':  A request for agreement was sent out - there was no dissent.  As a consequence I have added "where" to the list of reserved words under ["Ref/ReservedWords"].
+
+
+== Discussion on the Dollin Principle ==
+
+As a prequel to a proper discussion on Spice's type expressions, we
+explored the precise wording of the Dollin Principle.  This arose 
+because of SteveLeachs paraphrasing of the Dollin Principle applying to
+"all valid inputs" of a program.
+
+ChrisDollin pointed out that the correct phrasing is with regard to a particular
+set of inputs.  There was some muddled debate about whether that made the
+principle stronger or weaker - but it definitely makes it more useful!
+
+Here's what I hope is a more accurate and concise statement:-
+
+Adding or removing a STATIC type assertion to a program that DYNAMICALLY 
+satisfies that assertion for a PARTICULAR SET of inputs does not change 
+the program's behaviour on THOSE inputs.  
+
+Furthermore, we were in agreement that static type-check failures 
+should not prevent a developer from continuing to execute a program.
+(Although you might expect the system to complain a bit.)  This 
+resolution has been added to the DesignNotes/TypeRules.
+
+Lastly ChrisDollin observed that the Dollin Principle assumes that there is
+no reflection on type assertions.  The presence of such reflection
+cancels the Principle (although some locality can be regained with
+appropriate wording.)
+
+
+== Discussion on Type Expressions and Assertions ==
+
+An early point that found agreement was that type expressions would 
+follow the same syntax rules as ordinary expressions.  Although
+this is potentially ambiguous, the intention is to reduce the amount
+of syntax to learn.  (This has been entered as a resolution.)
+
+The jumping-off point for discussion was the meaning of a static
+type assertion.  There are two interpretations best illustrated by
+a typed formal parameter
+{{{
+    fun x : T => ...
+}}}
+An important reading of the type assertion can be read as saying that 
+it is *sufficient* to supply a value of type T.  Under this reading, 
+the type inference algorithm cannot narrow T to a subtype U because
+that would contradict the assertion that T is sufficient.  (The type
+inference algorithm _may_ however be permitted to widen the assertion.)
+
+The alternative reading - and the one that falls more into line with
+the Dollin Principle - is that type assertions should be read as 
+saying that it is *necessary* to supply a value of type T (and so
+any sub-type).  In this case, the type-inference algorithm is free
+to narrow T to U if it discovers that T is insufficient.
+
+The example we used to illustrate this draws from an infelicity in
+the Java List class.  The addLast method is only available to a
+particular subclass LinkedList:
+{{{
+    fun f( a, x : List ) => ... x.addLast( a ) ...
+}}}
+The essential question is which one - or both - is the appropriate
+interpretation for Spice?
+
+To better pursue this answer we opened up several new cans of worms.
+The first can was the appropriate interpretation for dispatches.  
+If we see
+{{{
+    fun g( x :- List ) => ....
+}}}
+then is a type inference algorithm permitted to narrow -x- or should it
+raise a type error?  SteveLeach argued that this would be most naturally
+treated as a type error - but has had second thoughts since!
+
+We then turned our attention to the question of function types.  The
+knotty question in front of us was this.  If we have a function H and
+we write
+{{{
+    val h : Int -> String = H;
+    H( "hello" )
+}}}
+have we in fact got a type error?  Does it make sense to have a retrospective type error?  Or do we have to assign functions static types when they
+are defined?  We explored the latter possibility for a little while and
+realized that this was a sufficiently serious topic to deserve separate
+thought.  ChrisDollin offered to lead this discussion.
+
+We continued to discuss the relationship between overloading and 
+anonymous type unions.  Because Spice does not require a type checker
+to discover all possible type errors, it is possible for the type
+inference algorithm to coalesce unions in order to prevent an 
+exponential exploration.  As a result, we observe that Spice type
+checking does not suffer from the same kind of performance issues
+as, say, the functional language Hope.
+
+
+== Discussion on Reflection, Meta-levels and Virtual Machines ==
+
+Several times during the afternoon, we found ourselves discussing the
+topic of reflection.  I have grouped these fragmentary discussions 
+together.
+
+SteveLeach was vociferous in his dislike of the unstructured reflection
+mechanism in Java.  He argues that the proper way to implement
+reflection is via virtual machines as values.  
+
+For more simple-minded reflection needs, he pointed out the trick 
+that a compiler can make static meta-level information.  This is
+exploited as the reflection mechanism of Palantir, for example, where
+the "external" facet is accessible via a static Map.  However, the
+static nature of the Map introduces no meta-programming capability
+whatsoever.  [Proof: the static Maps can be written by hand.]
+
+There is also a practical case for a reflection capability for 
+writing debugging utilities.  Since this is really an IDE capability
+SteveLeach would regard this as falling into the VM-as-value banner.
+
+However, the dynamic loading mechanism of Java is attractive.  But,
+again, this is not meta-programming in the usual sense.  This is
+nothing more than memory management (disk counting as a slow form of
+memory, of course.)  And the more general issue of dynamic loading and
+unloading of classes again falls into the class of problems best dealt
+with as VM-as-value.
+
+SteveLeach was volunteered to write up a document on dynamic loading.
+
+
+== Discussion of "Boxes" and the Logging Service ==
+
+We had a fairly lengthy digression on the topic of the Java logging
+interface.  The relevance here is that Open Spice must define a collection
+of execution environments for Spice programs.  KevinRogers and SteveLeach have taken to
+calling these Boxes.  e.g. the Console Box, the GUI Box, the Daemon Box,
+the Servlet Box, the CGI Box and so on.
+
+Roughly speaking, a Box provides the portable interface to operating 
+system services.  One of the most common services is a logging interface
+by which application can report on their progress and on high-level
+events.
+
+SteveLeach believes that the idea of spitting out characters to streams is a
+fundamentally poor way of understanding logging.  He opined that there
+should be a proper unification of GUI events, life cycle events, 
+notification, and logging.  He just doesn't know how, yet.
+
+
+== Discussion of Autoloading in Millscript ==
+
+We also reviewed the autoloading mechanism in Millscript, pointing out
+the need for both expression loaders and binding loaders.  We observed that
+this loading mechanism provides an interesting alternative to configuration
+files: instead of writing config files we simply pass parameters specified
+in the autoloading format!
+
+This is a very interesting proposal and has ramifications for the
+dynamic loading proposal.
+
+----
+SteveLeach

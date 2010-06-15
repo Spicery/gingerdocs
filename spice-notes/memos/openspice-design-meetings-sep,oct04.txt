@@ -1,0 +1,198 @@
+Summary of Spice Design Meetings, 06/09/04 & 04/10/04
+
+Location
+	12 Cedar Close, Long Ashton
+
+Attending Members
+	Chris Dollin	CJD		(eh@electric-hedgehog.net)
+	Kevin Rogers	KR		(krogers@openworld.org)
+							06/09/04, only
+	Steve Leach		SFKL	(steve@watchfield.com)
+	
+[1] Summary
+-----------
+
+[1.1] Summary of Tasks and Follow-Ups
+-------------------------------------
+
+Action:			'==' to work on numbers in JSpice
+Assigned-to:	SFKL
+
+Action:			JUnit in OpenSpice
+Assigned-to:	CJD
+
+Action:			Reference Manual Progress
+Requested-by:	All
+Assigned-to:	All
+
+
+[1.2] Summary of Resolutions Passed
+-----------------------------------
+
+*	The built-in equality operator should work on numbers even in 
+	implementations such as JSpice where numbers are not identical.
+	
+*	New design guideline: for every "unsafe" package there should exist
+	a "safe" version.  A simple naming convention should relate the two
+	packages.
+
+
+[1.3] Update on Previous Tasks and Follow-Ups
+---------------------------------------------
+
+Action:			Continue breaking out small topics for discussion from 
+				the structure matching "umbrella".
+Assigned-to:	SFKL 
+Status:			Generally seems to have been successful.  SFKL to continue.
+
+Action:			Comment on function types proposal.
+Assigned-to:	KR/SFKL
+Status:			Done
+
+Action:			Summarize assignment rules
+Requested-by:	CJD
+Assigned-to:	SFKL
+Status:			On hold
+
+
+
+
+[2] Reviews of Related Technologies
+-----------------------------------
+
+[2.1] AspectJ
+-------------
+
+SFKL reviewed the AspectJ from an OpenSpice perspective.  The significance of AspectJ is that it augments Java with method-extensions ("advice").  AspectJ's approach significantly differs from simple before/after extensions.  It structures extensions into classes called "aspects".  An aspect-class defines the situations that it interferes with via a restricted "pointcut" specifiers.  In normal use, aspect-classes are singletons whose single instance is instantiated on demand.
+
+The weakness of AspectJ lies in the design of the "pointcut" specifiers.  To understand this in more detail, here is a summary of them.
+
+The commonest sort of pointcut is a "kinded pointcut".	This sort always includes an "join point".	Join points are generic places in the source code that can be extended by an aspect-class.	Despite their name, join "points" typically have different start and end points.  The list of join points includes:
+
+execution:				method body execution
+call:					invocation of a method (happens in the context of the caller)
+get:					read an instance variable
+set:					assign to instance variable
+initialization:			constructor invocation
+staticinitialization:	class loading
+preinitialiazation:		argument preparation for call of super in constructor
+
+There are other sorts of pointcuts in AspectJ, in particular, "lexical-structure based pointcuts" - which allow the programmer to inhibit the recursive invocation of method-extensions.  However, these are not significant here.
+
+For example, to extend the method "credit" in class "Account" you might start by declaring a kinded pointcut "foo" as follows.
+
+pointcut foo() : call( void Account.credit( float ) );
+
+In AspectJ, pointcut specifiers are best understood as matching a subset of the total set of join points in a program.	And it is in the pursuit of the idea of "matching" that AspectJ goes off the rails.
+
+As one might expect, parameter matching is done on the basis of method name, input and return types.  However, a typical pointcut might look like this:
+
+	call(* RemoteService.get*( .. ) throws RemoveException)
+	
+This means match all call-join-points, irrespective of input and output types, as long as the method name begins "get".	 This violates a design principle: the only thing that matters about two names is whether they are the same or different (after name resolution).  Such a violation must be undertaken with extreme care otherwise there can be ghastly consequences.
+
+This matching rule means that such a pointcut refer to names in methods that have not yet been declared.  The upshot of this is that name clashes cannot be detected.
+
+
+
+[2.2] RDF
+---------
+
+[3] Activities
+--------------
+
+[3.1] Reference Manual
+----------------------
+
+We all committed ourselves to making progress on the reference manual.	As it transpires, we have not really managed to make progress on this (although KR has done something, so he wins the laurels this time round).	 We have volunteered to make contributions as follows:
+
+SFKL: number functions, intro
+CJD: small expressions
+KR: lexis
+
+
+[3.2] C/C++ Implementation of OpenSpice
+---------------------------------------
+
+The question of implementing a C/C++ implementation of OpenSpice was raised.  The context of this is that CJD has a significant body of code that would make this simpler for him than anyone else in the group.  CJD expressed interest but feels it is necessary to seek clearance from his employers (HP Labs) before engaging in any open source activity.
+
+The proposal is to set up a new open source project to provide such an implementation.	One definite idea is that we specify a virtual machine planting interface (a la Poplog) and provide multiple implementations.  This would enable CJD to pursue his interest in embedded systems and SFKL his interest in threaded interpreters.
+
+CJD is unclear about the commitment to C++ rather than sticking to plain C.  SFKL opined that the core runtime system should be plain ol' C but that anything associated with the compiler or IDE should be free to utilize C++.  On reflection, SFKL believes that the choices come down to these motivations: plain old C is more suitable for embedded systems but C++ is more suitable for a standalone system.
+
+An alternative that CJD and SFKL have discussed at length is an OpenSpice to C/C++/Java translator.	 The idea behind this would be to bootstrap an interpreter written in OpenSpice.  One would use the translator to turn such an interpreter into C/C++/Java into an executable program.	The disadvantage of this process is that it is potentially very long winded - but the advantage is that we end up with two useful tools.  The translator is likely to be a very handy tool when targeting other systems.
+
+SFKL has suggested that the translator could be incorporated into JSpice.  This would mean that the translator would be initially written in Java which isn't too unpleasant a prospect.  JSpice already provides lexis, parsing, name resolution and autoloading.	So this would mean that the programmer would focus on the core translation task.
+
+Translating into Java is by no means a daft idea.  JSpice is a very slow interpreter at present.  Translating OpenSpice into Java would mean that Spice programs would be considerably faster - and potentially smaller.
+
+
+[4] Handling Type Failures
+--------------------------
+
+We had a very productive discussion on how handle type check failures.	The key issue was the distinction between potential and certain type errors.  Consider the following definitions:
+
+	define checkWithAssertion( x : Any ) => x + 1 enddefine
+
+The type checker will make the discovery that x should have the type Number.  The first question that arises is whether or not this is a type error.  This is equivalent to the following issue: should the type assertion -x- be read as saying that all values of Any should be acceptable?  Or is it simply saying that some values of Any should be acceptable?
+
+The discussion converged on the idea that both ideas were useful.  A programmer should be able to select the level of strictness of the checking they require.	The key principle is that a type failure would never prevent compilation succeeding.  It was agreed that this is an important feature for development.
+
+The following definition 
+	define typeError() => "foo" + 99 enddefine
+is, by contrast, always a type error.  The only way to avoid a problem with this function is to never call it.	We collectively agreed that this level of error should always be flagged for the users attention - but should not prevent compilation and test.
+
+This definition has no explicit assertion:
+	define checkNoAssertion( x ) => x + 1 enddefine
+The question this poses is whether or not the lack of a type assertion should be treated as synonymous with the assertion ":Any".  The potential difference is that when the type checker discovers that it needs to narrow -x- to Number it might choose to be silent.	 It seemed to the group that this was best handled as simply another configurable option.
+
+
+[5] Parameterized Types in OpenSpice
+------------------------------------
+
+A very productive discussion was had on the OpenSpice type hierarchy.  This centered upon the role of parameterized types - which previously had been given little prominence.	SFKL and CJD worked out the following hierarchy for maps.  Note the associated type predicates are listed underneath the types.
+
+		  BoundedMap( a, b )
+			/	   isMapLike
+		   /			 \
+		  /				  \
+		 /				   \
+  Map( a, b )				\
+		|					 \
+		|					  \
+		|					   \
+		|						\
+		|						 \
+		|					 BoundedMap( Int, b )
+		|						 / \   isListLike
+		|						/	\
+  Map( Any, Any )			   /	 \
+			isMap			  /		  \
+							 /		   \
+							/			\
+						   /		BoundedMap( Int, Any )
+						  /							isList
+						 /
+			   BoundedMap( Int, Char )
+							  isString
+
+BoundedMaps do not support default values but Maps do.	This hierarchy is useful in setting the right level of genericity for functions and constructs in OpenSpice.  In particular, most actions in OpenSpice apply to BoundedMap( a, b ) e.g. for loops, explosions.	Some are intermediate e.g. concatenation applies to BoundedMap( Int, b ).  And some are specific e.g. caseChange applies to BoundedMap( Int, Char ). 
+
+
+[6] Number Identity in OpenSpice
+--------------------------------
+
+SFKL introduced a short item.  To his dismay, it has proved unacceptably inefficient to support the guarantee that "small" numbers are identical.  This rather conflicts with the motivation behind "==".  After some discussion it was resolved that SFKL would modify the "==" operator in JSpice to compare numbers using a fuller equality (they would have to have the same class).
+
+
+[7] Test Driven Development
+---------------------------
+
+CJD raised the topic of Test Driven Development.  This is an area all members are interested in supporting.	 The idea CJD had is to introduce a new define form to make it easier to write a collection of tests:
+
+	define lotsOfTests foo() =>
+		( => T1 ),
+		( => T2 ) ...
+	enddefine
+
+SFKL suggested adding a specific *.test extension to JSpice for writing tests.	This would allow the tests to be written in as compact a way as desired.

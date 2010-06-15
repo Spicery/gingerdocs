@@ -1,0 +1,77 @@
+Re: Pervasive Identifiers
+
+---------------------------------------------------------------------
+From: Chris Dollin <kers@hplb.hpl.hp.com>
+To: Stephen Leach <steve@watchfield.com>
+Date: Mon, 10 Sep 2001 14:45:03 +0100
+
+Hi Steve
+
+> OK, it is stupid question time.  Should true, false, absent and nil be
+> ordinary identifiers or reserved words?  
+
+OK, you should have had time to digest my previous message.
+
+In favour of identifiers: they have no properties that cannot be 
+possessed by identifiers, bar one (below). The parser does not
+need to know that they are special, so they don't need special
+tokens. Having them as identifiers reduces the load on the lexer.
+
+In favour of reserved words: you don't want to be able to [re]declare 
+them.
+
+The one property: they can't be redeclared.
+
+Resolution: add another standard attribute, "pervasive". Pervasive
+identifiers cannot be redeclared in a nested scope. 
+
+make true/false/absent/nil/termin/String/Absent/Small/Vector etc
+pervasive.
+
+They are then neither reserved words nor "ordinary" identifiers.
+
+---------------------------------------------------------------------
+Delivered-To: steve@outstation.bel-epa.com
+Delivered-To: steve-steve@watchfield.com
+Status:  U
+From: Chris Dollin <eh@electric-hedgehog.net>
+Reply-To: eh@electric-hedgehog.net
+Organization: absent
+To: Stephen Leach <steve@watchfield.com>
+Subject: Re: Pervasive
+Date: Tue, 11 Sep 2001 06:17:04 +0100
+
+Hi Steve
+
+> I quite like the suggestion of "pervasive" but suspect it ought to be
+> applied at the package level rather than the identifier level.  Maybe
+> both - it seems to me that your "protected" mechanism is an identifier
+> level version of "qualified", so perhaps there is a pattern there
+> already?
+
+"protected" is what "qualified" was. To protected-import a package is
+to treat all its public identifiers as protected. I agree that the term
+"protected" doesn't immediately suggest "needs a prefix". Perhaps
+"warded" would be better!
+
+"pervasive" and "protected" however (whatever the spellings) have
+different meanings. "protected" means "can only be *referred* to
+using an alias:: prefix". "pervasive" means "cannot be redeclared
+in an inner scope" [ie means the same thing "everywhere", well
+everywhere it's visible at all.]
+
+I believe it to be a property of an identifier, not a package or an
+import (although a "pervasive import", meaning that you can't
+redeclare any of the public identifiers, sounds like an option
+that control freaks would want to have available). The same
+package might well want to make some identifiers pervasive and
+others not.
+
+When pervasive becomes available, various sysWhatsit identifiers
+in the Spice basis package will probably become pervasive.
+(Since the code refers to them using the prefix::id notation,
+the suer can't over-ride them: but still.)
+
+
+
+---------------------------------------------------------------------

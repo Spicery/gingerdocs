@@ -1,0 +1,25 @@
+<Document Author="Chris Dollin">
+<Contents/>
+<doctitle><string>Spice language manual (v4.0, February 2002)
+</string>
+</doctitle>
+<part><p><string>a gentle introduction to Spice</string>
+</p>
+<chapter level="1">
+<headertitle><string>introduction</string>
+</headertitle>
+<p><string>This document describes the programming language Spice, which was developed,
+from an idea of Dave Raggett's, by Chris Dollin and Steve Leach. The initial
+design work was done in autumn 1998 and subsequent modifications made as
+implementations progressed.</string>
+</p>
+<syntax><word>ProcedureDef</word>
+<word>FullProcedureDef</word>
+<word><code></code></word>
+<word>FunctionDef</word>
+<word><code></code></word>
+<word>CompactDef</word>
+</syntax>
+</chapter>
+</part>
+</Document>

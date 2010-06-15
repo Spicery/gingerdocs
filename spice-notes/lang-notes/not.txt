@@ -1,0 +1,27 @@
+Re: not
+
+
+---------------------------------------------------------------------
+Date:	27/Jun/03
+
+Hi Chris,
+
+Quick question: what's your opinion on "not" in Spice.  Is it a prefix operator, an operator that only looks like a function call, or a variable imported from the standard package?  
+
+	not x and not y            # Prefix
+	not( x ) and not( y )      # Looks like function call
+	x.not and y.not            # Really is a function call
+
+My own preference is for the latter.
+
+---------------------------------------------------------------------
+From:	Chris Dollin
+Date:	27/Jun/03
+
+I implemented the first one (so likely that's what the manual says). I don't 
+like the second one. I do like being able to do the third one (even if not
+is an operator, that can be allowed - I did that for eg new in Zest).
+
+I think I prefer 1 with option 3.
+
+---------------------------------------------------------------------

@@ -1,0 +1,139 @@
+\contentsline {part}{I\hspace {1em}a gentle introduction to Spice}{2}
+\contentsline {chapter}{\numberline {1}introduction}{3}
+\contentsline {section}{\numberline {1.1}notes}{4}
+\contentsline {chapter}{\numberline {2}a gentle introduction to Spice}{5}
+\contentsline {section}{\numberline {2.1}hello, world}{5}
+\contentsline {section}{\numberline {2.2}one, two, buckle my shoe}{6}
+\contentsline {section}{\numberline {2.3}variables}{6}
+\contentsline {section}{\numberline {2.4}typed variables}{7}
+\contentsline {chapter}{\numberline {3}function definitions}{8}
+\contentsline {section}{\numberline {3.1}typed arguments}{8}
+\contentsline {section}{\numberline {3.2}typed results}{9}
+\contentsline {section}{\numberline {3.3}indefinite arguments}{9}
+\contentsline {chapter}{\numberline {4}arrays}{10}
+\contentsline {chapter}{\numberline {5}dot and infix notation}{11}
+\contentsline {section}{\numberline {5.1}dot and infix function definition}{11}
+\contentsline {chapter}{\numberline {6}ifs and buts}{13}
+\contentsline {section}{\numberline {6.1}elselessness and elseif}{13}
+\contentsline {section}{\numberline {6.2}ands and ors}{14}
+\contentsline {section}{\numberline {6.3}short conditionals}{14}
+\contentsline {section}{\numberline {6.4}unless}{14}
+\contentsline {chapter}{\numberline {7}loops}{15}
+\contentsline {section}{\numberline {7.1}repeat}{15}
+\contentsline {section}{\numberline {7.2}for}{16}
+\contentsline {chapter}{\numberline {8}multiple values}{17}
+\contentsline {section}{\numberline {8.1}void context}{17}
+\contentsline {section}{\numberline {8.2}multiple-value loops}{18}
+\contentsline {section}{\numberline {8.3}explode}{18}
+\contentsline {chapter}{\numberline {9}procedures as values}{19}
+\contentsline {section}{\numberline {9.1}first-class procedures}{19}
+\contentsline {section}{\numberline {9.2}lambda-expressions}{20}
+\contentsline {subsection}{\numberline {9.2.1}"full lexical scope"}{20}
+\contentsline {section}{\numberline {9.3}hole-expressions}{21}
+\contentsline {section}{\numberline {9.4}combining functions}{21}
+\contentsline {chapter}{\numberline {10}more on {\bf absent}}{23}
+\contentsline {chapter}{\numberline {11}classes}{24}
+\contentsline {section}{\numberline {11.1}class definition}{24}
+\contentsline {section}{\numberline {11.2}updaters}{25}
+\contentsline {section}{\numberline {11.3}methods}{25}
+\contentsline {section}{\numberline {11.4}initialisers}{26}
+\contentsline {section}{\numberline {11.5}inheritance}{27}
+\contentsline {section}{\numberline {11.6}overloading functions}{28}
+\contentsline {chapter}{\numberline {12}type-expressions}{29}
+\contentsline {section}{\numberline {12.1}multiple}{29}
+\contentsline {section}{\numberline {12.2}lots}{29}
+\contentsline {section}{\numberline {12.3}arrays (and based arrays)}{29}
+\contentsline {section}{\numberline {12.4}optional types}{30}
+\contentsline {chapter}{\numberline {13}packages}{31}
+\contentsline {section}{\numberline {13.1}public and private}{32}
+\contentsline {section}{\numberline {13.2}imports}{32}
+\contentsline {section}{\numberline {13.3}readonly}{33}
+\contentsline {section}{\numberline {13.4}protected access and aliases}{34}
+\contentsline {section}{\numberline {13.5}pervasive import}{34}
+\contentsline {chapter}{\numberline {14}switches}{35}
+\contentsline {chapter}{\numberline {15}numeric literals}{36}
+\contentsline {chapter}{\numberline {16}units}{38}
+\contentsline {chapter}{\numberline {17}enumerations}{39}
+\contentsline {chapter}{\numberline {18}all sorts of unmentionable things}{40}
+\contentsline {section}{\numberline {18.1}extended relational expressions}{40}
+\contentsline {section}{\numberline {18.2}op}{40}
+\contentsline {section}{\numberline {18.3}super and extends}{41}
+\contentsline {section}{\numberline {18.4}shared slots}{41}
+\contentsline {section}{\numberline {18.5}parallel iteration}{41}
+\contentsline {part}{II\hspace {1em}the Spice reference manual}{43}
+\contentsline {chapter}{\numberline {19}introduction}{44}
+\contentsline {section}{\numberline {19.1}a note on syntax}{44}
+\contentsline {chapter}{\numberline {20}lexis}{45}
+\contentsline {section}{\numberline {20.1}words}{45}
+\contentsline {section}{\numberline {20.2}marks}{45}
+\contentsline {section}{\numberline {20.3}literals}{46}
+\contentsline {subsection}{\numberline {20.3.1}numeric and unit literals}{46}
+\contentsline {subsubsection}{plain integer literals}{46}
+\contentsline {subsubsection}{radix-specified integer literals}{46}
+\contentsline {subsubsection}{integer literals with units}{46}
+\contentsline {subsubsection}{plain floating literals}{47}
+\contentsline {subsubsection}{radix-specified floating literals}{47}
+\contentsline {subsubsection}{floating literals with units}{47}
+\contentsline {subsubsection}{general specification of units}{47}
+\contentsline {subsection}{\numberline {20.3.2}string literals}{47}
+\contentsline {subsection}{\numberline {20.3.3}character literals}{48}
+\contentsline {subsection}{\numberline {20.3.4}regular expression literals}{48}
+\contentsline {section}{\numberline {20.4}comments}{49}
+\contentsline {chapter}{\numberline {21}top-level syntax}{50}
+\contentsline {section}{\numberline {21.1}programs}{50}
+\contentsline {section}{\numberline {21.2}aside: modifiers}{50}
+\contentsline {section}{\numberline {21.3}packages}{51}
+\contentsline {section}{\numberline {21.4}imports}{52}
+\contentsline {section}{\numberline {21.5}procedure definitions}{53}
+\contentsline {subsection}{\numberline {21.5.1}multiple definition}{56}
+\contentsline {subsection}{\numberline {21.5.2}super and extends}{56}
+\contentsline {section}{\numberline {21.6}variable definitions}{57}
+\contentsline {section}{\numberline {21.7}class definitions}{57}
+\contentsline {section}{\numberline {21.8}unit definitions}{59}
+\contentsline {section}{\numberline {21.9}enumeration definitions}{60}
+\contentsline {chapter}{\numberline {22}small syntax}{61}
+\contentsline {section}{\numberline {22.1}expressions}{61}
+\contentsline {subsection}{\numberline {22.1.1}name}{62}
+\contentsline {subsection}{\numberline {22.1.2}hole}{63}
+\contentsline {subsection}{\numberline {22.1.3}literal}{63}
+\contentsline {subsection}{\numberline {22.1.4}explosions}{63}
+\contentsline {subsection}{\numberline {22.1.5}prefix operators}{63}
+\contentsline {subsection}{\numberline {22.1.6}postfix operators}{64}
+\contentsline {subsection}{\numberline {22.1.7}infix operators}{64}
+\contentsline {subsection}{\numberline {22.1.8}assignment operators}{64}
+\contentsline {subsection}{\numberline {22.1.9}bracketed expressions}{65}
+\contentsline {subsection}{\numberline {22.1.10}call expressions}{65}
+\contentsline {subsection}{\numberline {22.1.11}array expressions}{65}
+\contentsline {subsection}{\numberline {22.1.12}index expressions}{65}
+\contentsline {subsection}{\numberline {22.1.13}lambda expressions}{66}
+\contentsline {subsection}{\numberline {22.1.14}quotation expressions}{66}
+\contentsline {subsection}{\numberline {22.1.15}new expressions}{67}
+\contentsline {subsection}{\numberline {22.1.16}none expressions}{67}
+\contentsline {subsection}{\numberline {22.1.17}throw and try expressions}{67}
+\contentsline {subsection}{\numberline {22.1.18}if}{68}
+\contentsline {subsection}{\numberline {22.1.19}repeat}{68}
+\contentsline {subsection}{\numberline {22.1.20}for}{69}
+\contentsline {subsection}{\numberline {22.1.21}switch}{70}
+\contentsline {subsection}{\numberline {22.1.22}var and procedure expressions}{71}
+\contentsline {section}{\numberline {22.2}type expressions}{71}
+\contentsline {chapter}{\numberline {23}scope rules}{72}
+\contentsline {chapter}{\numberline {24}the standard library}{74}
+\contentsline {section}{\numberline {24.1}generic procedures}{74}
+\contentsline {section}{\numberline {24.2}absent}{75}
+\contentsline {section}{\numberline {24.3}numbers}{75}
+\contentsline {section}{\numberline {24.4}enumerations}{77}
+\contentsline {section}{\numberline {24.5}values with units}{77}
+\contentsline {section}{\numberline {24.6}strings}{79}
+\contentsline {section}{\numberline {24.7}symbols}{79}
+\contentsline {section}{\numberline {24.8}booleans}{80}
+\contentsline {section}{\numberline {24.9}arrays}{80}
+\contentsline {section}{\numberline {24.10}bits}{81}
+\contentsline {section}{\numberline {24.11}procedures}{81}
+\contentsline {section}{\numberline {24.12}dictionaries and tables}{82}
+\contentsline {section}{\numberline {24.13}io}{83}
+\contentsline {subsection}{\numberline {24.13.1}pathname syntax and accessors}{84}
+\contentsline {section}{\numberline {24.14}other undefined library support}{85}
+\contentsline {section}{\numberline {24.15}types}{85}
+\contentsline {chapter}{\numberline {A}spice standard packages}{87}
+\contentsline {chapter}{\numberline {B}glossary}{88}
+\contentsline {chapter}{\numberline {C}syntactic summary}{90}

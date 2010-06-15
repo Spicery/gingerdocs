@@ -1,0 +1,89 @@
+--- Current ----------------------------------------------------------
+
+#   relational operator chains not implemented - seems an odd omission
+#   Too easy to mistype facet name - must be a check
+#   Printing of XML elements is ghastly; fix.
+#   Declarations in specified facets
+#   modify code planting for variables
+#   modify interactive mode
+#   support library vs development mode
+
+
+
+-- Questions ----------------------------------------------------------
+
+#   Some bits of the Spice grammar should be restricted to top
+    level.  Are they?  e.g. package, import, publish.
+
+
+-- Bugs ---------------------------------------------------------------
+
+#   Proper lexical scoping for conditionals (if,unless,??//,etc).
+
+#   Sort out the for-while/until syntax.  (There are no checks on
+    where while/until can appear.  Wrong.)
+
+#   CALLS does not check for procedureness.  Therefore we can end up
+    calling non-procedures.
+
+#   With a negative "by" argument the termination test must be
+    inverted.
+
+
+-- Enhancements -------------------------------------------------------
+
+#   Classes and methods.
+
+#   Updaters.
+        F( E ) := E'      updater( F )( #| E' |#, #| E |# )
+
+    We need to provide the following dynamic accessors
+
+        updater( F ).l_arity = |E|
+        updater( F ).r_arity = |E'|
+
+    And for completeness I should consider providing these
+
+        updater( F ).o_arity
+        F.i_arity
+        F.o_arity
+
+    but I do not have to.
+
+#   Short and long lambda expressions.
+        fun ARGS => BODY endfun
+        ARGS => BODY
+
+#   Holes.  Should the hole syntax use "?" ?
+
+#   Protected compilation mode for libraries
+
+#   Type analysis of functions.  This requires proper use of
+    arity_stack :-
+
+        dlocal arity_stack = [];
+        applist( arity( e ), arity_stack, aaunify )
+
+    This can be exploited when invoking functions compiled in
+    protected mode.
+
+#   "..." formal parameters.  Vectors, lists, or my append-node based
+    trees?  After all, it would be nice to be able to write
+        const foo... = ( bar..., gort... );
+        const foo% = ( bar%, gort% );
+        const foo! = ( bar!, gort! );
+    and have some reasonable expectation of efficiency.
+
+
+
+
+-- Fixes in Other Libraries -------------------------------------------
+
+### Dataword of element is XmlElement - should just be element.
+    (Could be Element, at a pince.  Anyway, this is really a printing
+    issue.)
+
+### Element_attribute_list needs to be added to the XML documentation.
+    Similarly, we need to properly document new_element.
+
+------------------------------------------------------------------------

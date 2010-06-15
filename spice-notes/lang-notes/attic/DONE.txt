@@ -1,0 +1,16 @@
+_______Reverse_ _____________Chronological_ _____Order
+
+#   Added relational operator chains.
+
+#   Added $ syntax for accessing environment variables.
+
+#   Implemented anonymous variables.
+
+#   Decided on the syntax for conditionals.
+        E ?? E' :: E''
+    where "small" expressions are used (i.e. precedence is
+    less than comma.)
+
+#   Stopped trying to use new clean sections - they inevitably get
+    polluted by new globals - the default in +strict mode.  Went over
+    to name hacking.  Yuck.  Best that can be done.

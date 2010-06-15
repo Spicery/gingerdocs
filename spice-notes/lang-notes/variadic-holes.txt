@@ -1,0 +1,34 @@
+Re: Variadic Holes
+
+---------------------------------------------------------------------
+Date:	10/Jul/03
+
+Idiom:  You may combine holes with with "..." like this
+	f( ?..., -1, 0, 1 )
+The "?..." is a 'big hole' and is equivalent to writing
+	fun tmp... => f( tmp..., -1, 0, 1 ) endfun
+If this no sense yet - don't worry.  Indefinite arguments are
+the next job on my list and I'll send a summary of how to use them, 
+too.
+
+---------------------------------------------------------------------
+Date: 26/Aug/03
+
+Hence we can now use multiple "..." operators in a since initialization
+or assignment, eliminating one of the annoying restrictions we felt
+obliged to add.  And my original plan of using "?..." to denote
+a variadic hole is now revealed as broken.  "?..." has the proper
+meaning of the explode operator.
+
+    [Glory:~] steve% jspice                                                                
+    Welcome to JSpice
+    :-) ?...("xyz");
+    'x'
+    'y'
+    'z'
+    :-)
+
+So this implies we need a different symbol to denote a variadic hole.
+Maybe "???" would work?
+
+---------------------------------------------------------------------

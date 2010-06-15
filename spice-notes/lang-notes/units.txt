@@ -1,0 +1,14 @@
+Re: Units
+
+---------------------------------------------------------------------
+From: Chris Dollin <kers@hplb.hpl.hp.com>
+Date: Mon, 2 Jul 2001 12:08:51 +0100
+
+
+Also I've started writing the units package (as opposed to the placeholder
+implementation embedded in the VM). You can already do such
+new remarkably powerful things as
+
+    2in/1in            -> 2
+
+---------------------------------------------------------------------

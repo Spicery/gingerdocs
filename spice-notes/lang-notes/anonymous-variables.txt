@@ -1,0 +1,14 @@
+Re:	Anonymous variables
+
+--------------------------------------------------------------------
+Date:	07/Jul/03
+
+In Spice a single underbar "_" is used to mean "a variable never to 
+be mentioned again".  It can be used as a synonym for -absent- or, 
+more commonly, a target for assignment that throws the result away. 
+A typical use would be something like this
+
+    # Who remembers this?  length = \ + o map ( K 1 ); 
+    val length = map( fun _ => 1 endfun, ? ) @andThen fold( 0, ?+?, ? );
+
+--------------------------------------------------------------------

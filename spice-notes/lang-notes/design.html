@@ -1,0 +1,125 @@
+<html>
+<head>
+    <title>Design of Interactive, Incremental Spice Compiler</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+<h1>Design Notes for Spice Engine</h1>
+
+<h2>Tree Representation</h2>
+
+<p>
+The parse tree itself does not encode restrictions such as One/None/Bool
+and so on.  It limits itself to describing the structure of the input.
+</p>
+
+<p>
+Therefore it is the responsibility of the code-planting routine to
+correctly impose the right limitations.
+</p>
+
+
+
+<h2>Data Representation</h2>
+
+<p>
+On the whole Spice types map nicely into Pop11 types.  However the exception
+is absent.  In Pop11, the role of absent is sometimes taken by undef or and
+undef value, sometimes by 0 or 1, but mostly by false.  Since true and false
+are better reserved for booleans, we have a problem.  I have decided to
+resolve this in favour of the value of the Pop11 psuedo-variable _.
+</p>
+
+<p>
+Spice lists are currently represented as Pop11 lists.  This is obviously
+not a particularly satisfactory situation.  We'll get back to this.
+</p>
+
+<h2>Function Representation</h2>
+
+<h3>Ordinary Functions</h3>
+
+<p>
+Spice function objects are currently represented as procedures - probably.
+This may well not be correct.  In fact I tend to suspect this is wrong and
+I should rely on compiler optimisations to make it practical to represent
+Spice functions as a special kind of record.
+</p>
+
+<p>However, a Spice function is a Pop11 procedure that expects an
+counted set of arguments.  There is currently no provision for eliminating
+the count.
+</p>
+
+<h3>Updaters</h3>
+
+<p>A Spice updater is a Pop11 procedure with doubly-counted arguments.
+The double-count is supplied in a rather unexpected form.  The transformation
+is shown below.
+</p>
+
+<pre>
+    <i>E</i> -> <i>F</i>( <i>A</i> )
+
+    <b>E</b> ; <b>A</b>; <b>#A</b> ; <b>#E</b>; updater( <b>F</b> )()
+</pre>
+
+
+<h3>Slots</h3>
+
+<h3>Methods</h3>
+
+
+<h2>Type Restrictions : Contextual and Asserted</h2>
+
+<p>
+There are several kind of contextual type restrictions in Spice.  Firstly,
+there are many contexts where exactly zero or exactly one result is
+required.  Secondly, all conditional contexts (such as if-expressions and
+while-loops) require single boolean results.  Thirdly, function calls
+require function values - non-functions need not apply!
+</p>
+
+<p>It is important that these contextual type restrictions are almost
+always optimized away.  The main problem in this regard is function
+calls.  Without type inference, the results of function calls cannot
+be usefully typed and runtime code must be planted to enforce the
+restrictions.
+</p>
+
+<p>
+In addition to this, there are explicit type assertions introduced
+by the programmer.  Again it is highly desirable that these type
+restrictions improve performance - and that means exploiting type
+information.
+</p>
+
+
+<h2>Consts in Library Mode</h2>
+
+<p>Code can be compiled either of two modes: development or library mode.
+This mode is very important from the viewpoint of efficiency.
+</p>
+
+<p>
+Library mode prevents the recompilation of a package <em>and</em> requires
+all imported packages were compiled in library mode.  This means that
+a const declaration in a library is immutable for the lifetime of the
+virtual machine.  [Note the careful phrasing - Palantir allows the
+running of many virtual machines in parallel.]  This means that a
+reference to a library const can be replaced by its value.
+</p>
+
+<p>
+By contrast, a const declaration that is compiled in development
+mode is merely protected against re-assignment, not re-compilation.
+</p>
+
+<p>Library mode makes type inference worthwhile.  If one can infer
+the input and output type of a function, it is typically possible
+to eliminate all the contextual checks and the redundant checks
+associated with type assertions.
+</p>
+
+</body>
+</html>

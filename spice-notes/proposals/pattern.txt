@@ -1,0 +1,549 @@
+Spice Memo: Discussion of Pattern Matching in Spice
+Notes based on a meeting held on the 24th October.
+
+Attending
+	Chris Dollin (CJD)
+	Stephen Leach (SFKL)
+
+The inclusion of literal regular expressions to the Spice core language has
+added a new kind of pattern matching.  The -val- and -define- constructs
+already have their own rather limited pattern-matching capability which, for
+the purposes of these notes will be called structure matching.  It is natural
+to speculate whether these two notions of matching can be usefully integrated.
+
+We want to explore integration for two reasons.  Firstly, we want to create a
+small, uniform and coherent explanatory model for Spice.  Secondly, we know
+that programming with pattern-matching is a very powerful technique; one could
+reasonably argue it is a programming paradigm on a par with OOP or even logic
+programming.
+
+To discuss these opportunities, CJD and SFKL met up at HP Labs on 24th
+October.  We had a wide ranging discussion that defies this reporter's ability
+to summarize it fully.  However, we began by reviewing the analogous structure
+of regular expressions and structure matching; we looked at the most obvious
+alterations to the interpretation of Spice syntax that might encompass the
+change; and we also examined the functional model that might be utilized to
+support first-class patterns.
+
+These notes are not intended to be minutes.  Instead I have tried to organize
+the ideas into a story of escalating, hypothetical changes to Spice.  In doing
+so I have introduced a significant amount of new material.  As a result, these
+notes are intended to be part of the continuing debate rather than merely a
+summary.  The justification for this is that we ae still at an experimental
+phase and have not reached the stage of a definite proposal.
+
+
+Background: Structure Patterns and the Analogy with Regular Expressions
+
+Spice supports the following structure patterns when binding arguments, either
+as the argument of a -val- or the formal arguments of a function definition.
+A structure pattern is used to match against zero, one or more actual values.
+
+The structure patterns that are part of the core of Spice are shown below.  In
+addition, the analogy with regular expressions is illustrated in the right
+hand column.
+
+	Pattern ::= 	_						# //./
+			::=		...						# //.*/
+			::=		Id						# //(.)/
+			::=		Id ...					# //(.*)/
+			::=		Id : TypeExpr			# //(T)/
+			::=		Pattern, Pattern		# //AB/
+			(with restriction)
+
+There is an extra restriction that only one vararg (... or Id...) argument can
+appear in a pattern.  This restriction was introduced in order to ensure
+unambiguous and efficient matching.
+
+
+First Steps: Opening Up Structure Patterns
+
+The smallest hypothetical change we considered was :-
+1. 	To relax the single vararg restriction
+2.	To add literals
+
+	Pattern ::=		Literal					# //x/
+			::= 	_						# //./
+			::= 	...						# //.*/
+			::= 	Id						# //(.)/
+			::=		Id...					# //(.*)/
+			::=		Id : TypeExpr			# //(T)/
+			::=		Pattern, Pattern		# //AB/
+
+This apparently modest change means that there can be multiple bindings to a
+pattern.  For example,
+
+
+	val ( x..., y, z... ) = 'abc';
+
+Could bind as any of the following
+
+	x ==> { 'ab' }, y ==> 'c', z ==> {}
+	x ==> { 'a' }, y ==> 'b', z ==> { 'c' }
+	x ==> {}, y ==> 'a', z ==> { 'bc' }
+
+The analogy with regular expressions suggests that it may be acceptable to
+impose an order on these solutions, by interpreting "..." as greedy or
+reluctant, and so make a choice.  Alternatively it may be more appropriate to
+only permit potentially ambiguous patterns in a context that iterates over all
+solutions - later on we see some examples of this.
+
+Also, adding Literals to Patterns is not quite as innocuous as it might seem.
+The complication is that a Literal might cause a match to fail.
+
+	val ( "foo", y ) = 'ab';	# Oh dear!
+
+However, it is arguably no worse that the run-time failure that can already
+result from a failure to result the correct number of results
+
+
+	val x = f();				# Not necessarily correct!
+
+
+Second Step: TypePatterns
+
+The above small extension goes a long way towards establishing an intimate
+relationship between Patterns and Type Expressions.  We already have the
+following
+
+	TypeExpr
+			::= Id						# a primitive type
+			::=	TypeExpr, TypeExpr		# sequence
+			::=	TypeExpr ...			# star
+			::=	TypeExpr ??				# alternation with absent
+
+Given the rough similarity between the grammar of Pattern and that of TypeExpr
+the following question arises.  Should we attempt to unify Patterns, which
+include match variables, and Types which do not? To explore this, we introduce
+a new syntactic category, TypePatterns.  The purpose of this is to let us to
+clearly distinguish the two different uses of identifiers in patterns.  An
+identifier in a Pattern is a match variable.  By contrast, an identifier in a
+TypePattern is a type variable.  We also carefully distinguish between
+TypePatterns that match against one value and those that match against many
+values.
+
+	Pattern ::=		Literal						# //x/
+			::= 	_							# Shorthand for Any
+			::= 	...							# Shorthand for Any...
+			::= 	Id							# Shorthand for Id : Any
+			::=		Id...						# Shorthand for Id : Any...
+			::=		Id : TypePattern			# Required match		} see below!
+			::=		Id :- TypePattern			# Dispatched match		}
+			::=		Pattern, Pattern			# //AB/
+	
+	TypePattern
+			::=		Literal						# match values equal to the literal
+			::= 	_							# Any
+			::=		...							# AnyLots
+			::= 	TypeId						# matches items of given type
+			::=		TypePattern ...				# matches many items of given type
+			::=		TypePattern, TypePattern	# concatenation of match patterns
+			::=		TypePattern ??				# matches absent or the pattern
+			::=		TypePattern | TypePattern	# alternation
+
+Firstly, note that TypePatterns allow alternation.  Because TypePatterns
+do not include match variables they are trivially dangle-free and so
+alternation is problem-free.  [Aside: a match variable is said to "dangle" if
+it is potentially accessible despite a failure to bind it.]
+
+Secondly, note that there are two possible interpretations of "x : T".  In the
+same way that a method's formal parameter can be marked as dispatch or
+non-dispatch (required), so we can distinguish between the patterns "x :- T"
+and "x : T".  [Please note: we have not definitively agreed the spelling of
+dispatched and non-dispatched formal parameters.  We overturned an earlier
+design decision and have not filled in the details of spelling.]
+
+To illustrate the difference between the two, consider these two examples
+	val ..., x : String, ... = ( 0, "oops" );			# generates a run-time error
+	val ..., x :- String, ... = ( 0, "ok" );			# binds x to "ok"
+In the first case, we find an invalid binding and check it post-hoc.  We don't
+like what we find and have to raise a run-time error.  In the second case, the
+match is guided to the unique valid binding and it succeeds.
+
+As will be seen a little further below, the difference between ":" and ":-" is
+exactly what we need to "inline" methods as switch statements.
+
+
+Third: Equality Constraints on Patterns
+
+One concern that arises is how to match against the value of an existing
+(free) variable rather than merely introduce it.  CJD points out that the HPSL
+idiom 'Pattern = Expr' allows us to get exactly the effect needed.  We can use
+this to interpret a val/var declaration as a pattern match.
+
+	ValDeclaration ::= val Pattern
+
+When we write
+	val x = 3;
+we could choose to interpret this as a Pattern which introduces
+-x- and, incidentally, binds it to 3.  The elegance of this interpretation is
+compelling.
+
+
+
+Fourth: Unified Patterns
+
+Another worthwhile extension, borrowed from SML this time, is the idea of
+"chained" Patterns, so you can refer to the original value as well as its
+matched components.  In our case I have added one clause to the Pattern
+grammar
+
+	Pattern	::=		Pattern ~= Pattern
+	
+The Pattern
+	A ~= B
+is one that only matches if _both_ A and B are matched against and all their
+bindings established.  Note that this is dangle-free.
+
+For symmetry I add a parallel clause to the TypePattern grammar.
+
+
+
+Going Further: Pattern Based Programming
+
+To make effective use of these Patterns, we have to be able to use them to
+control execution and also to find more than just the first match.
+
+Firstly, we want to execute code conditionally upon a match.  In this case the
+challenge is to avoid "dangling" match variables.  A spectacular example of a
+matcher that fails this criterion is the Pop11's matcher.  Experience with the
+Pop11 matcher shows us that it is important to restrict the scope of match
+variables to the context of a successful match.  [Aside: A possible
+alternative would be to define the values in the event of a failed match -
+which is the approach taken in traditional regular expression matching.]
+
+The -switch- statement might be adapted for this purpose.  Inventing syntax ad
+hoc, we can imagine writing -match- instead of -case- to introduce a Pattern
+context :-
+
+	switch Expr
+	match Pattern then
+		Statements		# match variables of Pattern in scope here
+	endswitch	
+
+If there are multiple -match- clauses before the -then-, by analogy with
+-case- clauses, it is unclear what the scope of the match variables should be.
+ We would be in danger of dangling match variables.  Note that it is the
+absence of a Pattern alternation operator that has spared us from this
+consideration previously.  [Aside: the | and ?? operators in TypePatterns are
+alternations but because they can only appear in TypePatterns, which are free
+of bindings, they are dangle-free.]
+
+The second use of Patterns that we would desire is the ability to iterate over
+some or all of the possible solutions.  Our first hypothetical step is to add
+a new type of loop expression such as :-
+
+	for Pattern matches Expression do Statements endfor
+
+The meaning would be that all the possible matches of the Pattern would
+be found in turn and the Statements executed with the appropriately bound
+match variables in scope.
+
+
+Loops as Query Iterators
+
+This idea naturally leads to an intriguing interpretation of all the loop
+expressions as Query iterators.  A good analogy is to be made with Prolog.  A
+Pattern plays the role of a Prolog term but a Query plays the role of a Prolog
+predicate.  In this interpretation, code fragments such as
+	i in my_list
+	j from 0 to 99
+would be interpreted as a Queries.  Their meaning is that the control Pattern
+is successively bound to the generated values.
+
+Here's the ever-expanding grammar :-
+
+	Query 	::=		Pattern matches Expr
+			::=		Pattern in Expr
+			::=		Pattern on Expr
+			::=		Pattern from Expr to Expr		# and all relevant variants
+
+By way of introduction to the idiom of programming with matches, note how the
+way -matches- can be exploited to achieve the effect of -in-.
+
+	for x in L do <etc>
+	for ..., x, ... matches L... do <etc>
+
+This gives rise to some neat shortcuts - or perhaps merely strange effects.
+For example, we might choose to give an interpretation to the following loop.
+	for x, y in L <etc>
+as
+	for ..., x, y, ... matches L... do <etc>
+
+In other words, it finds all the adjacent element pairs in L.  We can
+vary this trick to get other useful results.  If we wanted all the pairs of
+distinct elements we might write
+
+	for x, ..., y in L do <etc>
+
+If we wanted to select the string elements from a list we might write this
+
+	{ for x :- String in L do x endfor }
+
+Another idiom might be iterating over all the partitions of list
+
+	for lhs..., rhs... matches L... do <etc>
+
+
+Constructors and Destructors
+
+There has been a long-standing, tacit agreement that at some point we would
+attempt to integrate constructors into structure Patterns.  For example, it
+has always been our intention to arrange that
+
+	val { x, y } = { 'xy' };
+
+would have the same effect as
+
+	val x = 'x';  val y = 'y';
+
+Function-like application in Patterns is probably best treated as constructors
+and their destructors used during the matching process.  This obviously
+requires that destructors can inferred from constructors and that destructors
+are distinct from updaters.
+
+Adding constructors into Patterns seem to add no complications.  The grammar
+expands quite a lot just because we want to match against constructors in both
+Patterns and TypePatterns.
+
+	Pattern ::=		Literal						# //x/
+			::= 	_							# Shorthand for Any
+			::= 	...							# Shorthand for Any...
+			::= 	Id							# Shorthand for Id : Any
+			::=		Id...						# Shorthand for Id : Any...
+			::=		Id : TypePattern			# Required match		} see below!
+			::=		Id :- TypePattern			# Dispatched match		}
+			::=		Pattern, Pattern			# //AB/
+			::=		Pattern ~= Pattern
+			::=		Construction
+
+	Construction
+			::=		{ Pattern }
+			::=		Expr( Pattern )
+			::=		Pattern . Expr
+			::=		Pattern . Expr( Pattern )
+			::=		Pattern @ Expr
+			::=		Pattern @ Expr Pattern
+
+	TypePattern
+			::=		Literal						# match values equal to the literal
+			::= 	_							# Any
+			::=		...							# AnyLots
+			::= 	TypeId						# matches items of given type
+			::=		TypePattern ...				# matches many items of given type
+			::=		TypePattern, TypePattern	# concatenation of match patterns
+			::=		TypePattern ~= TypePattern
+			::=		TypePattern ??				# matches absent or the pattern
+			::=		TypeConstruction
+			
+	TypeConstruction ::=
+			::=		{ TypePattern }				# matches a sequence of a given type
+			::=		Expr( TypePattern )
+			::=		TypePattern . Expr
+			::=		TypePattern . Expr( TypePattern )
+			::=		TypePattern @ Expr
+			::=		TypePattern @ Expr TypePattern
+	
+
+Side Conditions, Composite Queries and Repeated Match Variables
+
+Another easy-to-anticipate extension is the addition of side-conditions to
+Queries (or even Patterns).  Borrowing from HPSL again, we can extend our
+grammar with the clause
+
+	Query	::=	Query where Expr
+
+This enables us to write much more powerful queries, such as this palindrome
+finder, without any significant complications.
+
+	for i..., j... in L where i = j.rev and i.length >= 2 do <etc>
+
+Further we might well want to consider the conjunction of two Queries A & B.
+Conjunction is dangle-free, of course, so it is safe to incorporate it as a
+Query operator.
+
+	Query	::= Query & Query
+
+This extension can be used for very modest effect such as the following
+compact declaration
+
+	val x = 1 & y = 2;
+
+Alternatively, it can be exploited for powerful idioms.  Here is one such
+idiom for computing the shared elements of two lists
+
+	define function shared( A, B ) =>
+		{ for i in A & _ = i in B do i endfor }
+	enddefine;
+
+Perhaps the above one-liner should have been written
+
+	{ for i in A & i in B do i endfor }		# i is repeated twice
+
+This becomes possible if we adopt the convention that repeated match variables
+are permitted and imply equality.  The only consideration is whether this
+extension would introduce difficult scope issues.  On the face of it there are
+none.
+
+This also introduces this beautiful idiom for nested iteration
+
+	# This surprised me ...
+	for i in A & j in B do <etc>
+	
+
+Naked Queries
+
+Of course, we also want to make conditional switches on Queries as well as
+Patterns.  A key observation is that Queries can appear in expression context.
+As a consequence the ordinary 'if' construct is adequate
+
+	if Query then <etc>
+
+The only question is whether or not the variables of the Query are in scope
+within the then-part of the 'if'.  I would argue that this is the most natural
+interpretation - but this topic is still slightly in flux.
+
+Naked queries give rise to some very elegant one-liners.  Here is the code for
+list membership :-
+
+	# short and sweet, almost to the point of cruelty.
+	define function member( x, L ) => _ = x in L enddefine;
+
+
+Equivalent of Method Definitions and Switches
+
+This framework is now more than powerful enough to allow us to rewrite the
+methods of a generic function as a single switch statement.  [Aside: This
+satisfies another of our general background goals, to be able to rewrite
+methods into a simpler in-line construct.]  If we have the following
+definitions
+
+	define generic g( Pattern ) => Expr enddefine;
+	define method g( Pattern_1 ) => Expr_1 enddefine;
+	define method g( Pattern_2 ) => Expr_2 enddefine;
+	
+we can rewrite this as
+
+	# We require the match clauses to be ordered by generality
+	define function g( args... ) =>
+		switch args...
+		match Pattern then Expr			# actually checked last of all.
+		match Pattern_1 then Expr_1
+		match Pattern_2 then Expr_2
+		else throw <etc>
+		endswitch
+	enddefine;
+
+
+
+Summary: One-Way Unification
+
+All of the changes discussed make structural pattern matching a very powerful
+tool.  However, it is still only a one-way unification.  As such it does not
+allow the creation of shared variables (aliases).  Nor does it permit Patterns
+to be used as first-class objects; they are restricted to appearing in a few
+match contexts.
+
+	Query 	::=		Pattern matches Expr
+			::=		Pattern in Expr
+			::=		Pattern on Expr
+			::=		Pattern from Expr to Expr	# and all relevant variants
+			::=		Query where Expr
+			::=		Query & Query
+
+	Pattern ::=		Literal						# //x/
+			::= 	_							# Shorthand for Any
+			::= 	...							# Shorthand for Any...
+			::= 	Id							# Shorthand for Id : Any
+			::=		Id...						# Shorthand for Id : Any...
+			::=		Id : TypePattern			# Required match		} see below!
+			::=		Id :- TypePattern			# Dispatched match		}
+			::=		Pattern, Pattern			# //AB/
+			::=		Pattern ~= Pattern
+			::=		Construction
+
+	Construction
+			::=		{ Pattern }
+			::=		Expr( Pattern )
+			::=		Pattern . Expr
+			::=		Pattern . Expr( Pattern )
+			::=		Pattern @ Expr
+			::=		Pattern @ Expr Pattern
+
+	TypePattern
+			::=		Literal						# match values equal to the literal
+			::= 	_							# Any
+			::=		...							# AnyLots
+			::= 	TypeId						# matches items of given type
+			::=		TypePattern ...				# matches many items of given type
+			::=		TypePattern, TypePattern	# concatenation of match patterns
+			::=		TypePattern ~= TypePattern
+			::=		TypePattern ??				# matches absent or the pattern
+			::=		TypeConstruction
+			
+	TypeConstruction ::=
+			::=		{ TypePattern }				# matches a sequence of a given type
+			::=		Expr( TypePattern )
+			::=		TypePattern . Expr
+			::=		TypePattern . Expr( TypePattern )
+			::=		TypePattern @ Expr
+			::=		TypePattern @ Expr TypePattern
+
+
+Pattern Madness: First Class Patterns
+
+Cutely, these pattern extensions have all avoided the knotty question of
+run-time pattern values.  A good baseline in this regard is set by Prolog, of
+course.  Pure Prolog eschews the -call- operator and that is not regarded as
+much of a problem.  This sounds a note of caution: be careful that the benefit
+of first-class patterns is big enough to justify the complications that they
+bring.
+
+Complications start arising when we try to unify the concept of
+"backreferences", in regular expressions, with bound variables in Patterns.
+Once Patterns are freed to roam as run-time values, we get dangling match
+variables back again.  Similarly, trying to accommodate alternation within
+structure patterns gives rise to the same issue.
+
+After some experimentation with the functional model underpinning regular
+expressions, it became apparent that there was no compelling reason for
+integrating the "capture groups" of regular expressions with the match
+variables of structure patterns.  The basic problem is that regular
+expressions are declarative and therefore re-entrant but first-class structure
+patterns are doggedly imperative.
+
+At the time of writing, it appears that we should aim for a model of regular
+expression arithmetic that encompasses structure patterns so that learning one
+contributes to learning both.
+
+
+Regular Expression Arithmetic
+
+It has been another long-standing intention to add a dynamic pattern matching
+capability.  Again, the inclusion of regular expression literals acts as a
+spur to firm this up.  We have a rather loose "SNOBOL-like" functional model
+to act as the general model for matching.
+
+	matcher( con, alt, stringThingy ) -> stringThingy
+
+This is an informal model since we have not agreed the types of con, alt and
+stringThingy.  Here are some examples showing how it might work out.
+
+	# Match 1-item
+	define function matchOne( con, alt, s ) =>
+		if s.isEmptyStringThingy then
+			alt( s )
+		else
+			con( alt, allbutfirst( 1, s ) )
+		endif
+	enddefine;
+	
+	# A or B
+	define function alt( A, B ) => ( con, alt, s ) =>
+		A( con, B( con, alt, ? ), s )
+	enddefine;
+	
+	# A then B
+	define function join( A, B ) => ( con, alt, s ) =>
+		A( B( alt, ? ), alt, s )
+	enddefine;

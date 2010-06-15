@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
+<html>
+<head>
+	<title>Palantir</title>
+	<meta name="generator" content="BBEdit 6.1.2">
+</head>
+<body>
+
+<h1>Recursive, Embedded XML</h1>
+
+<p>
+The key challenges in REXML are :-
+</p>
+
+
+<ol>
+
+<li>
+To cope with the fact that the lexical elements of XML,
+    especially "&lt;" and "&gt;", clash rather unfortunately with the
+    familiar less-than and greater-than operators.  It
+    transpires that there is <em>just</em> enough leeway to have both
+    the conventional comparison operators <em>and</em> the XML
+    elements.
+</li>
+<li>
+That XML character data has to be lexically distinguished
+    from program text in some systematic way.  After quite a lot
+    of experimentation, it became clear that the "clever"
+    options didn't work well in practice.  Instead, I now
+    recommend identifying character data with ordinary
+    (Unicode) strings.
+</li>
+
+<li>
+We need to be able to work with XML fragments as "object"
+    values.  This is in stark contrast to many other approaches
+    that simply print their output as they go along.  By
+    constructing fragments as objects, we create the option of
+    further processing them.
+
+    This is an absolutely key idea as it leads to an alternative
+    way of doing stylesheets.  Instead of stylesheets we use
+    functions that transform fragments.  As a simple example,
+    we might write a function that gives a table a blue
+    background with rounded corners.
+
+<pre>
+# We abstract out this frequently used fragment.
+const blue = &lt;td bgcolor="#0000FF"&gt;"&nbsp;"&lt;/td&gt;;
+
+# Similarly, we might as we abstract this one.  Note that
+# we are allowed to write name=variable to define the src
+# attribute.  Note that "=&gt;" is just a mark separating function
+# header from function body.
+define tdimg( source ) =&gt;
+	&lt;td&gt;&lt;img src=source/&gt;&lt;/td&gt;
+enddefine
+
+# To create a table with rounded edges, we wrap an enclosing
+# 3x3 table with custom GIFs for the 4 corners and a coloured
+# space for the 4 edges.  To do this properly, we ought to
+# copy the alignment attributes of the inner table into the
+# outr one.
+define rounded( table ) =&gt;
+	&lt;table border="0" cellspacing="0" cellpadding="0"&gt;
+		&lt;tr&gt;
+			tdimg( "bluetopleft.gif" ),
+			blue,
+			tdimg( "bluetopright.gif" )
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			blue,
+			table.add_attribute( "bgcolor", c ),
+			blue
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			tdimg( "bluebottomleft.gif" ),
+			blue,
+			tdimg( "bluebottomright.gif" )
+		&lt;/tr&gt;
+	&lt;/table&gt;
+enddefine
+</pre>
+</li>
+
+<li>
+It is essential to be able to denote expressions that
+    evaluate to multiple values.  For example, to create
+    a table of square roots one would like to write
+
+<pre>
+&lt;table&gt;
+	for i from 1 to n do
+		&lt;tr&gt;
+			&lt;td&gt; i &lt;/td&gt;
+			&lt;td&gt; sqrt( i ) &lt;/td&gt;
+		&lt;/tr&gt;
+	endfor
+&lt;/table&gt;
+</pre>
+
+    Given that this returns an object, as we established above,
+    it follows that the loop returns many values - n, in fact.
+    Although this is unfamiliar to most programmers, it
+    fortunately presents no difficulties in a dynamically
+    typed language.
+</li>
+
+</ol>
+</body>
+</html>

@@ -1,0 +1,147 @@
+Re:	Stylesheets
+
+---------------------------------------------------------------------
+Date:	29/Oct/01
+From:	Chris Dollin
+
+
+I have been brooding on stylesheets. Well, not so much brooding as coding,
+in my quest to re-render my bookmarks into something "better". Here is a 
+stylesheety thingy as of my latest attempt:
+
+const xStyle =
+    {
+        { "xbel",
+            (=> println( "<html>" )) @BB doChildren @AA (=> println( "</html>" ))
+        },
+        { "folder",
+            (stack, node, how =>
+                println( "<ul>" ),
+                doChildren( stack, node, how ),
+                println( "</ul>" )
+            )
+        },
+        {
+            {"bookmark", "title", "string"},
+            (stack, node, how =>
+                const href = stack.tail.tail.head @getAttribute "href";
+                println( "<li><a href='", href, "'>" ),
+                println( node ),
+                println( "</a></li>" )
+            )
+        },
+        {
+            {"folder", "...", "string"},
+            (stack, string, how =>
+                println( "<b>", string, "</b>" )
+            )
+        },
+        { true, doChildren }
+    };
+
+
+The style thingy is a vector of pairs. Each pair is a pattern and an action.
+Each action is applied to a triple (stack, node, how), where _stack_ is
+the current stack of nodes in the treewalk, _node_ is the current node
+(also appearing, possibly mutated, at the top of the stack), and _how_ is
+the stylesheet object: I can't call it "style", as that's a reserved word).
+
+The pattern can be a string (which matches if the stack-top has that
+tag) or a node (which matches if the stack-top is a node with the same
+tag and at least those attributes) or a vector of patterns, in which case
+the matcher matches the rightmost element of the vector to the top of
+the stack (etc); the special element _true_ matches anything, _false_
+matches nothing, and _"..."_ matches zero or more nodes.
+
+The tie-in with our discussion on matching last week may be causal
+or coincidental or conceptual. (Or confusing. Definitely something to
+do with "C".)
+
+I have hacked lambda expressions to allow empty argument lists. (My
+grammar didn't allow this until this morning.) But the action nodes need
+to have suitable combinators and it turns out that writing zero-argument
+lambdas is just ... ikky. So I would like to propose that a lambda expression
+can be written with no-arguments-and-no-arrow:
+
+    fun println( "html" ) endfun
+
+(technically this might generate an ambiguity, with our curried syntax,
+but in practice this should be a non-problem.)
+
+I was also going to suggest a symbolic syntax, eg "<|" for "fun", "|>"
+for "endfun", but then I remembered "fun" (I'd been using the (=>) syntax),
+so ... dunno.
+
+Spent most of the weekend emptying, cleaning, and painting the
+guestroom ready for the wardrobe installation today & tomorrow; also
+emptied attic and did much ferrying to tip & Oxfam. Who says
+garbage collection isn't a useful technology?
+
+
+---------------------------------------------------------------------
+Date:	01/Nov/01
+
+
+Hi Chris,
+
+ I have been toying with the idea of imposing one level of indirection by
+ working with "paths" into an XML tree.  In my mind, this is like keeping
+ several fingers "into" the tree - fingers that retain the paths to the
+ node they represent.  I am wondering whether this would lead to an elegant
+ formulation.
+
+Dunno. It might not have been obvious from my description, but the
+items in the "history stack" are the actual tree nodes themselves, not
+copies or abstractions. (I haven't thought of an elegant way of doing sibling
+matching yet. I do wonder if that's because its bad design.)
+
+I had assumed that.  Paths would be an abstraction of the history stack.
+The vague plan I have is to allow in-place editing via the abstraction of
+paths.
+
+
+ >I have hacked lambda expressions to allow empty argument lists. (My
+ >grammar didn't allow this until this morning.)
+
+ Bletch.  I have no _real_ objection, in fact I have been anticipating it.
+
+You'd prefer delay-force, presumably.
+
+Well, I would certainly like delay-force but I wouldn't see it as an
+alternative.  After all, you would only expect to be able to force once.
+I've shut up a bit about delay-force after finding out just how much
+hard work it entails.  Yes, I like it, but I'm not about to argue hard
+for it!
+
+
+ My reluctance to propose this is the steadily increasing number of shorthands
+ for lambda constructions :-
+ 	(a) x => E
+ 	(b) fun x => E endfun
+ 	(c) "foo%pbar".format( ? )
+ 	(d) <| E  |>   or  [[ E ]]
+
+I forgot to mention that I noticed that <| and |> were icons for left
+and right triangles.  I quite like the "artwork".  My worry is that the
+< and > will visually mix with the "=>" arrow.  e.g.
+
+	<| x => x |>
+
+
+
+ I rather suspect we need to clean up our act here.  I am tempted to propose
+ replacing fun/endfun with fat brackets along these lines ...
+ 	[[ E ]]                fun () => E endfun
+ 	[[ x => E ]]           fun x => E endfun
+ 	[[ x => y, z => E ]]   fun x => ( y, z ) => E endfun
+ Thoughts?
+
+I don't like overloading [ like that, although if we go the route where single-[
+is only ever a suffix, it may be OK (because [[E]] would only have one reading).
+
+I had thought we had agreed that single-[ was only going to be used as
+a suffix.  It is obviously just an alternative spelling for your
+suggested <| & |> or fun & endfun.  I think it looks OK but after I
+did my original post I realized that stuff like this looks dire.
+	[[ f[g[x]] ]]
+So I've gone off this idea.

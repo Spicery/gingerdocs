@@ -1,0 +1,2107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>BackgroundColor</key>
+	<dict>
+		<key>w</key>
+		<string>1</string>
+	</dict>
+	<key>Columns</key>
+	<array>
+		<dict>
+			<key>Identifier</key>
+			<string>66bfcd3e3e27ce52024a0112</string>
+			<key>MaximumWidth</key>
+			<real>3.000000e+01</real>
+			<key>MinimumWidth</key>
+			<real>1.300000e+01</real>
+			<key>OOPlainTextExportWidthKey</key>
+			<integer>1</integer>
+			<key>Title</key>
+			<string></string>
+			<key>Width</key>
+			<real>1.300000e+01</real>
+		</dict>
+		<dict>
+			<key>Identifier</key>
+			<string>147759653c3daedd01820001</string>
+			<key>MaximumWidth</key>
+			<real>1.000000e+06</real>
+			<key>MinimumWidth</key>
+			<real>1.300000e+01</real>
+			<key>OOPlainTextExportWidthKey</key>
+			<integer>40</integer>
+			<key>Title</key>
+			<string></string>
+			<key>Width</key>
+			<real>5.120000e+02</real>
+		</dict>
+	</array>
+	<key>GutterColor</key>
+	<dict>
+		<key>w</key>
+		<string>1</string>
+	</dict>
+	<key>IsNoteExpanded</key>
+	<false/>
+	<key>NoteColumn</key>
+	<string>66bfcd3e3e27ce52024a0112</string>
+	<key>NoteHeight</key>
+	<integer>100</integer>
+	<key>Other Information</key>
+	<dict>
+		<key>Page Layout</key>
+		<data>
+		BAt0eXBlZHN0cmVhbYED6IQBQISEhAtOU1ByaW50SW5mbwGEhAhOU09iamVj
+		dACFkoSEhBNOU011dGFibGVEaWN0aW9uYXJ5AISEDE5TRGljdGlvbmFyeQCU
+		hAFpCJKEhIQITlNTdHJpbmcBlIQBKxZOU0hvcml6b250YWxseUNlbnRlcmVk
+		hpKEhIQITlNOdW1iZXIAhIQHTlNWYWx1ZQCUhAEqhIQBY50AhpKEmZkNTlNS
+		aWdodE1hcmdpboaShJuchIQBZp4khpKEmZkUTlNWZXJ0aWNhbFBhZ2luYXRp
+		b26GkoSbnISEAXOfAIaShJmZDk5TQm90dG9tTWFyZ2luhpKEm5ygniSGkoSZ
+		mRROU1ZlcnRpY2FsbHlDZW50ZXJlZIaSmpKEmZkMTlNMZWZ0TWFyZ2luhpKE
+		m5ygniSGkoSZmQtOU1RvcE1hcmdpboaShJucoJ4khpKEmZkVTlNIb3Jpem9u
+		YWxQYWdpbmF0aW9uhpKEm5yjnwCGhoY=
+		</data>
+		<key>SpellCheckingEnabled</key>
+		<false/>
+	</dict>
+	<key>OutlineColumn</key>
+	<string>147759653c3daedd01820001</string>
+	<key>Root Item</key>
+	<dict>
+		<key>Children</key>
+		<array>
+			<dict>
+				<key>Children</key>
+				<array>
+					<dict>
+						<key>Children</key>
+						<array>
+							<dict>
+								<key>Children</key>
+								<array>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 OpenSpice = Spice &amp; MillScript}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Children</key>
+										<array>
+											<dict>
+												<key>Cols</key>
+												<array>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Agree structure}</string>
+												</array>
+											</dict>
+											<dict>
+												<key>Children</key>
+												<array>
+													<dict>
+														<key>Cols</key>
+														<array>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Membership rules}</string>
+														</array>
+													</dict>
+													<dict>
+														<key>Cols</key>
+														<array>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Access to resources}</string>
+														</array>
+													</dict>
+													<dict>
+														<key>Cols</key>
+														<array>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Roles}</string>
+														</array>
+													</dict>
+													<dict>
+														<key>Cols</key>
+														<array>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Communication}</string>
+														</array>
+													</dict>
+													<dict>
+														<key>Cols</key>
+														<array>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Meetings}</string>
+														</array>
+													</dict>
+												</array>
+												<key>Cols</key>
+												<array>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Examples}</string>
+												</array>
+												<key>Expanded</key>
+												<true/>
+											</dict>
+										</array>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Organization}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Children</key>
+										<array>
+											<dict>
+												<key>Children</key>
+												<array>
+													<dict>
+														<key>Cols</key>
+														<array>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Documentation}</string>
+														</array>
+													</dict>
+													<dict>
+														<key>Cols</key>
+														<array>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Implementations}</string>
+														</array>
+													</dict>
+												</array>
+												<key>Cols</key>
+												<array>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Define core language}</string>
+												</array>
+												<key>Expanded</key>
+												<true/>
+											</dict>
+											<dict>
+												<key>Children</key>
+												<array>
+													<dict>
+														<key>Cols</key>
+														<array>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Documentation}</string>
+														</array>
+													</dict>
+													<dict>
+														<key>Children</key>
+														<array>
+															<dict>
+																<key>Cols</key>
+																<array>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 layered structure}</string>
+																</array>
+															</dict>
+														</array>
+														<key>Cols</key>
+														<array>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Reference implementations}</string>
+														</array>
+														<key>Expanded</key>
+														<true/>
+													</dict>
+												</array>
+												<key>Cols</key>
+												<array>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Define standard libraries}</string>
+												</array>
+												<key>Expanded</key>
+												<true/>
+											</dict>
+											<dict>
+												<key>Children</key>
+												<array>
+													<dict>
+														<key>Cols</key>
+														<array>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Documentation}</string>
+														</array>
+													</dict>
+													<dict>
+														<key>Children</key>
+														<array>
+															<dict>
+																<key>Cols</key>
+																<array>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Command line tool}</string>
+																</array>
+															</dict>
+															<dict>
+																<key>Cols</key>
+																<array>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Various GUIs}</string>
+																</array>
+															</dict>
+															<dict>
+																<key>Cols</key>
+																<array>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Website building}</string>
+																</array>
+															</dict>
+															<dict>
+																<key>Cols</key>
+																<array>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 mod_openspice}</string>
+																</array>
+															</dict>
+														</array>
+														<key>Cols</key>
+														<array>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Examples}</string>
+														</array>
+														<key>Expanded</key>
+														<true/>
+													</dict>
+												</array>
+												<key>Cols</key>
+												<array>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Define standard application environments}</string>
+												</array>
+												<key>Expanded</key>
+												<true/>
+											</dict>
+											<dict>
+												<key>Children</key>
+												<array>
+													<dict>
+														<key>Children</key>
+														<array>
+															<dict>
+																<key>Cols</key>
+																<array>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Focus = user community}</string>
+																</array>
+															</dict>
+															<dict>
+																<key>Cols</key>
+																<array>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Hosting}</string>
+																</array>
+															</dict>
+															<dict>
+																<key>Cols</key>
+																<array>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Build}</string>
+																</array>
+															</dict>
+														</array>
+														<key>Cols</key>
+														<array>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Website}</string>
+														</array>
+														<key>Expanded</key>
+														<true/>
+													</dict>
+													<dict>
+														<key>Children</key>
+														<array>
+															<dict>
+																<key>Cols</key>
+																<array>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Focus = developer community}</string>
+																</array>
+															</dict>
+															<dict>
+																<key>Cols</key>
+																<array>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Select/agree licence}</string>
+																</array>
+															</dict>
+															<dict>
+																<key>Cols</key>
+																<array>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Hosting}</string>
+																</array>
+															</dict>
+															<dict>
+																<key>Cols</key>
+																<array>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+																	<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Build}</string>
+																</array>
+															</dict>
+														</array>
+														<key>Cols</key>
+														<array>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+															<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Open source development}</string>
+														</array>
+														<key>Expanded</key>
+														<true/>
+													</dict>
+												</array>
+												<key>Cols</key>
+												<array>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Promote language &amp; tools}</string>
+												</array>
+												<key>Expanded</key>
+												<true/>
+											</dict>
+										</array>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Objectives}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Date for next meeting}</string>
+										</array>
+									</dict>
+								</array>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Agenda}</string>
+								</array>
+							</dict>
+						</array>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 1st OpenSpice Meeting}</string>
+						</array>
+					</dict>
+					<dict>
+						<key>Children</key>
+						<array>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Venue:	Watershed}</string>
+								</array>
+							</dict>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Time:	12:30pm}</string>
+								</array>
+							</dict>
+							<dict>
+								<key>Children</key>
+								<array>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Andy Macaulay}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Dan Osbourne}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Chris Dollin}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Stephen Leach}</string>
+										</array>
+									</dict>
+								</array>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Attending}</string>
+								</array>
+								<key>Expanded</key>
+								<true/>
+							</dict>
+							<dict>
+								<key>Children</key>
+								<array>
+									<dict>
+										<key>Children</key>
+										<array>
+											<dict>
+												<key>Cols</key>
+												<array>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 We discussed in detail the issues of potential future ownership claim.  Apart from the founders, the parties include HP Labs, W3C, and ECMA.  We concluded that the IP issues would be on a firm foundation with the release of Chris's memo - which should be available by the start of March,}</string>
+												</array>
+											</dict>
+											<dict>
+												<key>Cols</key>
+												<array>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 The licence arrangement that would suit Open World best is, in Andy's view, the GPL.  This is the most infectious of the Open Source licences.  His reasoning is the Open World is a service provider, not a technology provider.  After a little discussion of how this might affect Steve's future product plans this met with agreement.}</string>
+												</array>
+											</dict>
+										</array>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Intellectual Property Issues and Open Source Licenses}</string>
+										</array>
+										<key>Expanded</key>
+										<true/>
+									</dict>
+									<dict>
+										<key>Children</key>
+										<array>
+											<dict>
+												<key>Cols</key>
+												<array>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 With regard to which aspects of MillScript should be included in the initial release, the architecture of MillScript was reviewed.  }</string>
+												</array>
+											</dict>
+										</array>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 MillScript Structure}</string>
+										</array>
+										<key>Expanded</key>
+										<true/>
+									</dict>
+									<dict>
+										<key>Children</key>
+										<array>
+											<dict>
+												<key>Cols</key>
+												<array>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+													<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Steve reported on the planned hosting arrangements and is currently on track to have the server hosted in Washington by the start of March.}</string>
+												</array>
+											</dict>
+										</array>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Cobalt RaQ status}</string>
+										</array>
+										<key>Expanded</key>
+										<true/>
+									</dict>
+								</array>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Topics}</string>
+								</array>
+								<key>Expanded</key>
+								<true/>
+							</dict>
+						</array>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 2nd OpenSpice Meeting}</string>
+						</array>
+					</dict>
+				</array>
+				<key>Cols</key>
+				<array>
+					<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+					<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 OpenSpice Meetings}</string>
+				</array>
+			</dict>
+			<dict>
+				<key>Children</key>
+				<array>
+					<dict>
+						<key>Children</key>
+						<array>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Spice as a Stylesheet language, Dave Raggett}</string>
+								</array>
+							</dict>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Extended by Chris Dollin &amp; Steve Leach into a general purpose language}</string>
+								</array>
+							</dict>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 MillScript developed by Steve Leach}</string>
+								</array>
+							</dict>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 OpenSpice is a major development push}</string>
+								</array>
+							</dict>
+						</array>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 History}</string>
+						</array>
+						<key>Expanded</key>
+						<true/>
+					</dict>
+					<dict>
+						<key>Children</key>
+						<array>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs18 \cf0 The best thing about Spice is its LACK of restrictions!  Its features are very often the omission of a restriction!  Good design implies simplicity, in our view.  Chris and I have put a lot of effort into crafting the language features so that they smoothly interact - eliminating many superfluous concepts such as templates, base types, package &amp; protected visibilities, and so on.  In short, it doesn't suck.}</string>
+								</array>
+							</dict>
+						</array>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Advocacy}</string>
+						</array>
+						<key>Expanded</key>
+						<true/>
+					</dict>
+					<dict>
+						<key>Children</key>
+						<array>
+							<dict>
+								<key>Children</key>
+								<array>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 1.	Multiple values everywhere}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 2.	Updaters}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 3.	Optional static types}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 4.	Unified method and functions (defn &amp; invocation)}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 5.	Multiple inheritance, multiple dispatch}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 6.	Higher-order functions with full lexical scoping}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 7.	Safe multi-processing - no threads!}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 8.	Single unified name space}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 9.	Simple, elegant, effective package mechanism}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 10.	Elegant, future-proof syntax}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 11.	Super-powerful,super-simple loop constructs}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 12.	Assignment protected variables}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 13.	Compiler ready}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 14.	Smart garbage collection}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 15.	Full arithmetic}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 16.	Autoimporting}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 17.	Concrete syntax is not set in stone (ahem)}</string>
+										</array>
+									</dict>
+								</array>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Features}</string>
+								</array>
+								<key>Expanded</key>
+								<true/>
+							</dict>
+						</array>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Language Summary}</string>
+						</array>
+						<key>Expanded</key>
+						<true/>
+					</dict>
+				</array>
+				<key>Cols</key>
+				<array>
+					<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+					<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 About &lt;Spice&gt;}</string>
+				</array>
+			</dict>
+			<dict>
+				<key>Children</key>
+				<array>
+					<dict>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 What kind of language is &lt;Spice&gt;?}</string>
+						</array>
+					</dict>
+					<dict>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Why do you call it "The XML Programming Language"?}</string>
+						</array>
+					</dict>
+					<dict>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 What else is &lt;Spice&gt; good for apart from XML processing?}</string>
+						</array>
+					</dict>
+					<dict>
+						<key>Children</key>
+						<array>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 How do you write/say &lt;Spice&gt;?}</string>
+								</array>
+							</dict>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Is &lt;Spice&gt; connected to the VLSI layout language Spice?}</string>
+								</array>
+							</dict>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Is &lt;Spice&gt; connected to Dave Raggett's Spice?}</string>
+								</array>
+							</dict>
+						</array>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 What's in a name?}</string>
+						</array>
+						<key>Expanded</key>
+						<true/>
+					</dict>
+					<dict>
+						<key>Children</key>
+						<array>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 What platforms (host environment) is it available on?}</string>
+								</array>
+							</dict>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 What is the universal host environment?}</string>
+								</array>
+							</dict>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 How do I get hold of it?}</string>
+								</array>
+							</dict>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 What is the licence?}</string>
+								</array>
+							</dict>
+						</array>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Availability}</string>
+						</array>
+						<key>Expanded</key>
+						<true/>
+					</dict>
+				</array>
+				<key>Cols</key>
+				<array>
+					<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+					<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 FAQs}</string>
+				</array>
+			</dict>
+			<dict>
+				<key>Children</key>
+				<array>
+					<dict>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Server Side}</string>
+						</array>
+					</dict>
+					<dict>
+						<key>Children</key>
+						<array>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Curl}</string>
+								</array>
+							</dict>
+							<dict>
+								<key>Children</key>
+								<array>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 HyperCard				Apple}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 SuperCard}</string>
+										</array>
+									</dict>
+									<dict>
+										<key>Cols</key>
+										<array>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+											<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 MetaCard}</string>
+										</array>
+									</dict>
+								</array>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 HyperCard family}</string>
+								</array>
+								<key>Expanded</key>
+								<true/>
+							</dict>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Katabounga US}</string>
+								</array>
+							</dict>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Coldstone				Beenox/Ambrosia}</string>
+								</array>
+							</dict>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Adventure Creator			Autumn Software}</string>
+								</array>
+							</dict>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 RealBasic}</string>
+								</array>
+							</dict>
+						</array>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Client-Side}</string>
+						</array>
+						<key>Expanded</key>
+						<true/>
+					</dict>
+				</array>
+				<key>Cols</key>
+				<array>
+					<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+					<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Similar Systems}</string>
+				</array>
+			</dict>
+			<dict>
+				<key>Children</key>
+				<array>
+					<dict>
+						<key>Children</key>
+						<array>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf2 Should you have any questions regarding your order, please quote the\
+following details to enable us to locate your order quickly.\
+\
+   Tracking Number: 04000034561\
+   Domain Name:     watchfield.com.co.uk\
+\
+By placing this order you are agreeing to our standard contract. You\
+may view this at http://www.dedicated-servers.co.uk/contract.shtml}</string>
+								</array>
+								<key>Style</key>
+								<dict>
+									<key>TextColor</key>
+									<dict>
+										<key>b</key>
+										<string>0</string>
+										<key>g</key>
+										<string>0</string>
+										<key>r</key>
+										<string>0</string>
+									</dict>
+									<key>TextFont</key>
+									<dict>
+										<key>name</key>
+										<string>Helvetica</string>
+										<key>size</key>
+										<real>1.200000e+01</real>
+									</dict>
+								</dict>
+							</dict>
+						</array>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf2 Order}</string>
+						</array>
+						<key>Expanded</key>
+						<true/>
+						<key>Style</key>
+						<dict>
+							<key>TextColor</key>
+							<dict>
+								<key>b</key>
+								<string>0</string>
+								<key>g</key>
+								<string>0</string>
+								<key>r</key>
+								<string>0</string>
+							</dict>
+							<key>TextFont</key>
+							<dict>
+								<key>name</key>
+								<string>Helvetica</string>
+								<key>size</key>
+								<real>1.200000e+01</real>
+							</dict>
+						</dict>
+					</dict>
+					<dict>
+						<key>Children</key>
+						<array>
+							<dict>
+								<key>Cols</key>
+								<array>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+									<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf2 RaQ Server IP Address: 217.199.165.4\
+RaQ Server IP Address 2: \
+Username: admin\
+Password: gzSfJ5tq\
+Root password: As Admin}</string>
+								</array>
+								<key>Style</key>
+								<dict>
+									<key>TextColor</key>
+									<dict>
+										<key>b</key>
+										<string>0</string>
+										<key>g</key>
+										<string>0</string>
+										<key>r</key>
+										<string>0</string>
+									</dict>
+									<key>TextFont</key>
+									<dict>
+										<key>name</key>
+										<string>Helvetica</string>
+										<key>size</key>
+										<real>1.200000e+01</real>
+									</dict>
+								</dict>
+							</dict>
+						</array>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf2 Setup}</string>
+						</array>
+						<key>Expanded</key>
+						<true/>
+						<key>Style</key>
+						<dict>
+							<key>TextColor</key>
+							<dict>
+								<key>b</key>
+								<string>0</string>
+								<key>g</key>
+								<string>0</string>
+								<key>r</key>
+								<string>0</string>
+							</dict>
+							<key>TextFont</key>
+							<dict>
+								<key>name</key>
+								<string>Helvetica</string>
+								<key>size</key>
+								<real>1.200000e+01</real>
+							</dict>
+						</dict>
+					</dict>
+				</array>
+				<key>Cols</key>
+				<array>
+					<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+					<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf2 Cobalt RaQ 4}</string>
+				</array>
+				<key>Style</key>
+				<dict>
+					<key>TextColor</key>
+					<dict>
+						<key>b</key>
+						<string>0</string>
+						<key>g</key>
+						<string>0</string>
+						<key>r</key>
+						<string>0</string>
+					</dict>
+					<key>TextFont</key>
+					<dict>
+						<key>name</key>
+						<string>Helvetica</string>
+						<key>size</key>
+						<real>1.200000e+01</real>
+					</dict>
+				</dict>
+			</dict>
+		</array>
+		<key>Cols</key>
+		<array>
+			<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+			<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+		</array>
+		<key>Expanded</key>
+		<true/>
+	</dict>
+	<key>StatusHidden</key>
+	<string>Yes</string>
+	<key>Styles</key>
+	<array>
+		<dict>
+			<key>Heading</key>
+			<dict>
+				<key>type</key>
+				<string>None</string>
+			</dict>
+			<key>ShouldAllowSorting</key>
+			<true/>
+			<key>TextColor</key>
+			<dict>
+				<key>b</key>
+				<string>0</string>
+				<key>g</key>
+				<string>0</string>
+				<key>r</key>
+				<string>0</string>
+			</dict>
+			<key>TextFont</key>
+			<dict>
+				<key>name</key>
+				<string>Helvetica</string>
+				<key>size</key>
+				<real>1.200000e+01</real>
+			</dict>
+		</dict>
+		<dict>
+			<key>Heading</key>
+			<dict>
+				<key>type</key>
+				<string>None</string>
+			</dict>
+			<key>ShouldAllowSorting</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Heading</key>
+			<dict>
+				<key>type</key>
+				<string>None</string>
+			</dict>
+			<key>ShouldAllowSorting</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Heading</key>
+			<dict>
+				<key>type</key>
+				<string>None</string>
+			</dict>
+			<key>ShouldAllowSorting</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Heading</key>
+			<dict>
+				<key>type</key>
+				<string>None</string>
+			</dict>
+			<key>ShouldAllowSorting</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Heading</key>
+			<dict>
+				<key>type</key>
+				<string>None</string>
+			</dict>
+			<key>ShouldAllowSorting</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Heading</key>
+			<dict>
+				<key>type</key>
+				<string>None</string>
+			</dict>
+			<key>ShouldAllowSorting</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Heading</key>
+			<dict>
+				<key>type</key>
+				<string>None</string>
+			</dict>
+			<key>ShouldAllowSorting</key>
+			<true/>
+		</dict>
+	</array>
+	<key>Version</key>
+	<integer>6</integer>
+</dict>
+</plist>

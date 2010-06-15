@@ -1,0 +1,110 @@
+;;; -----------------------------------------------------------
+;;;     Available Features
+;;; -----------------------------------------------------------
+
+Anonymous variables (inc. _...)
+Variadic parameters (i.e. ... parameters)
+Syntax
+    literals for string, atom, character
+    variables and explode
+    comma + semi
+    indexing                        # v[ n ]
+    apply                           # x.f(y) @g
+    holes                           # incomplete: e.g. indexing, and/or
+    define function                 # incomplete: multi-part missing
+                                    #           : updaters missing
+    if/unless
+    switch
+    for
+Operators
+    + - * / ** ++ $ div rem
+Datatypes
+    absent                          # should this role be played by nil?
+    booleans
+    numbers
+    characters
+    strings
+    atoms
+    lists
+Regular expressions
+Classes
+    slots
+    define class
+    new
+
+;;; -----------------------------------------------------------
+;;;     Missing Features
+;;; -----------------------------------------------------------
+
+Updaters
+Classes
+    define new
+    define method
+    primitive classes
+Optional static typing
+Syntax
+    ( x => E )                      # horrible!
+    for i ==> j on Map do ...
+Datatypes
+    maps
+Native regular expressions
+Library mode for compilation
+
+
+;;; -----------------------------------------------------------
+;;;     Bugs
+;;; -----------------------------------------------------------
+
+++ is not evaluated at compile-time when applied to
+constant arguments
+
+Boolean expressions do not type check their arguments
+    e.g. if/unless/while/until/and/or
+
+Scopes are not correctly implemented e.g. and/or
+
+CALL does not check its argument is a function
+
+popradians influences trig functions
+
+Regular expressions are incomplete.  This is a consequence
+of using the Poplog regular expression language which does not
+have (?=RE), (?!RE), or (?:RE) brackets.  There are numerous
+control sequences which are inconsistent with "traditional"
+regular expressions e.g. \a etc.
+
+Printing does not work
+
+
+;;; -----------------------------------------------------------
+;;;     Interesting / Points for discussion
+;;; -----------------------------------------------------------
+
+() + ( 1, 2 ) ?
+
+Native regular expressions
+
+
+;;; -----------------------------------------------------------
+;;;     Fixed
+;;; -----------------------------------------------------------
+
+Return has been left in
+
+Cannot exit Spice with Ctrl-D.  (Why not?)
+
+Local identifiers no longer clash with Pop11 top-level identifiers
+
+A superfluous terminating semi-colon raises an error
+
+A nasty syntax bug related to obsolete "autoInfixing" removed (and
+much old code has been cleaned up, too.)  Arithmetic parsing made
+simpler.
+
+Fixed dire bug in slot code that stopped slots working the first
+time through.  Simply no idea how the code ever worked prior to
+fixing this bug.
+
+Fixed incorrect code generated for nested functions.
+
+;;; -----------------------------------------------------------

@@ -1,0 +1,35 @@
+Re: termin
+----------------------------------------------------------------------
+From: Chris Dollin <eh@electric-hedgehog.net>
+Date: Thu, 10 Jul 2003 07:42:10 +0100
+
+> Have you added -termin- to Zest?  I am idly wondering about the best way
+> to add i/o to JSpice.  One route is the Poplog way that uses -termin- as
+> the special end-of-stream marker.  Another is to have an explicit
+> end-of-stream predicate test.  Yet another is a hybrid of the two.
+
+hedgehog: zest
+
+  zest (Spice + ChaiScript) v5.7.879 Sun 16-Feb-2003
+    whiskers on kittens
+
+-) termin;
+<termin>
+-) hedgehog:
+
+Yes, I added termin to zest. I don't think it's *used* for anything at present,
+though. I'd go for repeaters-then-termin myself.
+
+----------------------------------------------------------------------
+Date:	30/Jan/04
+Hi Chris,
+
+I'm revisiting the issue of repeaters & -termin-.  Although I quite like the idea that an exhausted stream uses -termin- to signal its exhaustion, I've always worried that this prevents it from representing streams which include -termin-.  (If all you are worried about are character repeaters that's not a problem but the idea of a repeater is more general.)
+
+It occurs to me that it possible to signal exhaustion in both ways: by returning the sentinel -termin- value _and_ also by changing state to end-of-stream.  In this case, procedures would not naturally be repeaters.  Instead there would be a constructor
+	new Repeater: Procedure -> Repeater
+that would simply look for termin and react with a change of state.
+
+Any thoughts?
+
+----------------------------------------------------------------------

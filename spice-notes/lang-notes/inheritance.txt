@@ -1,0 +1,34 @@
+Re:		Inheritance
+Date:	30/Jan/04
+
+Non-Standard Concepts
+
+--- Symmetric Multiple Inheritance ---------------------------------
+
+When a class inherits from multiple super-classes, no preference is
+made between the super-classes.  To support this it may necessary for
+the programmer to resolve potential ambiguities when writing methods.
+
+
+--- Royalty --------------------------------------------------------
+
+A class may only extend one royal class directly or indirectly. 
+Equally, a class may not be a descendant of two royal classes.  The
+point of royal classes is to allow the compiler to plant slightly more
+efficient code for method accesses.
+
+However, it isn't clear to me that there is any point in royalty.  It
+is perfectly possible to detect "potentially" royal classes and
+compile them as if they were royal - redoing the compilation if
+subsequent classes negate the royalty.
+
+
+--- Extends by Forwarding -------------------------------------------
+
+Extending by forwarding means that a slot is nominated to hold an
+instance of the superclass.  All the slot-accessors of the superclass
+are redirected to the embedded instance - but may be overridden or augmented 
+in the obvious fashion.
+
+---------------------------------------------------------------------
+

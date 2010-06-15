@@ -1,0 +1,22 @@
+Re: Currying
+
+
+---------------------------------------------------------------------
+Delivered-To: steve@outstation.bel-epa.com
+Delivered-To: steve-steve@watchfield.com
+Status:  U
+From: Chris Dollin <hedgehog@electric-hedgehog.net>
+To: steve@watchfield.com
+Subject: curried _function_s
+Date: Wed, 19 Sep 2001 17:28:19 +0100
+
+It turns out to be both unambiguous and Curry-friendly to extend the
+syntax of Spice lambda-expressions to permit
+
+    (x => y => x)
+
+    fun x => y => x endfun
+
+ie with as many "args =>" prefixes as you please.
+
+---------------------------------------------------------------------

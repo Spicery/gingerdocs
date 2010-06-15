@@ -1,0 +1,3822 @@
+\title
+    Spice language manual (v4.0, February 2002)
+\endtitle
+
+\part a gentle introduction to Spice
+
+\chapter introduction
+
+This document describes the programming language Spice, which was developed,
+from an idea of Dave Raggett's, by Chris Dollin and Steve Leach. The initial
+design work was done in autumn 1998 and subsequent modifications made as
+implementations progressed.
+
+The original language contained stylesheets and its syntax was closer to
+ECMAScript; the current language has lost stylesheets, which need more
+work to be useful in a general-purpose programming language, and its syntax
+has no C-like basis. The rest of the developed language remains.
+
+Spice is *dynamically typed*; by default, types are run-time entities
+attached to values, rather than compile-time entities attached to expressions.
+This gives flexibility in program development, at the cost of reduced
+up-front error detection and some run-time overhead. Type annotations
+can be added to variable declarations, and the compiler will use these for
+error checking and optimisation.
+
+Spice is *expression oriented*; (almost) all of the constructs of the
+language return values, including loops. Spice is *multiple valued*;
+expressions denote a "row" of zero or more values. The number of values an
+expression denotes is not a compile-time property.
+
+Spice is *higher order*; it supports functions as values, full lexical
+scoping, and has a syntax for function literals (aka lambda-expressions).
+
+Spice is *multiply dispatched*; functions can be defined piecemeal
+("overloaded") on differing combinations of argument types, and when the
+function is called, the piece with the "best fitting" formal arguments is
+executed. The usual single-receiver dynamic dispatch of object-oriented
+languages (Smalltalk, C++, Java) is a special case of Spice's multi-methods,
+which are inspired by CLOS and ObjectClass.
+
+Spice is *class neutral*; new overloadings of any generic function can appear
+in any package where that function is visible, and there is no special syntax
+that distinguishes the invocation of an overloaded function from a
+non-overloaded one. Classes do not provide namespaces.
+
+The remainder of this document is in two parts; an introductory guide,
+intended to give a practicing programmer a taste of Spice, followed by a
+semi-formal reference manual describing the language as of February 2002.
+
+\section notes
+
+_author_: Chris Dollin, _version_: 3.0a, _date_: December 2001
+
+_to be done_: regular expressions, facet definitions, which modifiers are
+marked, _super_ and _extends_, _var_ and _const_ to have only one blob.
+
+\endsection
+
+\endchapter
+
+\chapter a gentle introduction to Spice
+
+In this and subsequent sections we speak as though the reader has access to a
+Spice system into which they can type Spice code and have it executed. Unlucky
+readers will have to take the results on trust.
+
+\section hello, world
+
+A long-standing Unix-spawned tradition is that one's first program in a new
+language should be the one that prints "Hello, World" or some suitable
+variant, so here it is in Spice:
+
+\spice
+println( "hello, world." );
+\endspice
+
+Pasting this into your Spice evaluation should result in "hello, world" being
+displayed somewhere obvious.
+
+_"hello, world."_ is a *string literal* representing a sequence of characters.
+Most characters can appear as themselves in a string, but specific exceptions
+are all three quoting characters (*string quotes* _"_, *reserved quotes* _'_,
+and *symbol quotes* _`_) and the *escape character* \\.
+
+_println_ is the name of a built-in *procedure*. We'll see later that Spice
+has several kinds of procedure, including *functions*, *methods*, and
+*constructors*; we use the term "procedure" to refer to them all without
+distinction.
+
+The syntax _F(X)_ is one form of *procedure call*; it evaluates the procedure
+_F_ (which in this case is easy) and the argument(s) _X_ (ditto) and then
+*calls* the procedure, supplying it with the values of the arguments. The
+procedure does something (such as printing its argument) and returns some
+results, which we throw away.
+
+The semicolon is a *statement separator*, signifying the end of one statement
+and (possibly) the beginning of another. Sometimes they are not necessary, but
+this introduction will put them all in.
+
+\endsection
+
+\section one, two, buckle my shoe
+
+_println_ isn't restricted to strings; it can do numbers, too.
+
+\spice
+println( 1 );
+
+println( 1_032 );
+
+println( 40 + 2 );
+\endspice
+
+Evaluating these should result in the values _1_, _1032_, and _42_ being
+printed. The underbar in _1!_032_ is just a visual separator. Spice has the
+"usual" arithmetic operators, _+_, _-_, _!*_, and _/_, although they have some
+extra wrinkles we'll meet later.
+
+
+What's more, _println_ can take multiple arguments:
+
+\spice
+println( 1, 2, "buckle my shoe" );
+\endspice
+
+which will print _1 2 buckle my shoe_. Note that the arguments are printed
+preceeded by a space (this behaviour can be changed), and that there's
+only one newline printed, at the end. The degenenerate case _println()_ with
+no arguments just prints a newline.
+
+\endsection
+
+\section variables
+
+You can declare variables to hold values.
+
+\spice
+var x = 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10;
+
+println( x );
+\endspice
+
+which will print _55_. The value _x_ holds can be changed
+by assignment:
+
+\spice
+x := x * 10; println( x );
+\endspice
+
+will print _550_. Using the word _const_ instead of _var_
+makes an *unassignable* variable (rather an oxymoron, but there it is).
+
+Variables must be declared; trying to use a name that hasn't been declared is
+an error, even if you're assigning to it, unlike eg Basic or Javascript.
+
+\endsection
+
+\section typed variables
+
+It's possible to specify that a variable is restricted to holding values of a
+given type. For example,
+
+\spice
+var count: Small = 0;
+someActionsHere();
+count := "of Monte Christo";
+\endspice
+
+declares _count_ as a variable of type _Small_, restricted to "small" integer
+values (typically in the range plus-or-minus half-a-billion) and then throws
+an error when it attempts to assign a string (of type _String_) to it. If a
+variable is declared with a type but no initial value, then the *default
+value* for that type is used to initialise the variable; the default value of
+type _Small_ is _0_:
+
+\spice
+var anInt: Small; println( anInt );
+\endspice
+
+will print _0_. If there's no type then the variable is declared to be of type
+_Any_ (which means what it sounds like); the default value of _Any_ is called
+_absent_.
+
+\endsection
+
+\endchapter
+
+\chapter function definitions
+
+There's no magic about procedures that the user cannot harness. A simple
+way to define your own procedure is to write a _function_ definition:
+
+\spice
+define function add( x, y ) => x + y enddefine
+
+println( add( 1, 2 ) );
+\endspice
+
+_add_ is defined and then  invoked in the usual way, resulting in _3_ being
+printed.
+
+Note that there's no need to use a special _return_ statement to specify the
+procedure's return value; the value of the procedure body is returned as the
+procedure result, and the body here is the sum-expression _x+y_.
+
+\section typed arguments
+
+The arguments to a function can be typed in the same way that variables can.
+
+\spice
+define function addChecked( x: Small, y: Small ) =>
+    x + y
+enddefine
+\endspice
+
+Calls to _addChecked_ with non-_Int_ arguments will throw an error. Spice
+can sometime take advantage of the type information to produce better code
+or more informative error messages. Later on, we'll see how type information
+can be used to write *polymorphic* or *overloaded* functions.
+
+\endsection
+
+\section typed results
+
+The result of a function can also be typed.
+
+\spice
+define function addToInt( x, y ) returns Small =>
+    x + y
+enddefine
+\endspice
+
+The result from _addToInt_ must be an _Small_ value; if not an error will be
+thrown. Again, the Spice compiler may be able to use this information to
+generate better code or error messages.
+
+\endsection
+
+\section indefinite arguments
+
+How does _println_ manage to have arbitrarily many arguments? It uses an
+*indefinite argument*, marked with ellipsis notation:
+
+\spice
+define function gather( rosebuds... ) => rosebuds enddefine
+
+println( gather( "while", "ye", "may" ) );
+\endspice
+
+_rosebuds_ is an indefinite argument whose value is all of the (remaining)
+arguments to the function. This prints as _{while ye may}_, which
+is the way *array values* are printed; the arguments are turned into an array.
+(We'll see more about arrays soon.)
+
+It's possible to have one or more *definite* arguments before or after a final
+indefinite argument:
+
+\spice
+define function foo( x, y... ) as
+    println( x ); println( y )
+enddefine
+\endspice
+
+_foo_ needs at least one argument _x_ but takes arbitrarily many more, which
+are gathered into _y_. It then prints both _x_ and _y_; if there are no extra
+arguments, then _y_ is an *empty array*, which prints as _{}_. _println_
+returns no results, so _foo_ returns no results.
+
+\endsection
+
+\endchapter
+
+\chapter arrays
+
+Spice allows arrays to be constructed using *array expressions*, which are
+expression sequences enclosed in braces:
+
+\spice
+    var lots = {27, "now", "is", "the", "time", 42};
+    println( lots );
+\endspice
+
+which will print _{27 now is the time 42}_. Arrays can contain values of any
+type. Individual elements can be extracted by indexing:
+
+\spice
+    println( lots[2] ); lots[2] := "anguish"; println( lots );
+\endspice
+
+which will print _now_ and _{27 anguish is the time 42}_. Spice arrays are
+based at _1_, so element _2_ is the second element. The function
+_length_ delivers the number of elements in its array argument.
+
+\spice
+    println
+        (
+        length( lots ),
+        arrayBase( lots ),
+        arrayBase( newlots )
+        );
+\endspice
+
+which will print _6 0 1_.
+
+\endchapter
+
+\chapter dot and infix notation
+
+It's often useful and clearer to write calls to one-argument functions,
+expecially those that just extract components from structured values like
+arrays, using *dot notation*:
+
+\spice
+    println( lots.length, lots.arrayBase, newlots.arrayBase );
+\endspice
+
+is just another way of writing the previous calls. In fact you can call
+procedures of *any* number of arguments using dot notation, because of a
+general rule of the language:
+
+\spice
+    X.f(Y) == f(X,Y) == X @f Y, and X.f == f(X) == X @f
+\endspice
+
+The forms _X @f Y_ and _X @f_ are a way of writing any function call as an
+infix or postfix expression, which is often useful when you have a long chain
+of function applications each of which supplies the "left" argument to the
+next.
+
+The principal difference between _._ and _@_ is that _._ is much more tightly
+binding -- it's the most binding infix operator -- and _@_ is loosely binding,
+being only just tighter than the logical connectives _and_ and _or_.
+
+Different styles of function call are used to make it clear what's an argument to
+what.
+
+\section dot and infix function definition
+
+Although the plain fucntion definition syntax we've seen already is enough,
+because of the equivalence of the different notations we've described,
+Spice allows you to define a function in the style in which you expect it
+to be called:
+
+\spice
+define function x @addWithAt y as x + y enddefine
+
+define function x.addWithDot(y) as x + y enddefine
+\endspice
+
+The arguments can still be typed using _:_, and for a function
+defined with dot-notation, the special _on_ syntax:
+
+\spice
+define function x:Small @addWithAtColon y:Small as
+    x + y
+enddefine
+
+define function on Small x.addWithDotColon(y:Small) as
+    x + y
+enddefine
+\endspice
+
+All four of these definitions define functions which add two values together,
+the second pair demanding that those values be _Int_s, and all of them can be
+called in all the different ways we have discussed.
+
+We'll see later how these notations tie into the more common object-oriented
+approaches, and why the _on_ syntax is so-called.
+
+\endsection
+
+\endchapter
+
+\chapter ifs and buts
+
+So far, all of our expressions have been unconditional -- get the arguments,
+do something, deliver the result; no choices are involved.
+
+Spice has *conditional expressions* for expression choices, and *relational
+expressions* for tests.
+
+\spice
+    if lots.length < 10 then "short" else "long" endif.println;
+\endspice
+
+The relational expression _lots.length < 10_ compares the length of _lots_
+(which is probably still _6_) with _10_ and delivers _true_ if it's less than
+and _false_ if it's equal or greater. _true_ and _false_ are the built-in
+values of type _Bool_. Spice also has the obvious _>_, _<=_, and _>=_, and _=_
+for equality, and the less obvious _/=_ for inequality.
+
+The conditional expression tests the boolean value; if it is _true_ its value
+is its _then_ arm, if it is _false_ its value is its _else_ arm, and if it's
+not boolean, an error is thrown. (Unlike various other languages, _0_, the
+null string _""_, and the null reference _absent_, are *not*
+alternatives to _false_, and values such as _1_, _"yes"_, and _println_ are
+*not* alternatives to _true_.)
+
+_println_ is being called here with dot notation, with its argument being the
+result of the _if_-expression, here the string _short_.
+
+\section elselessness and elseif
+
+The _else_ part of a conditional is optional. If you miss it out, it's as
+though you'd written one with no expression following. Where you don't want a
+result from the _if_-expression, there's no problem; if you do, it will
+usually generate the value _absent_. (See the reference section for more
+details.)
+
+If you want to write a chain of tests, rather than ending up with
+ever-more-deply nested _if_-_endif_ structures, Spice lets you introduce
+additional tests with _elseif_:
+
+\spice
+if x == "hello" then
+    println( "well hello there!" )
+elseif x == "goodbye" then
+    println( "sorry to see you go" )
+else
+    println( "eh? what does", x, "mean?" )
+endif
+\endspice
+
+You can have as many _elseif_s as you need.
+
+\endsection
+
+\section ands and ors
+
+The test of an _if_ can be composed using the special operators _and_ and
+_or_. _X or Y_ is true if _X_ is or if _Y_ is, but _Y_ is only evaluated if
+_X_ is _false_. Similarly _X and Y_ is _true_ if both _X_ and _Y_ are _true_,
+but _Y_ is not evaluated if _X_ is false.
+
+That's what makes these operators "special": their right operand is only
+evaluated if its value is needed.
+
+\endsection
+
+\section short conditionals
+
+Spice also permits "short" conditional expressions, for which it uses the same
+syntax as Algol68 (by coincidence): the expression _(X !| T !| F)_ is
+equivalent to _if X then T else F endif_.
+
+\endsection
+
+\section unless
+
+Spice has an alternate form of _if_, the _unless_ (with closing keyword
+_endunless_) which is the same except the sense of the (first) test is
+inverted.
+
+\endsection
+
+\endchapter
+
+\chapter loops
+
+Spice has a rich _for_ loop construct, which allows iteration over
+collections, termination on conditions, and specification of loop results.
+A subset of those is available in the _repeat_ construct.
+
+\section repeat
+
+Suppose we want to iterate over the elements of an array _lots_.
+Here's one way to do it with _repeat while_:
+
+\spice
+    var i = 0;
+
+    repeat while i < lots.length do
+        ;;; stuff involving lots[i] ...;
+        i +:= 1
+    endrepeat
+\endspice
+
+The expression _i +:= 1_ is equivalent to _i := i + 1_, but more compact,
+especially when _i_ is some complex expression.
+
+For example, to find the element of an array containing a specific element by
+complete linear search:
+
+\spice
+define function findIndex( a, x ) as
+    var i = 0;
+    var here = 0;
+    repeat while i < a.length and here = 0 do
+        if a[i] = x then here := i endif;
+        i +:= 1
+    endrepeat;
+    here
+enddefine
+\endspice
+
+The index of the first element equal to _x_ is stored into _here_ and then
+returned as the procedure result. The equality test _=_ compares values
+using type-specific code.
+
+If you're wondering why Spice uses _repeat while_, and not just _while_, the
+reason is that it also has _repeat until_ (where the condition is inverted),
+and that you can write code between the _repeat_ and the _while_. Also, as
+we'll see below, _while_ is also used in _for_ loops.
+
+\endsection
+
+\section for
+
+We can perform the same loop with automatic counting and implicit value
+return, using a _for_-loop with two *control clauses*:
+
+\spice
+define function findIndex( a, x ) as
+    for
+        i from 1 to a.length
+        until a[i] = x then i
+        finally 0
+    endfor;
+enddefine
+\endspice
+
+The variable _i_ is automatically declared as a varible that exists only while
+the loop is executing; it takes values from the _from_ value (here, _1_) to
+the _to_ value (here, _a.length_) inclusive. The loop terminates "early" when
+an element _a[i] = x_ is found, and it delivers the result _i_. If the loop
+terminates "normally", it returns the value of the "finally" clause, here
+_0_.
+
+_for_ loops can also iterate over collections, using the _in_ syntax:
+
+\spice
+define function findIndex( a, x ) as
+    for
+        i from 1; ax in a
+        until ax == x then i
+        finally 0
+    endfor;
+enddefine
+\endspice
+
+_ax_ is automatically declared, and takes on the value of each element in
+turn; we still need to keep track of the index, so we count _i_ from 1
+upwards anyway.
+
+\endsection
+
+\endchapter
+
+\chapter multiple values
+
+So far, we've seen Spice expressions and procedures which deliver *single*
+results. Spice expressions can deliver *multiple* results, often avoiding the
+need to construct new objects or to use "reference parameters" (which Spice
+hasn't got).
+
+\spice
+define function plusOrMinus( x, y ) =>
+    (x + y, x - y)
+enddefine
+\endspice
+
+The comma keeps both its left and right operand values (exactly as it does in
+a function argument list); _plusOrMinus_ delivers *two* values.
+
+\spice
+println( 20 @plusOrMinus 17 );
+\endspice
+
+will print _37 3_.
+
+\section void context
+
+Some expressions, in particular top-level expressions, are evaluated in *void
+context*; they are evaluated and their results thrown away. The Spice system
+you are using to test our examples runs them in void context.
+
+Sometimes you need to make it explicit that, whatever else would have
+happened, you want no values to escape. The expression _none E_ evaluates E in
+a new multiple-value context and then throws away all the answers, delivering
+none. The expression _none_ is a shorthand for _none ()_, representing no
+values. Similarly, the expression _one E_ evaluates _E_ and turns it into one
+value: if _E_ delivered no values, _one_ returns _absent_; if _E_ delivers one
+value, _one_ returns that; and if _E_ delivers several values, _one_ returns
+the first one.
+
+\endsection
+
+\section multiple-value loops
+
+The result of a loop is all the results from the executions of its body,
+plus any finally-values.
+
+\spice
+println( for i from 1 to 10 do i*i endfor )
+\endspice
+
+to print _1 2 9 16 25 36 49 64 81 100_.
+
+\endsection
+
+\section explode
+
+One built-in function produces multiple results as a matter of course;
+_explode_. _explode_ takes one argument and explodes it into its constituents
+(if any) as a multiple result. Applied to an array, it explodes it into its
+elements; applied to a string, it explodes it into its characters. Applied
+to an atomic object (a number, a character, a boolean, _absent_) it delivers
+_none_.
+
+\endsection
+
+\endchapter
+
+\chapter procedures as values
+
+Spice procedures are not restricted to being defined and called; there are
+several ways they can be manipulated.
+
+\section first-class procedures
+
+Spice procedures are *first-class values*; they can be passed as parameters,
+returned as results, and stored into variables and data-structures (such as
+arrays; we'll see more later).
+
+This is particularly useful when you need to do something to all the elements
+of a collection, but the details of how the collection are kept is secret
+(eg to allow you to change it later); you write a function that walks over
+the collection and does "something" to each element. Since all we've got
+is arrays, that forms our first example; let's suppose that _them_ is
+a secret array variable.
+
+\spice
+define function appCollection( f ) as
+    for x in them: Array do x.f endfor
+enddefine
+\endspice
+
+Now the expression _appCollection(println)_ (which of course can also be
+written _println.appCollection_) will print all the elements of _them_. If the
+elements *do* something sensible when passed to some function _mangle_, then
+_mangle.appCollection_ will mangle all of them.
+
+Note that _appCollection_ returns all the values that _f_ returns for the
+caller to do with as they like. Of course, we might want to construct a new
+collection from the old one by mangling each element:
+
+\spice
+define function mapCollection( f ) =>
+    {f.appCollection}
+enddefine
+\endspice
+
+which gathers up the results from _appCollection_ and makes a new collection
+(here, array) out of them.
+
+\endsection
+
+\section lambda-expressions
+
+Passing functions as arguments, and applying them, is all very well, but it
+can get tedious defining trivial functions to use. For example, if
+we want to make a new collection by incrementing every element of the
+old one, we can write:
+
+\spice
+define function inc( x ) as x + 1 enddefine
+
+inc.mapCollection.println;
+\endspice
+
+If _them_ is, say, the collection _[0 8 41]_ then this will print _[1 9 42]_.
+But it's tedious to have to define a function, put it
+somewhere in the code, give it a suitably mnenomic (but short) name, then then
+pass it. Wouldn't it be nice if you could write the function right where you
+were going to pass it?
+
+Of course the answer is "yes", otherwise we wouldn't have posed the question.
+The expression _(A => E)_, where _A_ is an argument list (with the brackets
+omitted) and _E_ is a sequence of expressions, is called a _lambda expression_
+(for historical reasons to do with Church's *lambda calculus*) or a *procedure
+literal*. Lambda-expressions are intended to be used for *short* procedures;
+otherwise they can make the code look cluttered.
+
+Instead of defining _inc_ above, we can write _(x => x +
+1).mapCollection.println_ for the same effect. To double each element, use
+_(x => x !* 2)_; to square it, use _(x => x !* x)_; to replace it with _0_
+use _(x => 0)_.
+
+\passage "full lexical scope"
+
+Because we haven't said you can't, the reader may suppose that you can write
+lambda-expressions within procedures, and similarly, that those expressions
+may refer to, even assign to, local variables of those procedures. And you
+can.
+
+\spice
+define function konst( x ) as (ignored as x) enddefine
+\endspice
+
+_konst_ (so-called because _const_ is a Spice reserved word) is a function
+that makes constant functions; _konst(E)_ is a function that delievrs the
+value of _E_ whatever it's applied to, so _konst(0)_ is a function [of one
+argument] that always delivers _0_. The variable _x_ which is the parameter to
+_konst_ is available to the lambda-expression even after _konst_ has finished
+executing.
+
+This behaviour (that the variables of a function are visible to
+lambda-expressions within that function, and that they live on after the
+function exits)is called *full lexical scoping*. It's relatively uncommon
+in programming languages (with the notable exceptions of Common Lisp, Scheme,
+Pop11, and Smalltalk), but it is your friend.
+
+\endpassage
+
+\endsection
+
+\section hole-expressions
+
+Lots of little lambda-expressions are just an operator (or function call)
+with one (or two) arguments "missing"; like _inc_ and its brethren above.
+For these Spice allows you to write a special form of lambda-expression, the
+*hole expression*, which is a function call or operator invocation with
+some of its arguments replaced by *holes*. The usual hole is written _?_,
+and it stands for "the [first] argument"; it makes the application or
+invocation into a lambda expression.
+
+So _(? + 1)_ (the brackets are unnecessary) is another way of writing _(x =>
+x + 1)_, where _x_ has been replaced by the hole and the argument declaration
+is unnecessary.
+
+_(? - 1)_ is the function that subtracts _1_ from things, _(42 - ?)_ is
+the function that subtracts things from _42_, and _(? !* ?)_ is the
+function that squares things.
+
+Just in case you ever want to use holes for functions with more than one
+argument, there are as many holes as you like, written ?_1_, ?_2_, and so
+on; _?_ is shorthand for _?1_. A hole-expression has as many implied
+arguments as the biggest hole it uses; the Spice compiler will be curious
+about expressions with missing holes (eg _?19 + 1_).
+
+\endsection
+
+\section combining functions
+
+Because it's possible to write functions that take and deliver other
+functions, its possible to write *combining functions* who's job is just
+to manipulate other functions; this can result in a style known as *higher
+order programming*.
+
+The standard function _Then_ [note the capital T!!] takes two functions
+_f_ and _g_ and returns a new function that takes some arguments _X_,
+applies _f_ to them, and then applies _g_ to the result; it might be written
+as:
+
+\spice
+define function Then( f: Function, g: Function ): Function as
+    (args... as args.explode.f.g)
+enddefine
+\endspice
+
+Note that _explode_ generates arbitrarily many results, all of which become
+arguments to _f_; all of _f_s results become arguments to _g_; and all
+of _g_s results become the results of the lambda-expression. Nothing
+special has to be done by the programmer to keep tabs of how many arguments
+and results are returned.
+
+\endsection
+
+\endchapter
+
+\chapter more on _absent_
+
+It turns out that code like "the value of X, unless it's absent, in which case
+the value of Y" appears quite often, for example, doing table-lookups. Spice
+allows this to be written compactly using the operator _!|!|_.
+
+_X !|!| Y_ has the value _X_, unless it's _absent_, in which case it has the
+value _Y_; _Y_ is not evaluated unless it has to be (*ie*, _X_ is _absent_).
+It's rather like a pumped-up _or_ where any non-absent value counts as _true_.
+
+Similarly, _X && Y_ is _absent_ if _X_ is _absent_, and the value of _Y_
+otherwise; again, _Y_ is only evaluated if it has to be (*ie*, _X_ isn't
+_absent_). It's rather like a pumped-up _and_.
+
+\endchapter
+
+\chapter classes
+
+So far we've only uses (some) of the built-in Spice types: integers, strings,
+arrays, and procedures. Spice also allows you to define your own data-types
+using *classes*.
+
+\section class definition
+
+A class definition allows you to define a new (kind of) *object* which you
+can use in your code. The simplest class definition introduces an object
+with named slots:
+
+\spice
+define class Pair
+    slot front: Any = absent
+    slot back: Any = absent
+enddefine
+\endspice
+
+This defines a new class object, _Pair_, with two slots called _front_ and
+_back_. The _slot_ declaration is just like a _var_ declaration, except that
+it makes variables "inside" objects; you can leave out the initialiser and
+type in the usual way.
+
+The name _Pair_ becomes a new type name, and you can use it in the type part
+of a variable declaration or procedure argument.
+
+You can print out the class if you wish; _Pair.println_ will print something
+like _<Class Pair extends <absent>>_. (We say "something like" because it's
+possible to change the default way objects get printed.)
+
+You can make new _Pair_ objects with the expression _new Pair()_. Each such
+object has a _front_ and a _back_, which start off as _absent_, and which you
+can change. Every object also responds to the function _typeof_ by delivering
+its class object.
+
+\endsection
+
+\section updaters
+
+Suppose we've declared _var p = new Pair();_ so that _p_ holds a new _Pair_
+object. We can assign to the _front_ and _back_ slots of _p_:
+
+\spice
+    p.front := 1, p.back := "two";
+    p.front.println, p.back.println;
+\endspice
+
+prints _1 two_. In Spice, it's possible to call procedures
+on the left-hand-side of an assignment, in which case what happens is that
+the *updater* of that procedure is called. Just as Spice makes procedures
+to access the _slot_-slots of a class value, it gives them updaters
+to change those values.
+
+\indented
+*technical note*. Unlike some languages (Common Lisp, Dylan), it is the
+procedure *value* that has the updater, not the procedure *name*. This means
+that you can call the updaters of procedures passed as parameters or stored
+into data structures. We stole/////re-used this behaviour from Pop11.
+\endindented
+
+You can define your own updaters if you wish:
+
+\spice
+define function x.foo := y as
+    println( "updating", x, "with", y )
+enddefine
+\endspice
+
+The _:= y_ says this this is defining the updater of _foo_ (and there had
+better be a definition for _foo_ elsewhere; you can't define the updater of a
+procedure that doesn't exist) and that _y_ is the name of the parameter which
+is the "right-hand-side of the assignment". _y_ can be typed, as usual.
+
+While an updater can do whatever it likes, it is very stongly advised that
+updaters are given only to access functions, and that they do the "obvious
+thing"; after an assignment _x.foo = E_ then the expression _x.foo_ should
+deliver the value _E_ that was assigned.
+
+If _foo_ is a procedure, then _foo.updater_ is the updater of that procedure,
+if it has one, and _absent_ otherwise.
+\endsection
+
+\section methods
+
+A class can also define *methods* which act on objects of the type it
+defines.
+
+\spice
+define class Pair
+#
+    slot front: Any = absent
+#
+    slot back: Any = absent
+#
+    define method wipe() as
+        this.front = absent; this.back = absent; none
+    enddefine
+#
+    define method setPair(x,y) as
+        this.front = x; this.back = y; none
+    enddefine
+#
+enddefine
+\endspice
+
+This version of _Pair_ defines two methods, _wipe_ and _setPair_. _wipe_ sets
+both slots to _absent_, and _setPair_ sets them to the given parameter values.
+The name _this_ is bound to an implicit additional parameter, which is the
+instance of _Pair_ to be changed.
+
+The expression _none_ delivers no values; there doesn't seem to be a sensible
+value to deliver from either of these methods.
+
+Methods are procedures, and you call them in the usual ways; if _p_ is an
+instance of this _Pair_, then _p.wipe_ will wipe it, and _p.setPair(1,2)_ will
+set its _front_ to _1_ and its _back_ to _2_. You can tell from this that
+_this_ is bound to the *first* argument value. In fact, if it takes your
+fancy, you can use a different name than _this_, using the same
+function-definition syntax that we saw earlier:
+
+\spice
+define method self.wipe as
+    self.front = absent; self.back = absent; none
+enddefine
+\endspice
+
+would be a suitable replacement for _Pair_'s version of _wipe_.
+
+We'll see more about methods when we discuss inheritance, later.
+
+\endsection
+
+\section initialisers
+
+The _new Pair()_ syntax is a bit limited, because you can't easily set new
+values for its slots. If you want to create a new object *and* set the
+values of its slots, you cant define an *initialiser*. Here, _Pair_ gets a
+third outing:
+
+\spice
+define class Pair
+    slot front: Any = absent
+    slot back: Any = absent
+    define init pair(x,y) as
+        this.front := x, this.back := y
+    enddefine
+enddefine
+\endspice
+
+You can make a new initialised _Pair_ by writing _new pair("hello","world")_.
+This works by making a new _Pair_ and then handing that on as the _this_ for
+_pair_. Any values returned by an initialiser are discarded; the result of a
+_new_ expression is the newly constructed object.
+
+You can have as many initialiser definitions as you like for a class. As a
+special favour, you can use _define init_ (with no name) inside a definition
+of a class _P_ to define overloadings of _new P(X)_.
+
+\indented
+
+*Aside*. We've now met almost all the types of procedure you can have in
+Spice; functions, methods, initialises, and the different flavours of
+lambda-expressions. There are *predicates* which can tell them apart, although
+you will usually only need these when you're debugging code.
+
+\list
+
+_x.isProcedure_ is _true_ when _x_ is any kind of procedure, and _false_
+otherwise.
+
+_x.isMethod_ is _true_ if _x_ is defined by a _method_ definition, and _false_
+otherwise;
+
+_x.isFunction_ if _x_ is defined by a _function_ definition, and _false_
+otherwise;
+
+_x.isInitialiser_ is _true_ when _x_ has been defined with _method new_, and
+_false_ otherwise;
+
+and _x.isLambda_ is _true_ when _x_ is the result of a lambda-expression or
+hole-expression, and _false_ otherwise.
+
+\endlist
+
+\endindented
+
+\endsection
+
+\section inheritance
+
+A class can *extend* an existing class. Here's one example; we might
+choose to make triples an extension of pairs.
+
+\spice
+define class Triple extends Pair
+    slot side
+    define init triple(x, y, z) extends pair(x, y) as
+        this.side := z
+    enddefine
+endclass
+\endspice
+
+_Triple_ has all the slots that _Pair_ does, and one more: _side_. _front_ and
+_back_ automatically work on _Triple_s. _Triple_s *are* _Pair_s, and then
+some. The initialiser _triple_ works by first invoking the initialiser _pair_
+in its _extends_ clause to do the first two elements, and then assigning the
+third itself.
+
+Not just _front_ and _back_, but *any* function that works on _Pair_s and
+doesn't explicitly exclude non-_Pair_s will work on _Triple_s.
+
+\endsection
+
+\section overloading functions
+
+How does this happy state of affairs come about? When the argument type is the
+name of a class (like _Pair_), then it will accept values of any of its
+extensions (like _Triple_).
+
+Sometimes, we want the behaviour of a method to be different in sub-classes
+than in the parent. In this case, the parent must define the method to be
+_generic_, and the different definitions for the sub-classes must be declared
+as _specific_. This works outside as well as inside classes; the only
+difference is that inside a class, the implicit _this_ argument is added to
+the method signature.
+
+Here's an example of generic procedures outside a class:
+
+\spice
+define generic size( x: Any ) as 0 enddefine
+
+define specific size( x: Small ) as x @logToBase 2 enddefine
+
+define specific size( x: String ) as x.length enddefine
+\endspice
+
+This defines the _size_ of an integer to be its bitswidth (and blows up if _x_
+is _0_), the _size_ of a string to be its length, and the size of anything
+else to be _0_. The choice of which definition of _size_ to use is made when
+_size_ is called, by looking at the types of its arguments.
+
+\endsection
+
+\endchapter
+
+\chapter type-expressions
+
+So far we've said little about the type-expressions that can be written
+following _:_, except that certain built-in names (_Any_, _Small_, _String_)
+are allowed, and the names of any classes.
+
+In fact types can be expressed with *expressions*, which have the same syntax
+and semantics as value-expressions. There are four important type-expressions
+in Spice: *multiple*, *lots*, *array*, and *non-optional* types.
+
+\section multiple
+
+If _T_ and _U_ are types, then _T, U_ is the *multiple type* which is a value
+of type _T_ then a value of type _U_.
+
+\endsection
+
+\section lots
+
+If _T_ is a type, _T!*!*_ is the *lots of T* type, which is some unspecified
+number of _T_s as multiple values. The return type of a procedure defaults to
+being _Any!*!*_.
+
+\endsection
+
+\section arrays (and based arrays)
+
+If _T_ is a type, then _{T}_ is the type *array of T* or *T row*. Note
+carefully that the Spice array constructor _{E}_ *always* makes values of
+type _{Any}_, because Spice arrays can hold any kind of value; to make eg
+an _{Small}_ you have to invoke a special constructor _IntArray(E)_.
+
+\endsection
+
+\section optional types
+
+Unless otherwise specified, _absent_ is not permitted where a value of a
+specific (non-_Any_) type is expected; so a variable typed as _Small_ cannot
+legally be given _absent_ as its value. This can be over-ridden by using the
+_optional_ type constructor; if _T_ is a type, _T??_ is the type which all the
+values of type _T_ and also the value _absent_.
+
+\endsection
+
+\endchapter
+
+\chapter packages
+
+So far we've seen fragments of Spice code out of context for illustrative
+purposes. In real life, Spice code code should be organised into *packages*.
+A package is a collection of procedures, variables, and classes (and styles,
+which we'll see later) which work together to provide a coherent service to
+the programmer who uses those packages.
+
+A package starts with a *package header*, which identifies the package and the
+version of Spice it was intended for, specifies any other packages it may need,
+and then continues with the *package body*, which is a sequence of variable,
+procedure, class, and other declarations, or the kind we've discussed
+elsewhere.
+
+The header starts with the *spice specification part*, which consists of
+the reserved word _spice_, a version string, and possibly some *preference
+settings*. The version string is a string specifying the version of Spice
+that the package is supposed to work with, and the preference settings control
+the Spice compiler -- see later for details.
+
+Otherwise the header starts with the reserved word _package_ and the package
+name, which is a series of simple names deparated by dots. For example,
+
+\spice
+spice "release.2.0";
+
+package this.is.an.example;
+\endspice
+
+Spice does not constrain package names to conform to file names on your local
+system, but it's a good idea to put a package whose name ends in _.foo_ in a
+file called _foo_.
+
+\indented
+*technical note I*. An IDE for Spice is *required* not to insist that package
+names form a path through a filing system hierarchy, and is *required* to
+accept package name components longer that the local filing system component
+names, and with "strange" characters in.
+
+*technical note II*. The current Spice prototype compiler allows the mappings
+from package names to filestore names to be specified in package mapping
+entries in its initialisation file, as part of a proof-of-concept.
+\endindented
+
+\section public and private
+
+A package exists to make a service available to its users, which it does by
+making some of its identifiers visible to those users. By default, *none* of
+the identifiers in a package are visible. However, declarations can be marked
+as *public* by writing *declaration qualifiers* in square brackets after
+the introductory keyword. To make a public variable, for example:
+
+\spice
+public var exposed: String = "hello"
+\endspice
+
+declares a public string-only variable called _exposed_. You can mark a
+variable _private_ instead, but since this is the default, it won't make much
+difference.
+
+You can declare a function _public_ in the same way:
+
+\spice
+define public function inc( x ) as x + 1 enddefine
+\endspice
+
+More importantly, you can declare a _class_ public. If you do so, the
+class name is public, *and so are all the non-slot methods declared in
+it*. The slot methods (ie the names of _slot_-variables) are still private by
+default; you can declare them public explicitly, and you can declare the other
+methods private explicitly.
+
+\endsection
+
+\section imports
+
+_public_ is one side of the coin; _imports_ is the other. A package can
+*import* another one in its header.
+
+\spice
+package using.example;
+
+import this.is.an.example;
+\endspice
+
+This makes all the public identifiers from _this.is.an.example_ visible inside
+_using.example_. If you don't specify where this other package is to be found,
+the Spice compiler will use a set of rules to locate it; but you can force its
+hand:
+
+\spice
+import this.is.an.example from "/home/hedgehog/example.spi";
+
+import this.is.an.example from
+    "http://cdollin/Spice/Modules/example.spi";
+\endspice
+
+Following the _from_ is an expression (almost always a string literal) with
+the URL for the source of the package.
+
+Spice does not require than imported packages are written in Spice; it is
+expected that implementations will define ways to import packages written in
+commonly-used languages such as C, C++, Java, and Javascript.
+
+\endsection
+
+\section readonly
+
+It's possible to qualify public variables and slots as *read only*, which
+means that they can be read but not changed by importing packages. For ordinary
+variables, all that need be done is to prohibit assignment to them; but
+for slots, which are accessed by procedures, it's not quite so simple.
+
+When a slot is marked read-only
+
+\spice
+    public readonly slot magic = 42;
+\endspice
+
+(_readonly_ is not a reserved word) then the compiler makes *two* versions of
+_magic_; one for local use, and one for export. *Only the local version has an
+updater*. This can cause the interesting situation:
+
+\spice
+package defines.magic;
+#
+define class P
+    public readonly slot magic = 72;
+enddefine
+#
+define function isEqual( x ) as
+    println( x == magic )
+enddefine
+#
+endpackage
+
+package Q
+#
+import defines.magic;
+#
+testEqual( magic );
+#
+endpackage
+\endspice
+
+which will print _false_ as the exported _magic_ is a different function to the
+local one.
+
+\endsection
+
+\section protected access and aliases
+
+It's possible to import a package, but to declare that you need to specify its
+name everywhere you specify its variables:
+
+\spice
+import protected defines.magic;
+\endspice
+
+To refer to _magic_ now you need to prefix it with the last part if its
+package name: _magic::magic_. (Requiring the *entire* package name would be
+overkill; package names are supposed to be long and descriptive.)
+
+The main use of _protected_ is to allow an imported package to define lots of
+useful names (usually constants) without polluting your own packages
+namespaces.
+
+If you don't like the last part of the package name, or if it would be
+ambiguous, you can change the part you specify:
+
+\spice
+import protected boo = defines.magic;
+\endspice
+
+Now _boo_ is an alias for _defines.magic_ and we can write _boo::magic_.
+
+\endsection
+
+\section pervasive import
+
+A package that imports some identifiers -- say, _brick_ and _concrete_ -- from
+another package does not by default re-export them; they're not part of its
+*public interface*. They can be injected into the public interface by
+qualifying the import with _public_:
+
+\spice
+public import defines.magic;
+\endspice
+
+Now this package exports _magic::magic_.
+
+\endsection
+
+\endchapter
+
+\chapter switches
+
+The power of Spice's overloaded functions means that you won't write switches
+so often as you might in a more conventional language. But you still need to
+be able to choose from finite selections of integer and string values, so
+Spice has a general _switch_ construct:
+
+\spice
+switch x into
+    case 1: statement1();
+    case 2, 3: statement2();
+    case "hello":
+    case "world": statement3();
+    default: statement4();
+endswitch
+\endspice
+
+If _x_ has the value _1_, then _statement1()_ is executed. If it has the value
+_2_ or _3_, then _statement2()_ is executed. If it has the value _"hello"_ or
+_"world"_, _statement3()_ is executed. And if it has none of these values,
+_statement4()_ is executed.
+
+Note that the values in the switch can be integers or strings (or symbols);
+indeed the _case_ values need not be compile-time constants. (However, the
+switch construct is more efficient with compile-time constants, and more
+efficient with integers than with strings and symbols.) If a switch has a
+compile-time case label of _N_ then that takes priority over any run-time case
+label evaluating to _N_.
+
+Also note that there's no need for a _break_ or similar construct to leave the
+_switch_; the case body starts with its first statement and ends just before
+the next _case_ or _default_. (You can, of course, only have one
+_default_ per _switch_).
+
+If there's no _default_, it's as though _default: none;_ had been written.
+\endchapter
+
+\chapter numeric literals
+
+So far we've taken numbers pretty much for granted, writing them as digit
+sequences with the occasional _!__ for visual clarity. Spice has a rather
+extensive set of *numeric literals*.
+
+All numeric literals start with a digit, and all numeric literals may
+contain underbars (which are ignored; they are there for the reader's visual
+convenience). When numeric literals contain letters, their case is
+irrelevant.
+
+A numeric literal may begin with a *base specifier*, which is a series of
+digits ending with the letter "x". The digits, taken as a decimal number,
+specify the base of the numeric literal; the base must be in the range
+_2..36_. If the base is _0_ it is taken to mean base _16_ for compatability
+with _C_ (etc). The extended digits are "a" (for _10_) up to "z" (for _35_).
+Using digits too large for the base is an error.
+
+A numeric literal that has a base less than or equal to _10_ may end with
+a series of letters specifying the _units_ in which the value is expressed.
+Typical units are _px_ (pixels), _in_ (inches), _s_ (seconds), _em_ (ems -- a
+printing unit), and _mm_ (millimetres).
+
+\indented
+To get values with large bases to have units, you need to use a different
+way of expressing those units, eg using function calls.
+\endindented
+
+A numeric literal may have a *scaling factor*, which is the letter "e",
+optionally followed by a sign ("+" or "-") and a series of digits. The digits
+represent a number in decimal, and the scaling factor is the literal's base
+raised to that power. If the literal's base is greater than _10_ then the sign
+is not optional (otherwise _0x4e5_ would be ambiguous). If present, the
+scaling factor is before the units.
+
+An *integral* literal is a series of digits, possibly with a base specifier
+(in which case the digits can include letters), possibly with a scaling factor
+and units. A *floating* literal is a series of digits, a decimal point, and a
+second series of digits; again, it may include a scaling factor and units.
+
+\endchapter
+
+\chapter units
+
+To support its use in laying out Web pages (and for other graphic operations),
+Spice values can have *units*. Several units are built-in to the language,
+notably *inches* (_in_), *millimeters* (_mm_), *points* (_pt_), and *pixels*
+(_px_).
+
+Writing a unit literal is easy, as described earlier; _4in_ is four inches,
+_27mm_ is twenty-seven millimetres, _100px_ is one hundred pixels. These
+pre-defined names are also available as postfix operators, so _x in_ and
+_(y + 1)px_ are legal, and by special dispensation of the dot operator can
+appear as functions using dot, so _x.pt_ is also legal.
+
+The arithmetic operators work on values with units in the "natural" way,
+so you can add and subtract values with like units. (You can't just add a
+number to a unit value, though; _42in + 1_ will generate a run-time error.)
+What's more, if the units are different but have the same underlying
+dimension (eg both lengths), then they can still be added and subtracted, by
+converting them to a common scale.
+
+You can multiply values with units by numbers, in the obvious way. You can
+multiply values with units together, too; _6in !* 7in_ is _42 in in_, or
+42 square inches. Division works in the corresponding inverse way.
+
+\endchapter
+
+\chapter enumerations
+
+Sometimes you want a collection of distinct named values, for example as
+the names of options (_small_, _medium_, _large_, _jumbo_). Rather than using
+_const_ integer variables (which can be confused with plain integer values) or
+strings/symbols (vulnerable to silent mis-spellings), Spice allows you to
+define *enumeration values*:
+
+\spice
+define enum Size = small, medium, large, jumbo enddefine
+\endspice
+
+_Size_ becomes a new type name, and _small_, _medium_, _large_, and _jumbo_
+become new values of that type. _print(medium)_ will print _medium_; the
+values retain their names. Each value also has an associated small integer,
+starting at _1_ (for the first) and taking on successive values; you can see
+this number using _magnitude_, so _large.magnitude.println_ will print _3_,
+and you can construct enum values from numbers: _new Size(4)_ is identical to
+_jumbo_. Using values outside the range will generate an error.
+
+Spice's enumerations are just shorthand. An _enum_ type is a class
+extending the built-in _Enum_ class, which has slots for the name and
+magnitude of its values. Each _enum_ value is an instance of its class
+with the slots set appropriately.
+
+\indented
+Spice implementors are encouraged to implement _enum_ values as efficiently as
+possible, taking advantage of their specialised nature.
+\endindented
+
+\endchapter
+
+\chapter all sorts of unmentionable things
+
+\section extended relational expressions
+
+In Spice, the relational operators have a special syntactic property;
+you can write expressions like _x <= y <= z_ to mean _(x <= y) and (y <= z)_.
+The expression _y_ will be evaluated at most once. The operators do not have
+to be the same (_x == y <= z_ is fine) and you can chain them up as long as
+you like (_x == y == z == h == q_ is fine, too).
+
+\endsection
+
+\section op
+
+Sometimes you'd like to get at the functions that implement Spice's infix
+operators, usually so that you can pass them to higher-order procedures
+(eg for zipping two arrays together with a specified procedure such as
+addition). The form _op Operator_, where _Operator_ is a Spice operator,
+gets a procedure that has the effect of that operator; so _op +_ is a
+procedure of two arguments that adds them together and _op ==_ is a
+procedure of two arguments that tests them for structural equality.
+
+Note that _op and_ and _op or_ deliver ordinary procedures of two arguments
+(the special syntactic property that means that _E~1~ and E~2~_ need not
+evaluate _E~2~_ is lost) as does _op ==_, _op <=_, etc (the chaining property
+is lost).
+
+\endsection
+
+\section super and extends
+
+Sometimes, in an overloaded procedure definition, you wish to invoke
+the more general version of that procedure; you do the general case, then you
+do your more specific one. The identifier _super_ in a procedure is bound to
+the next most general definition of that procedure.
+
+An initialiser (ie a _method new_) *must* invoke its more general case,
+and what's more, must do so before it starts its own initialisation. Rather
+than using _super_ (which in any case doesn't have quite the right effect),
+that pre-initialisation is described in the _extends_ clause of the
+initialiser, which provides calls to the other initialisers. If the extends
+clause is left out, it is as though you'd written _extends Parent()_ where
+_Parent_ is the parent class of this one.
+
+\endsection
+
+\section shared slots
+
+A class can have a shared slot, introduced by _shared Name_, typed if desired.
+A shared slot is a single location accessible through any instance but shared
+by them all.
+
+\indented
+
+Note that a shared slot is different from a variable declared in a class;
+it is accessed by method-call syntax, as ordinary slots are, rather than
+simply by its name, as variables are.
+
+\endindented
+
+\endsection
+
+\section parallel iteration
+
+Spice allows _for_ loops to iterate over several things "in parallel".
+Suppose _Xs_ and _Ys_ are both arrays, and we wish to "zip them together",
+say by adding corresponding elements; we can write
+
+\spice
+{for x in Xs also y in Ys do all x + y endfor}
+\endspice
+
+to make the array of sums. The loop will finish when either of _Xs_ or _Ys_
+are exhausted. As well as _Name in Expr_, you can use the form _from E~low~ to
+E~high~_, with the _to_ part being optional:
+
+\spice
+for x in E also y from 1 do
+    println( "element", y, "is", x )
+endfor
+\endspice
+
+Note that this works even if _E_ is not an array, and even if it is, is better
+than
+
+\spice
+for y from 1 to E.length do
+    println( "element", y, "is", E[y] )
+endfor
+\endspice
+
+because in the first case the compiler can generate the most efficient code
+for indexing through the array (and the reader does not have to worry that
+the iteration is properly bounded).
+
+As well as _from_ and _in_ parts, you can specify termination conditions for
+the loop with _while_ and _until_ clauses; if a _while_ clause goes _false_
+(or an _until_ goes _true_) the loop ends "abnormally" (as it does with a
+_break_) and you can specify a final loop value with _then_.
+
+\endsection
+
+\endchapter
+
+\endpart
+
+\part the Spice reference manual
+
+\chapter introduction
+
+\section a note on syntax
+
+Syntax is described using an extended BNF. Terminal symbols that are names are
+in _bold_; terminals that are symbols are in bold and quoted, eg, "_++_".
+Non-terminals are in |this| font.
+
+Grouping is shown by round brackets. Optional elements are enclosed in square
+brackets, eg in _"?" [Integer]_ the _Integer_ may be omitted. A suffix
+operator _!*_ is used to mean "zero or more of", while a postfix operator _+_
+means "one or more of".
+
+The infix operator _E !*!* X_ is used to mean "Zero or more _E_s separated by
+_X_s"; _X_ is usually a comma or semicolon. Similarly infix _E ++ X_ means
+"*one* or _E_'s separated by _X_'s".
+
+All the syntax definitions in the body of the document are collected together
+in an appendix.
+
+\endsection
+
+\endchapter
+
+\chapter lexis
+
+A Spice program is made up of a series of *tokens*. Tokens are
+separated by *token gaps*. Token gaps are unimportant except that they
+may serve to separate tokens that would otherwise combine into single
+tokens (eg the two tokens "x" and "then" must be separated by a gap,
+otherwise they would be recognised as a single token "xthen").
+
+A token gap is any sequence of spaces, newlines, horizontal or
+vertical tabs, and form-feeds, possibly containing comments (see below).
+
+A token is a *word*, a *mark*, or a *literal*. A word is a sequence of
+letters and digits; a mark is a sequence of mark characters; and a
+literal is a string, character, numeric, or unit constant. The lexis
+makes no substantive difference between those words (or marks) that
+are reserved and those that may freely be used as identifiers (or
+operators).
+
+\section words
+
+A word is a series of digits and letters starting with a letter. Words are
+case sensitive and of unlimited length.
+
+Spice conventions are that type names start with upper-case letters
+and that value names do not.
+
+\endsection
+
+\section marks
+
+A mark is either a *simple mark* or a *compound mark*. A *simple mark*
+is one of the characters "(", ")", "{", "}", "[", "]", ";", ",". A
+*compound mark* is a series of mark characters, where a mark character
+is one of "!~!!@%!^&!*-+=!|:.?/<>". Note that "#" is *not* a mark
+character.
+
+Note that this means that "<>", "+++", "!|->" etc are all possible Spice
+marks; they are reserved for future expansion.
+
+\endsection
+
+\section literals
+
+There are four kinds of literal in Spice: numeric literals, string literals,
+character literals, and regular-expression literals. The
+numeric literals may be decorated with units.
+
+\passage numeric and unit literals
+
+A numeric literal represents an integer or floating-point number, possibly
+with units, possibly in a radix other than the default _10_. Within a numeric
+literal, underbar characters may be present; they are immediately discarded,
+being there only for presentation (eg to make _7!_476!_294_ readable).
+
+\fragment plain integer literals
+
+A plain integer literal is a series of decimal digits. It represents the
+obvious number in radix _10_. There is no limit to the number of digits
+permitted, and the correct integer value is preserved, using bignums if
+necessary.
+
+\endfragment
+
+\fragment radix-specified integer literals
+
+A radix-specified integer literal consists of a radix specifier, which is a
+series of decimal digits followed by the letter _x_ (in either case), followed
+by a series of letters and digits. The letters must be consistent with the
+radix, in that if the radix is _k_ then no letter past _a + (k - 10)_ is
+permitted; if the radix is _10_ or less, any letters terminate the numeric
+part of the literal.
+
+\endfragment
+
+\fragment integer literals with units
+
+A plain integer literal, or a radix-specified integer literal with radix _10_
+or less, may be immediately followed by a unit name, which is a series of
+letters. The integer value represents a value in those units. Thus _45cm_,
+_19mile_, and _6seconds_ are all legal, assuming that those units have been
+declared.
+
+The value denoted by _nU_, where _n_ is the number and _U_ the units, is the
+measure value with _n_ as its magnitude and the unit named by _U_ as its unit.
+
+\endfragment
+
+\fragment plain floating literals
+
+A floating literal is a series of decimal digits, a decimal point, and another
+series of decimal digits; it represents the "obvious" floating-point number.
+It may be followed by an exponent specifier, which is the letter _e_,
+optionally followed by a sign (_+_ or _-_), followed by a plain integer
+literal.
+
+\endfragment
+
+\fragment radix-specified floating literals
+
+A radix-specified floating literal is a radix specifier followed by a series
+of letters and digits, a decimal point, a series of letters and digits, and an
+optional exponent specifier.
+
+The radix specifier gives the radix of the floating point number but not the
+exponent. If the radix is _10_ or less, then letters terminate the numeric
+part of the literal. If the radix is more than _10_, the sign in any exponent
+specifier is not optional.
+
+\endfragment
+
+\fragment floating literals with units
+
+A floating literal with radix _10_ or less may be followed by a unit name, as
+for integer literals with units.
+
+\endfragment
+
+\fragment general specification of units
+
+If a number in a radix greater than _10_ is supposed to be in some units,
+then one of the general syntaxes for values-in-units must be used.
+
+\endfragment
+
+\endpassage
+
+\passage string literals
+
+A string literal is a character sequence starting and ending with the
+double-quote character _"_. The characters between the quotes are any
+characters except quotes (any flavour), newlines, control characters, or
+backslashes except as permitted by *escape sequences*:
+
+\list
+
+\\n -- a newline
+
+\\f -- a form feed
+
+\\v -- a vertical tab
+
+\\r -- a return
+
+\\b -- a backspace
+
+\\t -- a horizontal tab
+
+\\s -- a space
+
+\\\\ -- a backslash
+
+\\" -- a double quote
+
+\\' -- a single quote
+
+\\` -- a reverse quote
+
+\\"(" numeric literal !* "," ")")
+-- the series of characters with those
+Unicode values
+
+\\u Hex Hex Hex Hex -- the Unicode character with value given by the
+specified four hexadeciaml digits.
+
+\endlist
+
+Any other backslash sequence _\\X_ means "protected _X_"; protection applies
+within regular expression literals, *qv*.
+
+\endpassage
+
+\passage character literals
+
+A character literal has the same syntax as a string literal, except that the
+delimiters are the single quote _'_ instead of the double quote.
+
+A character literal denotes the multiple values formed by all its constituent
+characters. Thus _''_ denotes no values, _'x'_ denotes the single character
+_x_, and _'spoo'_ denotes the characters _s_, _p_, _o_, _o_.
+
+\endpassage
+
+\passage regular expression literals
+
+Spice has two regular expression syntaxes: a *traditional* syntax and a
+*native* syntax. The traditional syntax is based on existing
+regular-expression notations with little modification, and the native
+syntax is designed to mesh cleanly with the string syntax. Regular expressions
+are a late addition to Spice, and many details have not been settled, pending
+experimental implementation.
+
+A traditional regular expression literal starts with the sequence _//_ and
+then is a sequence of characters terminated by a closing _/_. The sequence
+cannot include any unprotected _/_. The exact permitted syntax of the sequence
+is under discussion, but we expect to conform as far as is possible with the
+syntax used by the Java regex package.
+
+A native regular expression (NRE) starts with the sequence _/"_ and then is a
+sequence of characters terminated by a closing _"_; the sequence cannot
+include an unprotected _"_. Within a native regular expression, all the usual
+string escapes apply with the same meaning, and protected characters stand for
+themselves and have no meta-meaning.
+
+Our proposal is that the characters _?!|!*{}[]%_ are special [that is, do not
+stand for themselves] within NREs. _%_ is the *marker character* and the rest
+are meta-characters.
+
+\list
+
+*character classes*, [XYZ]: the square brackets enclose compact
+character-class expressions.
+
+*grouping*, {E}: braces are grouping brackets which have no effect on
+back-references.
+
+*repetition*, E!*: suffix !* is the Kleene star.
+
+*wildcard*, ?: matches any character.
+
+*alternation*, E!|F: matches either E or F.
+
+\endlist
+
+Other syntactic jobs are performed by sequences introduced by the marker
+character. They are expected to be less frequent and so a larger overhead
+to use them is acceptable.
+
+\endpassage
+
+\endsection
+
+\section comments
+
+A comment is either the character "#"
+followed by all characters up to a newline or
+end-of file, or the mark "/!*" followed by any series of characters excluding
+"!*/" and then by "!*/", or the mark ";;;" followed by all characters up to a
+newline or end-of-file.
+
+\endsection
+
+\endchapter
+
+\chapter top-level syntax
+
+A Spice program is composed of a collection of *packages*. A package
+consists of a *header*, which identifies the package and what it relies
+on, and its *body*, which is a series of *definitions* possibly
+interspersed with *executions*. Definitions define variables,
+procedures, classes, and units; executions are expressions
+that perform some run-time activity.
+
+\section programs
+
+\syntax\$ Program
+    Spice
+    (Package* | PackageBody)
+\endsyntax
+
+\syntax\$ Spice
+"spice" String ("," (Name ":" Expr)) *
+\endsyntax
+
+The _String_ identifies the version of Spice that the writer assumed
+when the package was written; it is a dot-separated sequences of
+integers or names (eg "1.0" or "5.beta"). The _Name_-_Expr_ pairs
+define settings for compiler preferences; each _Expr_ must be
+evaluable at compile-time.
+
+The _spice_ preamble is intended for future expansion.
+
+\endsection
+
+\section aside: modifiers
+
+_Modifiers_ are annotations to declarations. They allow a declaration to be
+accompanied by arbitrary information. Modifiers can appear in two different
+positions, *open* modifiers and *closed* modifiers; open modifiers can
+decorate declarations not introduced by _define_ (ie, _var_, _const_, and
+_slot_), and thus need a more restricted syntax.
+
+\syntax\$ OpenModifier
+    MarkedModifier Modifier*
+\endsyntax
+
+\syntax\$ Modifier
+    MarkedModifier
+    | Name [ModArgument]
+    | "[" Modifier ** "," "]"
+\endsyntax
+
+\syntax\$ MarkedModifier
+    "public" | "private" | "protected"
+\endsyntax
+
+\syntax\$ MarkedArgument
+    Literal | "(" Expression ")"
+\endsyntax
+
+Modifiers are
+discussed in the sections that require them, except we shall mention
+here the two marked modifiers:
+
+\list
+
+_public_: the identifier(s) are put into the public interface of this
+package, ie, they can be used in packages that import this one.
+
+_private_: the identifier(s) are *not* put into the public interface
+of this package; they cannot be referred to outside it at all.
+_private_ is the default, except for identifiers declared in _public_
+packages, as below.
+
+_protected_: protected identifiers are public but can only be referred to in
+other packages using the _alias::name_ notation; see also _protected import_.
+
+\endlist
+
+\endsection
+
+\section packages
+
+\syntax\$ Package
+    MarkedModifier "package" PackageName PackageBody ["endpackage"]
+\endsyntax
+
+\syntax \$ PackageName
+    Word ++ "."
+\endsyntax
+
+A package name is a sequence of dot-separated identifiers. The last name
+in the sequence is the *leafname* of the package; apart from in
+_package_ and _import_ constructs, packages are referred to only by
+their leafname or an alias for it.
+
+Top-level identifiers declared in a _public package_ are public by default.
+Top-level identifiers declared in a _private package_ are private by default.
+
+\syntax\$ PackageBody
+    Import ** SEMI
+    Bundle ** SEMI
+\endsyntax
+
+\syntax\$ Bundle
+    Definition+ Expr*
+\endsyntax
+
+A package body consists of its import declarations followed by its own
+definitions. All the names exported by the packages which have been imported
+are available in all the bundles of the package. Each bundle is a sequence
+of definitions, possibly followed by some expressions; each _Bundle_ is as
+long as possible. The names declared by a _Bundle_ are *visible throughout
+that bundle*; declarations need not lexically preceed their use.
+
+Expressions are evaluated when the package is loaded.
+
+\syntax\$ Definition
+    ProcedureDef
+    | VarDef
+    | ClassDef
+    | UnitDef
+    | EnumDef
+\endsyntax
+
+A definition is a procedure, class, unit, enumeration, or
+variable definition.
+
+\endsection
+
+\section imports
+
+\syntax \$ Import
+    MarkedModifier
+        "import"
+        OpenModifier
+        [Alias "="] PackageName ["facet" (Name ** ",")]
+        ["from" Expr]
+\endsyntax
+
+An _import_ definition identifies a package to be imported and possibly
+a location to import it from; that location is given as a
+String-valued expression representing a URL. The name can be given
+directly or by the evaluation of an expression.
+
+If the modifier _public_ is given, then all the identifiers in the
+imported package are added to this package's public interface. This
+allows packages to act as "collectors" for definitions from several
+other places.
+
+An imported identifier _x_ can be referred to as _leafname::x_, where
+_leafname_ is the leafname of the package (if _Alias=_ is omitted) or
+the *alias* _name_ (if _Alias=_ is given). Unless the modifier _protected_ is
+given, it may also be referred to as _x_.
+
+If two (or more) packages with the same leafname are imported, at least one
+of them must be given an alias. If two (or more) packages export the same
+identifier _x_, then _x_ must be referred to using the _alias::x_ notation.
+
+If the _facet_ modifier is present, only the names in the specified facets
+are imported (see elsewhere for facet definitions).
+
+\endsection
+
+\section procedure definitions
+
+The full power of a procedure definition is available through _define_
+options, which allow generics, methods, plain functions, and initialisers
+to be declared.
+
+\syntax\$ ProcedureDef
+    FullProcedureDef
+    | FunctionDef
+    | CompactDef
+\endsyntax
+
+\syntax\$ FullProcedureDef
+    "define" Modifier
+        ("method" | "function" | "generic" | "init" | "specific")
+        Header
+        ["returns" Type]
+        ["extends" CommaExpr]
+        ["super" Header]
+        ProcedureBody
+        "enddefine"
+\endsyntax
+
+\syntax\$ FunctionDef
+    OpenModifier
+        "function"
+        Header
+        ["returns" Type]
+        ["extends" CommaExpr]
+        ["super" Header]
+        ProcedureBody
+        "endfunction"
+\endsyntax
+
+\syntax\$ CompactDef
+    "def" Header ("=" | "as" | "=>") Expr
+\endsyntax
+
+A procedure declared by _function_ or _def_ is monomorphic; it has a single
+definition and cannot be redeclared.
+
+A procedure declared by _generic_ is a polymorphic procedure; the _generic_
+definition gives its most general argument types and its default body.
+
+A procedure declared by _specific_ is a dynamic overloading of the named
+generic procedure (which must exist and be visible).
+
+If a _generic_, _specific_, or _method_ definition appears within a class, it
+is given an implicit first argument called _this_ whose type is that class,
+unless the _plain_ modifier has been supplied. Outside a class, _plain_ does
+nothing. _function_ and _def_ never supply a _this_.
+
+A procedure declared with _init_ is an *initialiser*: it is used to fill in
+the fields of freshly-constructed objects.
+
+_init_ procedures may only be declared within classes. A name used
+for a _init_ procedure cannot be used as the name of an ordinary
+procedure; also they can be defined only with one class.
+
+The _Header_ defines the procedure argument's names and types, the procedure
+name itself, and the "expected shape" of calls to the procedure. _returns_
+gives the type of the value(s) returned by a procedure; if omitted, a return
+type is inferred from the body of the procedure.
+
+_extends_ and _super_ are currently under revision.
+
+\syntax\$ Header
+    CallShape
+    | Name "->" CallShape
+    | CallShape ":=" Arg
+\endsyntax
+
+The allowed _Modifier_s include _public_, _protected_, and _private_. A
+procedure with modifier _frozen_ cannot be overloaded outside its package; a
+procedure with modifier _fluid_ can be. (By default, _function_s are frozen
+and _method_s are not.) An overloading of a procedure which appears outside
+its owning package must have the modifier _extension_, unless it appears in a
+_class_ and extends a method of that _class_.
+
+If the updater argument is given, this definition defines the *updater* of the
+named procedure, which must be declared in this package and have a compatible
+_CallShape_.
+
+\syntax\$ CallShape
+    PrefixShape | DottedShape | InfixShape
+\endsyntax
+
+\syntax \$ PrefixShape
+    NameA [Arglist]
+\endsyntax
+
+\syntax \$ DottedShape
+    NameB .NameA [Arglist]
+\endsyntax
+
+\syntax \$ InfixShape
+    ArgA @NameA [ArgB]
+\endsyntax
+
+There are three different _CallShape_s; the conventional prefix form
+_f(x)_, the method-oriented form _x.f(a)_, and the infix-oriented form
+_x @f y_. _NameA_ is the name of the procedure being defined in all
+cases. The arguments are given by the optional _Arglist_ for the
+prefix form, by the _Arglist_ and _NameB_ for the method form, and by
+_ArgA_ and _ArgB_ for the infix form; _ArgA_ and _ArgB_ are both
+_Arg_s, see below.
+
+A _method_ is implicitly in method form, with _this._ assumed as the first
+argument unless overridden explicitly. For _init_ it is permitted
+to omit the _NameA_; in this case, the initialiser is that called by
+expressions of the form _new C_.
+
+\syntax\$ Arglist
+    "(" Args ")"
+\endsyntax
+
+\syntax\$ Args
+    Arg ** ","
+\endsyntax
+
+\syntax\$ Arg
+    Name [":" ["!!"] Type | "==" Expr] | [Name] "..."
+\endsyntax
+
+An _Arglist_ is just a comma-separated list of _Arg_s. An _Arg_ is a _Name_,
+optionally followed by a _Type_ introduced by a _TypeWord_, or optionally
+followed by a value introduced by "=="; or by _..._, making it an *indefinite*
+argument, bound to an array of all the extra arguments to the procedure.
+
+At most one indefinite argument is allowed, but it may appear anywhere in the
+argument list.
+
+\indented
+All argument identifiers are immutable, ie, cannot be assigned to, but
+if they are data-structures, their components can be changed.
+\endindented
+
+The prefixing of the _Type_ with the symbol _!!_ means that the argument
+does not take part in overloaded dispatch; all overloadings of that procedure
+must have that argument, and mark it as non-dispatch.
+
+_== Expr_ is equivalent to _: T_ where _T_ is a type whose only value is the
+value of _Expr_, which is evaluated at compile-time.
+
+\syntax \$ ProcedureBody
+    StatementSeq
+    | ArgList "=>" ProcedureBody
+    | Arg "=>" ProcedureBody
+\endsyntax
+
+A procedure body is introduced by _=>_ or _as_ and ends with _enddefine_. If
+the body is empty, the arrow may be omitted. If the body has the form _A=>B_,
+the procedure is *curried*; the body is itself a function expression.
+
+\passage multiple definition
+
+A _generic_ procedure may have many different definitions, with the rest being
+given as _method_s. The different definitions may have different numbers of
+arguments (up to any indefinite arguments) and no two definitions can have the
+same sequence of types for their arguments.
+
+Furthermore, for any pair of definitions with signatures (ie the
+type-sequence of its arguments) _T~1~_ and _T~2~_, there must be a
+definition with type-sequence _T~3~_ where the _i_th element of _T~3~_
+is a super-type of the _i_th elements of _T~1~_ and _T~2~_ (note that
+_T~3~_ might be equal to one of _T~1~_ or _T~2~_).
+
+A call of such a polymorphic method will execute the most specific instance of
+it, ie, the one whose formal arguments are as specific as possible while
+matching the actual arguments. A procedure with _K_ arguments does not match a
+call with _N /== K_ arguments, unless it has a final indefinite argument and
+_N>K_.
+
+In particular, methods can be redeclared in classes, when
+they over-ride the definitions in their parents.
+
+\indented
+
+If a method has definitions of different arities, all definitions with
+indefinite arguments are, for the purposes of dispatch, extended to the same
+length by adding additional penultimate arguments of type _Any_.
+
+\endindented
+
+\endpassage
+
+\passage super and extends
+
+An overloaded procedure may wish to invoke the "next most general" definition
+to complete (or start!) its work. The identifier _super_ is bound to that
+next most general definition. When there is ambiguity about that, it is
+resolved by the _super_ clause of the function, which takes the form of a
+function call where the operands are all type names; _super_ is bound to the
+version of the function that takes those types as its argument.
+
+\indented
+    This use of _super_ has not been tested in the fire of the
+    current Spice implementation.
+\endindented
+
+An initialiser in a class _C_ with parent class(es) _A (B...)_ is
+required to invoke initialisers of all of those classes. This is done in
+the _extends_ clause of the initialiser; this clause is a comma-separated list
+of initialiser calls, where each called procedure must be an initialiser
+of a parent class and each parent class must have at least one initialiser
+called.
+
+\indented
+    Similarly, this use of _extends_ has not been tried in practice.
+\endindented
+
+\endpassage
+
+\endsection
+
+\section variable definitions
+
+A variable declaration introduces one or more identifiers, may give
+their initial value, and may give their type.
+
+\syntax \$ VarDef
+    MarkedModifier ("const" | "var") NameDecl
+\endsyntax
+
+\syntax\$ NameDecl
+    (OneDecl | "(" OneDecl ++ "," ")") [("=" |":=") Expr]
+\endsyntax
+
+\syntax \$ OneDecl
+    Name [":" Type | "..."]
+\endsyntax
+
+The _Modifier_ may include _public_, _protected_, and _private_. A _var_ may
+have modifier _readonly_, in which case it cannot be updated outside of its
+defining package; _const_s can never be assigned to. All the names declared in
+a single _const_ or _var_ declaration share the same _Modifier_.
+
+The _NameDecl_ may initialise one or more names to the value(s) of an
+_Expr_; if the _Expr_ is omitted, they are initialised to the default value of
+their type; if no type is specified, they are given type _Any_.
+
+A _NameDecl_ will usually contain a single _OneDecl_, but it may contain
+several, in which case the _Expr_ must be present and they are initialised
+from it as for assignment. The _..._ form is permitted for at most one
+_OneDecl_; it bundles all the (remaining) values from the _Expr_
+into an array which is assigned to the _Name_.
+
+It is forbidden for _OneDecl_s to be typed if the entire _NameDecl_ is typed,
+and *vice versa*.
+
+When a _var_ or _const_ appears at top-level, or within a class,
+it defines a permanent variable that comes into existance when the
+package is loaded and goes away only when no references to it remain.
+
+When a _var_ or _const_ appears within a procedure, it defines a local
+variable; a new location is allocated each time the declaration is executed.
+This location does not share with any other location. It persists as long
+as there are any references to it, which means that if it is not captured
+by any lambda-expression or hole-expression referring to it it may
+be disposed of when its scope is left (if not sooner).
+
+\endsection
+
+\section class definitions
+
+A Class defines a shape shared by a collection of objects which are its
+instances. Every Class is itself an object, and has a particular instance
+called its *prototypical instance*.
+
+\syntax\$ ClassDef
+    "define" Modifier "class" Name
+    ["extends" CommaExpr]
+    ClassProperty ** SEMI
+    "enddefine"
+\endsyntax
+
+The _Name_ is defined to be a constant bound to the class object,
+and is suitable for use as a type name.
+
+A class may be qualified as _public_, _protected_ _private_,
+_array_, and _abstract_. If
+it is qualified _array_, its instances are array-type objects, and can
+be indexed with integers. A _public_ class has its _method_s and
+_function_s (but not its _slot_s) declared _public_ by default.
+A class qualified _abstract_ cannot have direct instances; trying to _new_ it
+will fail.
+
+\indented
+
+The _array_ modifier is not implemented by the current Spice compiler.
+
+\endindented
+
+If the _extends_ clause is present, its _CommaExpr_ must be a comma-separated
+sequence of names of other classes, and this class inherits all of
+their slots. (Slots that are inherited twice along different routes of course
+only count once in the new class.)
+
+\indented
+
+The current Spice compiler only implements single inheritance.
+
+\endindented
+
+\syntax\$ ClassProperty
+    Procedure | SlotDecl | VarDef
+\endsyntax
+
+The properties of a class are its procedures and slots. A _NameDecl_ within a
+class acts exactly like a _NameDecl_ outside a class -- they declare top-level
+permanent identifiers. Within a class, method definitions by default give
+their implicit _this_ argument that class as their type.
+
+\syntax \$ SlotDecl
+    ( "slot" | "shared" ) Name [":" Type] ["=" Expr] ["implements" Name2]
+\endsyntax
+
+Slots are declared by _slot_ and _shared_ declarations. Each _slot_
+declaration arranges that objects of this type have a slot in them, suitable
+for storing values of the given _Type_, and defines a procedure _Name1_ of one
+argument which has the class as its type and whose action is to deliver the
+value of its slot; that procedure also has an updater which alters the value
+of that slot.
+
+If _implements Name2_ is specified, then _Name2_ must be a generic procedure,
+and the slot declaration provides an overloading of that procedure for
+arguments of the current class.
+
+A _shared_ declaration does not allocate any slots in the
+object, but makes a procedure which accesses (and updates) a single shared
+location.
+
+If a slot or shared identifier is qualified _readonly_, then the procedure
+that it exports has no updater, although the locally-visible version does.
+
+When an object of this type is constructed, the _Expr_s of its _slot_s are run
+to get the initial values for those slots.
+
+\indented
+_shared_ and _readonly_ are not implemented by the current Spice compiler.
+\endindented
+
+A class definition for _Spoo_ allows the expression _E is Spoo_ as a test for
+the value _E_ being an instance of _Spoo_ (or a subtype).
+
+\endsection
+
+\section unit definitions
+
+\indented
+
+Unit definitions are not implemented by the current Spice compiler.
+
+\endindented
+
+A _unit_ definition informs the compiler about units and their dimensions.
+
+\syntax \$ UnitDef
+    "define" ("unit" | "units") UnitDef ++ "," "enddefine"
+\endsyntax
+
+\syntax\$ UnitDef
+    Word ["=" Expr]
+\endsyntax
+
+The _Word_ of a _UnitDef_ is declared to be legitimate unit names.
+If the _Expr_ of a _UnitDef_ is present, it must be an compile-time expression
+delivering an anonymous _Unit_ value, which is named by the _Word_.
+
+\indented
+
+for example, we may have _define unit mile = inch !* 12 !* 3 !* 1760
+enddefine_, which defines _mile_ in terms of _inch_, or _define unit length =
+new Unit(1,`length`) enddefine_, which defines a new unit of dimension
+`length`.
+
+\endindented
+
+\endsection
+
+\section enumeration definitions
+
+\syntax \$ EnumDef
+    "define" "enum" [Modifier] Name "=" Name ++ "," "enddefine"
+\endsyntax
+
+An _enum_ declaration for _Foo_ is shorthand for declaring a new class called
+_Foo_ extending _Enum_, which provides two private slots (for the name and the
+magnitude of enumeration values) and an instance of this class for each of the
+_Name_s. The enumeration values atart at _1_ and the default value for _Foo_
+is an instance with value _0_ and name _nullFoo_.
+
+Implementors are encouraged to find efficient representations for enumeration
+values.
+
+\endsection
+
+\endchapter
+
+\chapter small syntax
+
+Most of the rest of the syntax of Spice is in terms of *expressions*.
+Spice expressions may denote tuples of values; we say thay are
+*multiple valued*. Spice expressions may be evaluated in three modes;
+*value* mode, when they are evaluated for their value; *update* mode,
+when they are evaluated to update some location or data structure; and
+*void* mode, which is value mode except that all the values that are
+delivered are then discarded.
+
+Unless otherwise specified, an expression is illegal in update mode.
+All function calls and operator applications are legal there; every
+procedure _P_ can have an updater _U_, which is the procedure that is
+called when a call of _P_ appears as the target of an assignment.
+
+\section expressions
+
+A _Statement_ is an expression, or sequence of expressions separated
+by commas. The value of a sequence of _Statement_s is the value of the
+*last* _Statement_; the values of all the others are discarded.
+
+\syntax \$ Statement
+    Expr ++ "," SEMI
+\endsyntax
+
+\syntax \$ StatementSeq
+    Statement*
+\endsyntax
+
+\syntax \$ Expr
+    Name
+    | Hole
+    | Literal
+    | Expr "..."
+    | PreOp Expr
+    | Expr PostOp
+    | Expr InOp Expr
+    | Expr AssignOp Expr
+    | "(" Expr ")"
+    | Expr ["." DotExpr] [OptExpr]
+    | Expr ["@" DotExpr] [OptExpr]
+    | Expr "[" Expr "]"
+    | "[" Expr "]"
+    | LambdaExpr
+    | "new" Name ["(" Expr ")"]
+    | "none" OptExpr
+    | "one" Expr
+    | "once" Expr
+    | "throw" Expr
+    | "[" CommaExpr "]"
+    | "{" CommaExpr "}"
+    | QuoteExpr
+    | TryCatchExpr
+    | IfExpr
+    | RepeatExpr
+    | ForExpr
+    | SwitchExpr
+    | VarDef
+    | ProcedureDef
+\endsyntax
+
+Operator expressions are disambiguated by the "usual" precedence
+rules. Here, _Expr_ is an expression that cannot contain top-level
+commas.
+
+\syntax \$ OptExpr
+    [Expr]
+\endsyntax
+
+\syntax \$ CommaExpr
+    Expr ++ ","
+\endsyntax
+
+\syntax \$ OptCommaExpr
+    [CommaExpr]
+\endsyntax
+
+\passage name
+
+A _Name_ is either a simple identifier, or an imported identifier
+_short::id_, where _short_ is the short name of a package and _id_ is
+the name of the identifier within it.
+
+\endpassage
+
+\passage hole
+
+A Hole is a "virtual operand" used when making partial applications.
+Thus the expression _? + 1_ is a function that adds 1 to things. The
+expression _?2 - ?1_ is reverse subtract; the arguments to a partial
+application are numbered _1..N_, left-to-right.
+
+\syntax\$ Hole "?" [Integer]
+\endsyntax
+
+\endpassage
+
+\passage literal
+
+Literals may be symbols, strings, characters, numbers, or reserved
+literals. Symbols, strings, numbers, and reserved literals are
+themselves lexical items.
+
+\syntax\$ Literal
+    StringLiteral
+    | NumberLiteral
+    | ReservedLiteral
+    | CharacterLiteral
+\endsyntax
+
+\endpassage
+
+\passage explosions
+
+The value of the expression _E..._ is the *explosion* of the value of _E_, ie
+all the components of all the public values of _E_.
+
+In update mode (ie as the target of an assignment) _E_ must be an
+updatable expression; it is assigned an array constructed of all the
+values on the source of the expression.
+
+\endpassage
+
+\passage prefix operators
+
+The value of a prefix expression is found by applying the procedure
+bound to the prefix operator to the value delivered by the operand,
+*except* for the special operator _once_, which arranges that its
+operand is evaluated only once, "as soon as possible".
+
+The prefix operator _one_ delivers the first of its arguments, and
+_absent_ if it called with no arguments.
+
+\endpassage
+
+\passage postfix operators
+
+The value of a postfix expression is found by applying the procedure
+bound to the postfix operator to the value delivered by the operand.
+
+\syntax \$ PostOp
+    LexicalPostfixOperator | "@" DotExpr
+\endsyntax
+
+[Note that _@_ can serve as a infix or postfix call marker.]
+
+\endpassage
+
+\passage infix operators
+
+\syntax \$ InOp
+    LexicalInfixOperator | "@" DotExpr
+\endsyntax
+
+_Note_. The logical operators _and_ and _or_, and the relational operators
+_==_, _<=_, _>=_, _<_, _>_, _!!=_, _/==_, _==_, _/==_ are special in that
+they all automatically _one_ their arguments.
+
+Further, the relational operators are *continued relationals*; if _R_ and _S_
+are relational operators, the expression _a R b S c_ is shorthand for _a R b
+and b S c_, except that _b_ is only evaluated once.
+
+\endpassage
+
+\passage assignment operators
+
+The assignment operators _X:=_ for some operators _X_ (ie _+:=_, _-:=_,
+_!*:=_, _/:=_, _&:=_, _!|:=_, _!^:=_) are shorthand for assignments where
+the target and left operand of _X_ are the same, ie, _E~1~ X:= E~2~_ is
+equivalent to _E~1~ := E~1~ X E~2~_ except that side-effects of _E~1~_
+are only applied once.
+
+The assignment operator _:=_ evaluates its left operand (the *target*) in
+update mode with its right operand being the *source*.
+
+The assignment operator "->" evaluates its *right* operand (the target) in
+update mode, with the source being its *left* operand; any excess values are
+retained as the value of the assignment expression.
+
+The source delivers some sequence of values; the target is a sequence of
+updateable expressions. At most one target is allowed to be a procedure call
+with an updater which takes an indefinite number of assigned values.
+(Otherwise, in _(f(), g()) = (1,2,3)_, where _f_ and _g_ both have indefinite
+updaters, there would be no way to tell how the values were to be distributed
+between _f_ and _g_.) Assignments are done right-to-left; each
+assignment target takes the appropriate number of values from the right-hand
+end of the value sequence and the rest of the value sequence is handed to the
+remaining targets. If the assignment target is an identifier, one value is
+assigned into it. If it is a procedure call, its updater is invoked, passing
+it the appropriate number of values.
+
+\endpassage
+
+\passage bracketed expressions
+
+The expression _(E)_ has the same value that _E_ does.
+
+\endpassage
+
+\passage call expressions
+
+The expression _x.f_ is a call of _f_ with argument(s) _x_, as are the
+expressions _f(x)_ and _x @f_. The expression _x.f(y)_ is a call of
+_f_ with arguments _(x,y)_, as is _x @f y_.
+
+When a call appears as the target of an assignment, eg _f(x)=E_, it is
+equivalent to the expression _(f.updater)(x)(E)_; that is, the updater
+function specialises itself on the target arguments [allowing it to
+be overloaded on those arguments] and delivers a function which consumes
+the assigned values [and which may be separately overloaded on those values].
+
+\indented
+
+The current Spice implementation uses an earlier definition that has
+a similar effect in simple cases, but is inadequate to deal with
+overloaded functions: _(f.updater)(x,E)_.
+
+\endindented
+
+\syntax \$ DotExpr
+    Name | "(" Expr ")" | "return" | "throw" | "new"
+\endsyntax
+
+The expression permitted after a dot or _@_ may be a _Name_, an arbitrary
+expression in brackets, or one of the reserved words _throw_, or
+_return_ (which allows these forms to be used postfix) or _new_ (which
+allows it to be used infix).
+
+\endpassage
+
+\passage array expressions
+
+The expression _{E}_ is an *array expression*; it creates a new array
+by evaluating its operand and piling all the results into the new
+array.
+
+\endpassage
+
+\passage index expressions
+
+The value of the expression _a[i]_ is that obtained by calling the
+*index function* associated with the type of _a_, supplying it with
+_a_ and _i_. If _a_ is an array, this attempts to index the array. If
+_a_ is a table, it looks _i_ up in that table. Otherwise it attempts
+to find the _i_-property of _a_.
+
+When an index expression is used in update mode, the updater of the
+associated index function is called.
+
+\endpassage
+
+\passage lambda expressions
+
+A lambda-expression is an inline procedure definition; it is the
+procedure taking the specified arguments and computing the desired
+result.
+
+\syntax\$ LambdaExpr "(" Args "=>" StatementSeq ")"
+| "fun" Args "=>" StatementSeq "endfun"
+\endsyntax
+
+\endpassage
+
+\passage quotation expressions
+
+A quotation expression allows _Symbol_ values, and sequences of _Symbol_
+values, to be denoted by an expression.
+
+\syntax\$ QuoteExpr "`" QuotedItems "`"
+\endsyntax
+
+\syntax\$ QuotedItems QuotedItem*
+\endsyntax
+
+\syntax\$ QuotedItem
+    Word
+    | "{" QuotedItems "}"
+    | "(" Expr ")"
+    | "!^" Word
+    | "!^!^" Word
+    | Literal
+\endsyntax
+
+A _QuotedItem_ that is a literal or a word denotes the corresponding value;
+words are represented as Spice _Symbol_s (interned strings with a type of
+their own). An item which is an expression in brackets evaluates to the
+value of that expression; the form _!^Word_ is equivalent to _(Word)_,
+with _Word_ stripped of any special syntactic properties, and the form
+_!^!^Word_ is equivalent to _(Word...)_.
+
+The form _{Q}_ denotes the sequence formed out of the values denoted by _Q_.
+Thus quotations can express nested sequence structures which are mostly
+constant.
+
+\endpassage
+
+\passage new expressions
+
+The expresssion _new X(A)_ is a construction expression; _X_ is a constructor
+value, and _A_ the arguments to the construction. If the argument _E_ is
+omitted, it does *not* mean that _X_ is invoked on no values; instead
+the constructor *function* is delivered, as though one had written
+
+\spice
+(A... => new X(A...))
+\endspice
+
+If _X_ is a class value, then a new default-initialised instance of that class
+is constructed, and handed to the class's anonymous constructor. If _X_ is a
+named constructor, that is, defined as _new X_ in some class _C_, a new empty
+instance of _C_ is constructed and passed to _X_ with arguments _A_.
+
+\endpassage
+
+\passage none expressions
+
+The expression _none_ denotes no values. The expression _none E_
+evaluates _E_ and discards all the values it computes.
+
+\endpassage
+
+\passage throw and try expressions
+
+The expression _throw E_ raises an exception with value the value of _E_. If
+this exception is not caught within the program, it is caught by the top-level
+Spice environment, which will deal with it in an implementation-specific
+fashion.
+
+The _try_ expression allows exceptions to be caught and handled.
+
+\syntax\$ TryCatchExpr
+    "try" StatementSeq CatchSeq "endtry"
+\endsyntax
+
+\syntax\$ CatchSeq
+    ("catch" Arglist ["as"] StatementSeq)**
+\endsyntax
+
+The _StatementSeq_ of the _try_ is evaluated and the _try_ expression resturns
+its result if no exception is thrown. If an exception _E_ is thrown, then
+the _catch_ body who's _Arglist_ best matches the thrown value is executed
+(just as though the _catch_ blocks were alternative definitions for an
+overloaded function) and the reult of the _try_ is the result of that
+_catch_ block.
+
+If there is no _catch (x: Any)_ catch clause, it is as though the clause
+_catch (x:Any) with throw x_ had been supplied.
+
+\indented
+
+This is not true; the description needs revising.
+
+\endindented
+
+\indented
+
+Note that this is *not* sequential testing. Sequential testing means that you
+have to write the general case last, not first, and makes things more
+order-dependant than they need be. Making the _catch_ clauses share the
+semantics of procedure call makes the language more coherent and offers
+alternative implementation tactics.
+
+\endindented
+
+\endpassage
+
+\passage if
+
+An _if_ expression expresses a choice. Both verbose and compact if-endif forms
+are supported; in the short form, _if_ - _endif_ is replaced by _(_ - _)_,
+"!|" is used in place of _then_ and _else_, and "!|:" in place of _elseif_.
+
+An _if_ must have a matching _endif_, and an _unless_ must have a matching
+_endunless_. _then_ and _do_ are equivalent in _if_ and _unless_ expressions.
+The _unless_ form inverts the initial test.
+
+\syntax\$ IfExpr
+    LongIfExpr | ShortIfExpr
+\endsyntax
+
+\syntax\$ ShortIfExpr
+    "(" Expr "!|" CommaExpr
+    ("!|:" Expr "!|" CommaExpr)*
+    ["!|" CommaExpr]
+    ")"
+\endsyntax
+
+\syntax \$ LongIfExpr
+    ("if" | "unless") Expr Then StatementSeq
+    ("elseif" Expr Then StatementSeq)*
+    ["else" StatementSeq]
+    ("endif" | "endunless")
+\endsyntax
+
+\syntax \$ Then
+    "then" | "do"
+\endsyntax
+
+\endpassage
+
+\passage repeat
+
+A _repeat_ loop repeats statements while (or until) a condition is true.
+On each iteratation, _Seq1_ is executed, and then _Expr1_ is tested.
+If it is satisfied (_true_ for _while_, _false_for _until_) then _Seq2_ is
+executed and the loop repeats. Otherwise, the loop terminates and delivers all
+the values computed by the loop body.
+
+\syntax\$ RepeatExpr
+    "repeat" StatementSeq1
+    [RepeatTest ["do" StatementSeq2]]
+    "endrepeat"
+\endsyntax
+
+\syntax\$ RepeatTest
+    ("while" | "until") Expr1 ["then" Expr2]
+\endsyntax
+
+\endpassage
+
+\passage for
+
+A _for_ loop causes a body of code to be repeatedly executed while various
+conditions are _true_ (or _false_), and variables are stepped "in parallel"
+along a sequence of values. When the loop terminates "naturally" (that is,
+by exhaustion of one of the sequences) then a termination clause is executed.
+
+\syntax\$ ForExpr
+    "for" ForControls ["do" StatementSeq] ["finally" StatementSeq] "endfor"
+\endsyntax
+
+The controls are separated by _also_, although that's optional if the next
+control is a _while_ or an _until_.
+
+\syntax\$ ForControls
+    ForControl
+    | ForControls "also" ForControl
+    | ForControls ForCondition
+\endsyntax
+
+A _Control_ is a binding of a variable to values, or an early-exit condition.
+
+\syntax\$ ForControl
+    ForBinding | ForCondition
+\endsyntax
+
+If the early-exit condition is satisfied (_while false_ or _until true_),
+the loop terminates. If the _then_ (for _until_) or _else_ (for _while_)
+is present, its code is executed before the loop exits; otherwise the loop's
+_finally_ code is executed.
+
+\syntax\$ ForCondition
+    ("while" | "until") Expr [("then" | "else") CommaExpr]
+\endsyntax
+
+A _ForBinding_ binds names to sequences of values.
+
+\syntax\$ ForBinding
+    ForName "in" Expr
+    | ForName "from" Expr [("to" | "downto") Expr]
+    | ForName "to" Expr
+\endsyntax
+
+\syntax \$ ForName
+    Name [TypeWord Type]
+\endsyntax
+
+For-loop identifiers are declared there, are immutable, and are local
+to the loop. What is more, a *new* identifier is bound each time round
+the loop (this is noticable only if the loop body forms closures using
+lambda-expressions or holes which involve the identifiers).
+
+The meaning of a _ForBindings_ is that each _Name_ introduced is given
+successive values from its _Expr_, in parallel (ie on the _N_th iteration each
+_Name_ has its _N_th value), until at least one of the _Expr_s is exhausted.
+The notion of "successive values" is defined by the run-time type of the
+expression's value. It is not defined what happens if that value is modified
+during the execution of the loop body.
+
+The form _from E~1~ to E~2~_ is equivalent to _in [E~1~..E~2~]_. If _to E_ is
+omitted, then the loop is unbounded (it will terminate only via _break_ or if
+a parallel iteration terminates). If _from E_ is omitted, the loop starts at
+_1_. If _downto_ is used instead of _to_, the loop counts down rather than up.
+
+\endpassage
+
+\passage switch
+
+\syntax\$ SwitchExpr
+    "switch" Expr Case+ "endswitch"
+\endsyntax
+
+\syntax \$ Case
+    ("case" Expr)+ "then" StatementSeq
+    | "else" StatementSeq
+\endsyntax
+
+Each _case_ clause starts with some number of _case_ expressions (or
+_else_) and is followed by the expressions to evaluate when the switch
+expression takes the value of one of those labels.
+
+A Spice switch may switch on *any* values; it is not restricted to integer
+constants (although it may be much more efficient on them). In particular, a
+Spice switch may switch on strings and symbols.
+
+A _switch_ can have at most one _else_ clause.
+
+The result from a _switch_ is the result from the selected _case_ statement or
+statement sequence. Thus a _switch_ may deliver multiple values.
+
+\endpassage
+
+\passage var and procedure expressions
+
+A _VarDef_ and a _ProcedureDef_ counts as expressions, but they deliver
+no values.
+
+Note that this means that procedure definitions may be nested. A
+procedure may access and update the local variables of the procedure that it
+appears in; Spice has full lexical scope.
+
+\endpassage
+
+\endsection
+
+\section type expressions
+
+A _type expression_ is an expression. Its semantics is the same as that of
+ordinary expressions, but they must deliver values of type _Type_.
+
+\syntax\$ Type
+    Expr
+\endsyntax
+
+The language of type expressions is intended to allow the programmer
+to give the compiler useful information about the program.
+
+The basic type expression is the *name*. A name used as a type
+expression should be the name of one of the built-in types or a
+class. _Any_ is the name of the universal type, _Object_ is the
+name of all object types.
+
+\indented
+
+Only names are legal type-expressions in this edition of the Spice
+compiler.
+
+\endindented
+
+If _T_ is a type-expression, then _T??_ represents the *optional type*
+of _T_; it is the type of values which may be _T_ or may be the value
+_absent_. _absent_ is also spelt _null_.
+
+If _T_ and _U_ are type-expressions, so is _T,U_, which represents the
+type of multiple values with first component(s) or type _T_ and second
+component(s) of type _U_.
+
+If _T_ is a type expression then so is _T!*!*_, the type of lots of
+multiple values all of type _T_.
+
+If _T_ is a type-expression, _{T}_ ("array of T", "row of T") is the
+type of arrays who's elements are required to be of type _T_.
+
+\endsection
+
+\endchapter
+
+\chapter scope rules
+
+The scope rules for Spice define where identifiers are visible. They are
+intended to be natural and in most cases are straightforward.
+
+A sequence of forms (eg, a package body, or a non-package)
+consists of sequences of consecutive declarations, *bunches*, interspersed
+with non-definition expressions. All the _Definition_s in a bunch are mutually
+in scope. In consequence, there is rarely any need for "forward" declarations.
+Non-definitions terminate this mutual scope to allow the rules for interactive
+execution to be the same as those for batch compilation.
+
+_class_es do not introduce new scopes; the declarations within a class put
+names into the top-level namespace. The same name cannot legally declared more
+than once. (A _method_ definition does not re-declare a name; it attaches
+additional definitions to an existing generic procedure.) Class slots must be
+uniquely named in a scope.
+
+A procedure definition introduces a new scope; the arguments and the body
+share that scope. (Thus is it illegal to have two arguments with the same
+name, or an argument to have the same name as a top-level local of the
+procedure.) The body of the procedure is bunched in the same way as a package.
+
+A _LambdaExpr_ introduces a new scope. All the names from the surrounding
+scope are visible inside the lambda, with the same rights; in particular,
+it is permitted to assign to locals of the surrounding context, and for this
+to "work": Spice has full lexical scoping.
+
+A _try_ expression introduces a new scope which extends to the first _catch_
+clause (or to the _endtry_ if there are no explicit _catch_ clauses). A
+_catch_ clause introduces a new scope which ends at the next [non-nested!!]
+_catch_ or _endtry_.
+
+Each of the arms of an _if_ or _unless_ expression have their own scopes. The
+body of a _repeat_ loop is a scope. (What's more, variables declared
+in the body of a loop are re-declared *each time round the loop*.)
+
+Each _SpiceCase_ introduces a new scope which ends at the end of its
+_StatementSeq_.
+
+A _for-do_ statement introduces a new scope. The identifiers declared in
+a _ForBinding_ are in scope in any succeeding _while_ or _until_ clause, and
+in the loop body, but *not* in the _Expr_ parts of other _ForBinding_s of this
+loop. As for _while_ and _until_ loops, these identifiers are re-declared
+each time round the loop.
+
+The right operand of an _and_ or _or_ operator has its own scope. (This odd
+rule is because _x and ((var y = 42), z)_ is a legal expression, but then
+questions would arise about _y_'s existence or value if _x_ were _false_.)
+
+\endchapter
+
+\chapter the standard library
+
+Spice has a large library of standard values and procedures. Many of these
+have not been implemented yet.
+
+\section generic procedures
+
+\list
+
+_x.typeof_: the type of _x_.
+
+_x.printOn( s )_:
+    send a human-readable representation of x down the stream s.
+    Characters are sent as-is, integers are printed as their signed
+    decimal representation [note: there ought to be a way of defining
+    a negative numeric literal], strings are printed as their
+    sequence of characters, arrays are printed as [elem1 elem2 ...],
+    and objects are printed as defined by their overloading of
+    printOn (and Class.printOn( s ) does something sensible).
+
+_x.print_
+    shorthand for x.printOn( standardOutput )
+
+_x.report_:
+    shorthand for x.printOn( standardReport )
+
+_println( x... )_: _print_ all the arguments in turn, prefixing all
+but the first with a space, and printing a newline after printing
+all the arguments.
+
+_x.copy_:
+    make a copy of x. If x is atomic (Small, Symbol, Char, Procedure)
+    just delivers x. If x is composite object, defaults to making
+    a shallow copy of x. Overloadable for new types.
+
+_x.toString_:
+    convert _x_ to a string in the same way that _print_ does.
+
+_equals( x, y )_
+    the procedure implementing =. Overloadable on new types, but
+    the programmer has to ensure that the new definition respects
+    the usual rules for equality (reflexive, transitive, symmetric).
+
+    If x and y are both Small, Symbol, Char, or Procedure, equals
+    delivers x == y (ie identity). If x == y, equals delivers
+    true.
+
+    If x and y are both objects, by default equals does a slot-by-
+    slot = test on all the init-slots that x and y have in common.
+    If any of these fail, equals delivers false; otherwise it
+    delivers true.
+
+    If x and y are both String, equals does the obvious string
+    equality test. If they are both arrays, equals does the obvious
+    sequence-equality test.
+
+_x.hashCode_:
+    a type-specific hashcode for the value _x_.
+
+_apply( f, x... )_:
+    called when evaluating f(X) and f is not a function. Overloadable.
+    On arrays and strings is equivalent to indexing. On tables is
+    table lookup. Has the obvious updater. Allows objects to represent
+    functions compactly. Is not implemented.
+
+_x.length_:
+    overloadable. Should deliver the "length" of the object. On
+    strings and arrays has the obvious meaning. On objects delivers
+    the number of "obvious" slots (see explode). On atomic objects
+    delivers 0.
+
+_x @asType t_:
+    _t_ must be a type. The value _x_ is converted to that type in a
+    type-specific way (_asType_ is overloadable), or an exception is thrown.
+    _x @asType String_ is equivalent to _toString_.
+
+\endlist
+
+\endsection
+
+\section absent
+
+The special value _absent_ corresponds roughly to the value _null_ in
+other programming languages: it denotes a "missing" value.
+
+There are two special operators for use with _absent_, corresponding to the
+boolean operators _and_ and _or_.
+
+The expression _X !|!| Y_ is the value of _X_, unless it is _absent_, in which
+case it is the value of _Y_. Only if _X_ is absent is _Y_ evaluated. _X_ and
+_Y_ should both be expressions of arity 1. _!|!|_ can usefully be thought of
+as "if absent".
+
+The expression _X && Y_ is _absent_ if _X_ is _absent_; otherwise it is the
+value of _Y_. _Y_ is not evaluated if _X_ is _absent_. _&&_ can usefully be
+thought of as "if present".
+
+
+\endsection
+
+\section numbers
+
+Spice has several kinds of number: small integers (_Small_), big integers
+(_BigInt_), short and long floating point values (_Float_, _Double_),
+ratios (ie fractions) (_Ratio_), and complex numbers (_Complex_).
+
+\indented
+
+Only _Small_ and _Double_ are implemented.
+
+\endindented
+
+The operators _+_, _-_, _!*_, _/_, _div_, _rem_, _%_ work more-or-less as
+you'd expect on plain numbers (they work on some other values, too, for which
+see the section on _units_). _div_ is integer division; the operands must be
+integers and the result is truncated toward _0_. _rem_ is integer remainder;
+the operands must be integers and the result is the appropriate remainder. _/_
+will produce a floating-point value if the result is not an exact integer.
+
+The operator _/:_ is *exact division*; its result uses ratios to express
+non-floating non-integer components. This is the primary way (the only way, at
+root) that ratio values are generated.
+
+The operator _.._ ("upto") delivers multiple results: all the integers
+from the left operand (inclusive) to the right operand (also
+inclusive).
+
+There are no bitwise operators; instead Spice provides them as predefined
+functions (to allow the operator symbols to be used for other purposes).
+The functions provided are _bitAnd_, _bitXor_, _bitOr_, _bitNot_, _bitBic_,
+_bitShl_, _bitShr_, and _bitAsr_, operating on integer arguments only.
+
+The relational operators _<=_, _<_, _>=_, _>_, _==_, _/==_ work as you'd
+expect. Note that it's unwise to use _==_ and _/==_ on floating-point values.
+
+There are also a number of standard functions.
+
+\list
+
+_x.abs_ and its synonym _x.magnitude_ is the absolute value of _x_; if _x_ is
+not complex, its sign is made positive; if _x_ is complex, it is its
+magnitude.
+
+_x.neg_ and its equivalent _x.negative_ invert the sign of the value
+of _x_. _x.positive_ returns _x_ if it is a (non-complex) number.
+
+_x @min y_, _x @max y_ deliver the minimum (maximum) of their argument
+values _x_ and _y_.
+
+_x @logToBase y_ delivers the logarithm of _x_ to the (positive
+integer) base _y_.
+
+_x @toPower y_ delivers _x_ raised to the power _y_.
+
+_x.sqrt_ is the square root of _x_. An exception is thrown if the result
+must be _Complex_ but this implemention does not support it.
+
+_x.round_, _x.floor_, _x.ceiling_ convert the value _x_ to an integer
+(details to be added).
+
+_x.cos_, _x.sin_, _x.tan_ are the usual trigonometric functions. The
+argument is in radians.
+
+_x.inRadians_ takes an angle in degrees _x_ and converts it to
+radians. _x.inDegrees_ takes an angle in radians and converts it to
+degrees.
+
+_x.acos_, _x.asin_, _x.atan_ are the usual inverse trigonometric
+functions. Note that _atan_ is only suitable for simple programs.
+
+\endlist
+
+[various complex functions etc to be done]
+
+\endsection
+
+\section enumerations
+
+Enumeration values can be queried for their numeric value and name, and can be
+created from numeric values or names. Note that the number of enumeration
+values is fixed by the declaration; the constructor delivers existing values,
+not fresh ones.
+
+\list
+
+_e.index_: if _e_ is an enumeration value, its index is its position
+in the list in which it was declared.
+
+_new E(n)_: if _E_ is an enumeration type, the _n_th enumeration value that it
+was declared with, or an error is thrown if _n_ is out of range.
+
+_e.enumName_: if _e_ is an enumeration value, the symbol which names it.
+
+_new E(s)_: if _E_ is an enumeration type, and _s_ is a string or symbol,
+the enumeration value of _E_ named by that string or symbol, or an error
+is thrown.
+
+\endlist
+
+\endsection
+
+\section values with units
+
+Spice has values with _units_. Values with units represent lengths, or
+times, or other inter-related quantities. All the unit procedures are
+imported qualified from _Spice.language.units_.
+
+A _unit_ expresses an amount along a given dimension. A _basic dimension_ is
+represented by a symbol naming that dimension. A _compound dimension_ is the
+result of a product or quotient of dimensions.
+
+\list
+
+_Unit_: the type of units.
+
+_Unit( scale, unitName, dimension )_: make a new unit object. _dimension_ must
+be a symbol or string; it specifies the dimension of the unit. (Typical values
+are _length_, _time_, _colour_.) _unitName_ must be a symbol or string; it
+names the unit itself. [It is an error if a unit with that name already
+exists.] The _scale_ expresses the scale of this unit in terms of the
+"canonical unit" for this kind; a scale of _1_ defines the canonical unit.
+
+_U @unitProduct V_: _U_ and _V_ must be unit objects. The result is the
+product of those units.
+
+_U @unitQuotient V_: _U_ and _V_ must be unit objects. The result is the
+quotient of those units.
+
+_U.scale_: _U_ must be a _Unit_ object; the result is its scale.
+
+_U.name_: _U_ must be a _Unit_object; the result it its unit name.
+
+_U.dimension_: _U_ must be a _Unit_ object; the result is its dimension.
+
+_x @inUnits y_: _x_ must be a numeric value, and _y_ must be a unit name
+(symbol or string) or a _Unit_ object (eg from _unitNamed_). The result is a
+unit value with _x_ as its number and the unit (named by) _y_ as its unit.
+
+_n.unitNamed_: the _Unit_ value named by _n_, which must be a string or a
+symbol.
+
+_u.number_: the number of the value _u_, which must be a value with
+units.
+
+_u.unit_: the unit of the value _u_, which must be a value with units.
+
+_u.explode_: _u_ must be a value with units; exploding it gets the number
+and unit, in that order.
+
+\endlist
+
+The arithmetic operators also work on values with units. There is a minor
+complication in that different units of the same kind may be inter-converted.
+Multiplication and division also work on _Unit_ objects themselves to produce
+new _Unit_ objects; this is intended for use in _define unit_ definitions.
+
+\list
+
+_u + v, u - v_: _u_ and _v_ must be values with the same dimension. The number
+with the larger unit is scaled to the size of the smaller, and the result is
+the sum (difference) of the numbers, with the smaller unit as its unit. [*ie*,
+adding inches to miles gets a result in inches.]
+
+_u !* v_: if _u_ or _v_ has units, the result has number _u.number !*
+v.number_ and units _u.unit @unitProduct v.unit_.
+
+_U !* V_: if _U_ and _V_ are units or numbers, the result is a new unit which
+has dimensions the product of the dimensions of _U_ and _V_, and number the
+product of the numbers of _U_ and _V_.
+
+_u / v_: if _u_ or _v_ has units, the result has number _u.number / v.number_
+and units _u.unit @unitQuotient v.unit_.
+
+_U / V_: if _U_ and _V_ are units or numbers, the result is a new unit with
+dimensions the quotient of the dimensions of _U_ and _V_, and number the
+quotient of the numbers of _U_ and _V_.
+
+_u < v_: equivalent to _number(v - u) < 0_, and similarly for the other
+relational operators.
+
+\endlist
+
+\endsection
+
+\section strings
+
+Strings are sequences of Unicode characters in canonical form. Strings created
+as literal tokens are immutable. Strings, like arrays, can be indexed using
+the _s[i]_ notation. The infix operator _++_ concatenates strings (and
+arrays).
+
+There are many built-in functions on strings.
+
+\list
+
+_s.length_ is the length in characters of _s_.
+
+_s @indexOf x_ delivers the index in _s_ of the first occurance of
+_x_, which can be a character or a string. If _s_ does not contain any
+occurence of _x_, _indexOf_ delivers _absent_. The result has the same
+base as the string does.
+
+_s @lastIndexOf x_ is the same as _indexOf_, except that it searches
+for the last occurence of _x_, not the first.
+
+_s @chopAt x_, where _x_ is a string or character, delivers *two*
+results _(before, after)_ such that _s == (before <> x <> after)_ and
+_x_ does not occur earlier in _s_.
+
+_s @chopAt x_, where _x_ is an integer, delivers _(after, before)_
+such that _s = before <> after_ and _after.length == x_ -
+s.stringBase.
+
+_s @split x_ delivers an array of strings obtained by repeatedly
+chopping _s_ with _x_.
+
+_s.toLower_ is a copy of _s_ with all upper-case characters replaced
+by their lower-case counterparts; _s.toUpper_ is a copy of _s_ with
+all lower-case characters replaced by their upper-case counterparts.
+
+_x @catStringly y_: equivalent to _x <> y.toString_.
+
+\endlist
+
+\endsection
+
+\section symbols
+
+\indented
+
+Symbols are not implemented.
+
+\endindented
+
+The *symbol literal* _`foo`_ represents a *symbol* (a value
+of type _Symbol_) whose *spelling* is the string _foo_. The important
+difference between symbols and strings is that there is only one
+symbol with a given spelling. (You can tell the difference using the
+Spice *identity operator* _==_.)
+
+You can index symbols using _s[i]_, but if you do so, you are probably
+using symbols for something other than their intended use; supplying
+the programmer with an infinite set of mnenomic values.
+
+\list
+
+_s.intern_, where _s_ is a string, delivers the symbol whose spelling
+is _s_, making it if necessary.
+
+_s.spelling_, where _s_ is a symbol, delivers an immutable string which
+is the spelling of _s_.
+
+_s.explode_, where _s_ is a symbol, delivers all the characters of _s_,
+rightmost last.
+
+\endlist
+
+\endsection
+
+\section booleans
+
+The built-in operators _not_, _and_, _or_ on booleans operate as you
+might expect; _not_ negates its operand, _and_ is boolean _and_ and
+_or_ is boolean _or_, neither of which evaluate their second operand
+unless it's necessary.
+
+\endsection
+
+\section arrays
+
+Array elements can be accessed and updated using the _a[i]_ notation.
+
+\list
+
+_a.length_: delivers the length of the array _a_.
+
+_a @reduceBy (x, p)_: _a_ must be an array, _x_ some value, and _p_ a dyadic
+procedure. The result is obtained by starting with _x_ and repeatedly
+replacing it by the result of _p(result,ai)_ for _ai_ being bound to all the
+elements of _a_ in turn.
+
+_a @join s, a.join_: equivalent to _a @reduceBy (s, catStringly)_; with one
+argument, _s_ is taken to be the null string _""_.
+
+_a @sortInPlaceWith f_: sorts the array _a_ according to the comparison
+function _f_. _f_ should accept two arguments _(x, y)_ and deliver
+_true_ if _x_ should go before _y_ in the ordering and _false_
+otherwise. _sortInPlaceWith_ is guaranteed to be stable if _f_ is
+sane.
+
+_a @sortWith f_: makes a copy of _a_ and sorts that in place with _f_,
+so far as anyone can tell. (The implementor is at liberty to make a
+more efficient version.)
+
+_a.reverse_: a copy of _a_ with the elements reversed.
+
+_a.reverseInPlace_: reverses the order of the elements of _a_.
+
+\endlist
+
+\endsection
+
+\section bits
+
+Spice does not have standard operators for bit operations on integer values;
+instead, it has standard functions which you call in infix form. This reflects
+the designer's belief that bit operations are simply not used enough to
+warrent using up useful symbols for them.
+
+\list
+
+_x@bitNot_: the bitwise complement of _x_ and _y_.
+
+_x @bitAnd y_: the bitwise _and_ of _x_ and _y_.
+
+_x @bitOr y_: the bitwise _or_ of _x_ and _y_.
+
+_x @bitXor y_: the bitwise _exclusive or_ of _x_ and _y_.
+
+_x @bitClear y_: _x @bitAnd y.bitNot_.
+
+_x @bitShl y_: _x_ shifted left _y_ places.
+
+_x @bitShr y_: _x_ shifted right _y_ places. Note: the sign of _x_ is *always
+preserved* for plain (_Small_ or _Big_) integer values.
+
+\endlist
+
+\endsection
+
+\section procedures
+
+There are several standard functions on procedures.
+
+\list
+
+_p.updater_: if _p_ is a procedure, then delivers its updater (or _absent_ if
+if hasn't got one).
+
+_p @apply _x: _p_ must be a procedure, and _x_ a collection of values; applies
+_p_ to all the values in _x_, ie, is _x.explode.p_ except that _x_ must be a
+compound type.
+
+\endlist
+
+The different kinds of procedures can be recognised by predicates.
+
+\list
+
+_x.isProcedure_ is _true_ when _x_ is any kind of procedure, and _false_
+otherwise.
+
+_x.isMethod_ is _true_ if _x_ is defined by a _method_ definition, and _false_
+otherwise;
+
+_x.isFunction_ if _x_ is defined by a _function_ definition, and _false_
+otherwise;
+
+_x.isConstructor_ is _true_ when _x_ has been defined with _method new_, and
+_false_ otherwise;
+
+_x.isLambda_ is _true_ when _x_ is the result of a lambda-expression or
+hole-expression, and _false_ otherwise.
+
+\endlist
+
+\endsection
+
+\section dictionaries and tables
+
+The type _Lookup_ is the parent type of a variety of mapping data types; the
+*simple* mapping types map single values to single values, while the *compond*
+mapping types map tuples of values to tuples of values. There are no direct
+instances of _Lookup_. The type _Maplet_ is the type of pairs of (simple)
+values. The type _Dictionary_ is an extension of _Lookup_ that maps _Symbol_s
+to values.
+
+\list
+
+_l.length_: the number of key-value associations stored in the lookup _l_.
+
+_l.explode_: the key-value pairs stored in the lookup _l_. Each pair is
+represented by an instance of the type _Maplet_.
+
+_p @mapOver l_: apply the procedure _p_ to each of the key-value pairs in _l_
+in turn. _p_ will be called with two arguments, being the key and the value.
+*All the results of _p_ will be returned.*
+
+_l @hasKey k_: if _l_ is an instance of an extension of _Lookup_, _hasKey_
+returns _true_ if _k_ is a key for a non-default value in _l_ and _false_
+otherwise.
+
+_l @fetch k_: if _l_ is an instance of an extension of _Lookup_, _fetch_ gets
+the value bound to the key _k_. If no value is bound, some type-specific
+computation is performed. _fetch_ has an updater which alters the bound value,
+or creates a binding if none already exists.
+
+_l @apply k_: if _l_ is an instance of an extension of _Lookup_, applying it
+runs _fetch_.
+
+_m.key_: the key part of _m_, ie, the value which would be looked up.
+
+_m.value_: the value part of _m_, ie, the value that would be returned when
+looking up the _key_ part.
+
+_Dictionary()_: constructs an empty _Dictionary_ object with default value
+_absent_. A _Dictionary_ is an extension of _Lookup_.
+
+_Dictionary(d)_: constructs an empty _Dictionary_ with default value _d_.
+
+_Dictionary(d, k~1~, v~1~, ..., k~n~, v~n~)_: constructs a _Dictionary_ with
+default value _d_ and bindings which bind k~i~ to v~i~. If several k~i~ are
+equal, the last one wins. All the k~i~ must be _Symbol_s.
+
+_Table_: an extension of _Lookup_ with constructors in the same style as
+_Dictionary_. A _Table_ can have key arguments of any type; they are compared
+using _==_ (and hashed using _hashCode_, qv).
+
+_FatTable_: an compound mapping extension of _Lookup_. _FatTable_ has similar
+constructors to _Dictionary_, except that the keys and values must all be
+arrays; all the keys must have the same length, and all the values must have
+the same length. A _FatTable_ maps tuples of values to tuples of values.
+
+_f @fetch (k~1~, ..., k~n~)_: if _f_ is a _FatTable_, look up the value(s)
+specified by the sequence of keys _k~i~_, which must be the same length as the
+key arrays used in the constructor of _f_. Deliver the associated multiple
+values. The updater of _fetch_ will store multiple values into _f_.
+
+\endlist
+
+\endsection
+
+\section io
+
+Spice includes some simple I/O operations in its core; the type _Pathname_,
+the type _File_, and the type _Stream_.
+
+\list
+
+_s.parsePath_: _s_ must be a string or symbol. It is parsed into a _Pathname_,
+or an exception thrown if it is illegal in some way. (See below for the syntax
+of pathnames).
+
+_p.pathScheme_, _p.pathRoot_, _p.pathDirs_, _p.pathName_, _p.pathSuffix_, and
+_p.pathType_: the corresponding components of the pathname. If the component
+was omitted in the originating string, the result is _absent_.
+
+_p @openIn_: _p_ must be a pathname (or string or symbol, which is immediatley
+parsed into a pathname). The external entity named by the path is opened for
+input. _openIn_ delivers a _File_ object.
+
+_p @openOut_: _p_ must be a pathname (or string or symbol, which is immediatley
+parsed into a pathname). The external entity named by the path is opened for
+output. _openOut_ delivers a _File_ object.
+
+_f.openedOn_: if _f_ is a file, then the pathname it was opened on.
+
+_f.close_: _f_ must be a file; if it is not closed, it is hereby closed,
+committing all writes (if open for output).
+
+_f @readInto (b, w, l)_: _f_ must be a file open for input. _readInto_ reads
+the next _l_ bytes (or fewer) into the buffer _b_, which must be a byte array,
+starting at position _w_. An exception is thrown if _w_ or _w+l_ would be
+outside the bounds of _b_. The number of bytes actually read is returned as
+the result.
+
+_f @writeFrom (b, w, l)_: _f_ must be a file open for output. _l_ bytes from
+the byte array _b_ are written, starting at offset _w_. An exception is thrown
+if _w_ or _w+l_ would be outside the bounds of _b_.
+
+_f.inFrom_: _f_ is a file open for input, or a pathname (which is immediately
+_openIn_'ed). The result is an byte _InStream_ on the file.
+
+_f.outTo_: _f_ is a file open for output, or a pathname (which is immediately
+_openOut_'ed). The result is an byte _OutStream_ on the file.
+
+_s.next_: _s_ must be an _InStream_; the result is the next object from _s_,
+or _absent_ if the file has been exhausted. _next_ has an updater which puts
+objects back onto the stream. Arbitrarily many objects can be put back, and
+they need not correspond to objects originally present in the stream.
+
+_s @out x_: _s_ must be an _OutStream_ and _x_ an object; that object is
+appended to the stream.
+
+_s.streamFile_: if _s_ is a stream based on a file, delivers that file;
+otherwise an exception is thrown.
+
+\endlist
+
+\passage pathname syntax and accessors
+
+A pathname has several components. The basic elements are _Word_s which,
+within this section, are sequences of characters not otherwise reserved
+to the pathname syntax.
+
+In this section, the identifier _p_ is presumed to contain a _Pathname_ value.
+
+\syntax\$ Pathname
+    [Scheme] [Root] [Directories] [Name] [Suffix] [Type]
+\endsyntax
+
+\syntax\$ Scheme
+    Word ":"
+\endsyntax
+
+The _Scheme_ of a pathname directs how the components are to be interpreted.
+The standard schemes are _file_, _http_, and _socket_.
+
+_p.pathScheme_ is a _Symbol_.
+
+\syntax\$ Root
+    "//" Dotted
+\endsyntax
+
+The _Root_ identifies where the pathname is anchored. For an _http_ or _net_
+pathname, the _Root_ is the IP address where the named entity is located. For
+a _file_ scheme, the _Unit_ identifies some root in the filing system in
+an implementation-specific way.
+
+_p.pathRoot_ is an array of _Symbol_ values, one for each word-part of the
+_Dotted_.
+
+\syntax\$ Directories
+    ["/"] (Dotted "/") ++
+\endsyntax
+
+The _Directories_ identify some place within the _Root_ where an entity is
+found, by giving a sequence of _Dotted_s. For a _file_ scheme, thet are the
+names of filing-system directories. For an _http_ scheme, they are successive
+components of the directory part of the URL. For a _socket_ scheme, they
+identify the port number to be used for the socket; typically there is but one
+_Dotted_ and it names an IP service.
+
+_p.pathDirectories_ is an array of _Symbol_s, each symbol being the spelling
+of a _Dotted_.
+
+\syntax\$ Name
+    Word
+\endsyntax
+
+The _Name_ is the leafname of the entity being described.
+
+_p.pathName_ is a Symbol.
+
+\syntax\$ Suffix
+    "." Word
+\endsyntax
+
+The _Suffix_ is the suffix part of the entity name.
+
+_p.pathSuffix_ is a _Symbol_.
+
+\syntax\$ Type
+    ";" Word
+\endsyntax
+
+The _Type_ is the type of the entity. When a pathname is being used to create
+an object, is specifies the type of object to create. When it is being used
+to access an existing object, the object should be of a compatible type.
+
+_p.pathType_ is a _Symbol_.
+
+\syntax\$ Dotted
+    Word ++ "."
+\endsyntax
+
+\endpassage
+
+\endsection
+
+\section other undefined library support
+
+Spice is expected to support useful library functions for locales, dates, and
+regular expressions, but these have not yet been specified.
+
+\endsection
+
+\section types
+
+The standard types are
+
+\list
+
+_Lookup_, the parent type of data dictionaries.
+
+_Maplet_, a helper type for data dictionaries.
+
+_Table_, the type of tables.
+
+_FatTable_, the type of compound tables.
+
+_Small_, the type of small integers.
+
+_Number_, the type of all numbers -- integers, floats, rationals (when
+implemented), complexes (ditto).
+
+_Complex_, the type of complex values.
+
+_Ratio_, the type of ratios.
+
+_BigInt_, the type of big integers.
+
+_Float_, the type of all floating-point numbers.
+
+_String_, the type of strings.
+
+_Procedure_, the type of all procedures.
+
+_Bool_, the type of booleans.
+
+_Char_, the type of characters.
+
+_Any_, the type of anything whatsoever.
+
+_Object_, the type of all objects (ie things defined by classes).
+
+_Date_, the type of dates.
+
+_Unit_, the type of units.
+
+_Pathname_, the type of pathname objects used to represent URLs (and local
+file names, etc).
+
+\endlist
+
+\endsection
+
+\endchapter
+
+\appendix spice standard packages
+
+Spice compes with a collection of standard packages. Most of them are
+automaticlly imported by the compiler (except in limited implementations), but
+it is permitted to export them explicitly.
+
+\table
+
+\row _package name_         \ _description_ \endrow
+
+\row Spice.core.complex     \ handling complex arithmetic \endrow
+
+\row Spice.core.ratios      \ handling rational numbers \endrow
+
+\row Spice.core.bignums     \ handling big integers \endrow
+
+\row Spice.core.styles      \ style operations \endrow
+
+\row Spice.core.units       \ _define unit_ definitions and operations \endrow
+
+\row Spice.core.properties  \ _property_ declarations and operations \endrow
+
+\row Spice.core.multimethods \ support for multimethods \endrow
+
+\row Spice.core.multivalues \ support for multiple values \endrow
+
+\row Spice.core.monomethods \ support for monomethods (single-argument
+polymorphism) \endrow
+
+\row Spice.core.multiheritance \ support for multiple inheritance \endrow
+
+\row Spice.core.dates       \ the _Date_ type and its operations \endrow
+
+\row Spice.core.io          \
+basic input/output support, including pathnames \endrow
+
+\row Spice.core.files       \ file input/output support \endrow
+
+\row Spice.core.net         \ network input/output support \endrow
+
+\row Spice.core.tables      \ lookup table support \endrow
+
+\endtable
+
+\endappendix
+
+\appendix glossary
+
+\list
+
+_absent_. The "missing" value. Also spelt _null_.
+
+_all_. reserved word used following _do_ in loops to specify that the value of
+the loop includes all the values from iterating through its body.
+
+_Any_. The universal type; all values are compatible with _Any_.
+
+_class_. A value representing a template for a collection of other values
+called its _instances_.
+
+_explode_. (a) the name of a procedure which explodes its single argument. (b)
+to take a value and deliver all of its consituent values.
+
+_enum_. An abbreviated _class_ definition which describes a new class and all
+of its values.
+
+_hole_. The marker _?_ in an expression, representing a parameter position
+for an implicit lambda-expression wrapped round the smallest enclosing
+application.
+
+_initialiser_. A procedure declared with _define init_ which initialises
+its first argument (usually called _this_) according to the values of its
+remaining instances.
+
+_lambda expression_. An expression describing a procedure by giving its
+arguments and body.
+
+_method_. A _procedure_ expected to be called using dot-notation and defined
+within a _class_. Methods have a usually-implicit first argument usually
+called _this_.
+
+_measure_. A value consisting of a number and a unit, meaning that many of
+that unit.
+
+_multiple values_. A Spice expression can evaluate to zero or more values,
+and how many values is determined at run-time, not compile-time. Thus a
+function call, or a loop, may deliver several results, which may be assigned
+or embedded into a larger expression.
+
+_new_. Syntactic form for building instances of a class.
+
+_null_. Another name for _absent_.
+
+_package_. A named collection of definitions and executable expressions; the
+unit of encapsulation.
+
+_predicate_. A _procedure_ of one argument that returns a single _Bool_ value.
+
+_procedure_. A piece of code invoked from elsewhere to perform some specified
+task. A procedure takes some number of arguments, performs some action,
+and delivers some number of results.
+
+_property_. (a) part of a _style_ that gives a value to some aspect of
+rendering. (b) the name of such a part. (c) A procedure which maps objects to
+values in a way that respects their class inheritance structure. (d) The name
+of such a procedure.
+
+_slot_. (a) A named location within (instances of) a class. (b) the procedure
+which gives access to such a location.
+
+_super_. Used in method calls to invoke the "next more general" method.
+
+_unit_. The value used in a _measure_ to specify the units of that measure,
+eg inches, seconds, x's, and so on.
+
+_updater_. The part of a _procedure_ that implements its behaviour when it is
+called as the target of an assignment.
+
+\endlist
+
+\endappendix
+
+\appendix syntactic summary
+
+This section gathers together all the syntax from the rest of the document.
+
+\allsyntax
+\endappendix
+
+\endpart

@@ -1,0 +1,48 @@
+Date: 16/Jul/03
+Re: Indefinite Arguments
+
+I have just finished up adding indefinite arguments (... args) to JSpice.  
+This was a fair amount of work because I wanted to add them to 
+assignments, local declarations (val & var), lambda functions (fun) and
+named functions (define).  In addition, the existing code had made the
+assumption that all variables consumed a single argument and so I had
+to root out all the places that occur.
+
+If you aren't familiar with Spice's indefinite variables, here is a
+short summary.  The "..." operator applies to list-like objects and
+is used in a postfix position.  When used as part of an ordinary
+expression it returns all the members of the list, rather like Poplog's
+-explode- procedure.
+
+However, it can also be used as a modifier in a local declaration or
+local parameter.  For example you can write
+    val results... = f();
+or
+    define firstArg( x, _... ) => x enddefine
+
+When used in this way, as part of a declaration or binding, it has the
+effect of gathering SOME of the inputs and CONSTRUCTING a list from 
+them.  In effect it runs -explode- in reverse!  [And it is part of
+a planned expansion of Spice for _all_ constructors to be act in a
+similar way.]
+
+So JSpice can now properly handle bindings for named variables, 
+anonymous variables, indefinite named variables and indefinite
+anonymous variables.  Here's a simple example:- 
+
+    [Glory:jspice/JSpice/build] steve% java -ea -jar JSpice.jar
+    Welcome to JSpice
+    :-) define f( x, _..., z, _ ) => x, z enddefine;
+    :-) f( 'abcdefg' );
+    'a'
+    'f'
+    :-)
+ 
+And here's one with an indefinite named variable:-
+
+    [Glory:jspice/JSpice/build] steve% java -ea -jar JSpice.jar
+    Welcome to JSpice
+    :-) fun ( x..., _, y, _, _ ) => x, y endfun( 'pqrstuvwxyz' );
+    {'p', 'q', 'r', 's', 't', 'u', 'v'}
+    'x'
+    :-) 

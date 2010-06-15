@@ -1,0 +1,211 @@
+Re: define
+
+---------------------------------------------------------------------
+To: Chris Dollin:kers@hplb.hpl.hp.com, eh@electric-hedgehog.net;
+From: Stephen Leach <steve@watchfield.com>
+Subject: define
+Cc: 
+Bcc: 
+X-Attachments: 
+
+Hi Chris,
+
+Further thought on the choices surrounding define prompts me to make these observations.
+
+[0] Our general scheme fits into one or both patterns
+
+    define Modifier* Selector SelectedStuff enddefine
+    define Modifier* FunApp enddefine
+
+[1] It is required that a reader can distinguish Modifiers and Selectors without knowing anything about which version of Spice we are using.  This is a special case of the Principle of Innocent Parsing which demands we can parse a program without knowing anything about the bindings.
+
+[2] It is required that no valid define statement has an ambiguous parse.
+
+[3] We wish to restrict SelectedStuff as little as possible since the contents of these are future extensions.
+
+[4] If we permit Modifiers to be "unadorned" Names we must either mark the Selectors or restrict the SelectedStuff.  This is because without Selectors being marked we cannot tell from position what Name is a Selector and which is a modifier.  e.g.
+     # Any of foo bar or gort (or none) could be the Selector
+     define foo bar gort -etc-
+
+[5] If we permit Modifiers to be "unadorned" Names  _and_ permit Selectors to be omitted, we must choose to mark Selectors.  This is because the appropriate restriction must be that SelectedStuff must contain a non-Name token in a fixed position.  Since the common situation will be
+     define Modifier* Selector Name -etc- 
+the restriction would be on the 2nd token in SelectedStuff.   However we must further strengthen this restriction to preclude all tokens that may appear in the second position of a FunApp i.e.
+"(", ".", "@", ":", and in the future "{", "}", "<", ">", and quote marks.  This is so restrictive that it is fair to say it is unacceptable.
+
+[6] If we permit Selectors to be omitted we must either restrict the tokens that may follow Selectors _or_ we must mark all Selectors.  This is because if Selectors are optional they are confusible with the Name at the beginning of a prefix FunApp.  This means that either the syntactic form of a FunApp is distinct from the syntactic form of SelectedStuff _or_ we can tell the difference between a Selector and a Name.
+
+[7] If we permit both Modifiers to be "unadorned" Names _and_ Selectors to be omitted then Modifiers are also potentially confusible with the start of a FunApp.  This means that either we must restrict the forms of a FunApp, so that we can determine whether the last Name is a function name.  It is not possible to attempt to disambiguate using both parses because of "@" having an optional left hand side.
+    # Is foo a Modifier or a formal parameter?
+    define foo @ bar =>
+
+[8] If "@" is not permitted an empty left hand side then the above situation can be disambiguated by attempting both parses.  Proof:
+    (a) All FunApp forms either begin with "(" or with a Name.
+    (b) No valid FunApp forms have two consecutive Names.
+    (c) Prefixing a valid FunApp form with a Name creates either a form with
+        two names _or_ an additional level of function application.
+    (d) Nether of the two outcomes are valid FunApps.
+
+[9] If "@" is permitted an empty left hand and right hand side, though presumably not simultaneously, lots of amusing potential for ambiguity arises e.g.
+    f @ @ g  could be f @ ( @ g ) or ( f @ ) @ g i.e. g()( f ) or g( f() )
+Although this ambiguity can always be uniquely resolved by "fixity" it is unclear what @ f is bringing to the party that f( ... ) does not.
+
+[10] If we mark Selectors _and_ permit Selectors to be omitted we must select the marking technique with care to avoid confusion between the contents of a FunApp and a marked Selector.  A FunApp may contain the following token types
+    (a) Name including _
+    (b) One of the following signs ( ) . @ : ?? , =>
+    (c) The type-dispatch sign :-
+    (d) And should pattern matching be permitted { } < > " ' `
+    (e) And for futureproofing $ 
+
+[11] If we permit Selectors to be omitted and insist that Modifiers are marked the same considerations as above apply to marking Modifiers.
+
+[12] We already need a way of saying "the next Name is (not) an ordinary identifier".  It is plausible that whatever we choose for marking Selectors/Modifiers is the right general mechanism for marking Names that must must be treated as extraordinary.  For example, let us suppose that we choose "\" as a prefix marker for ordinaryness; since we use "/" to mean "not" then perhaps "/\" would be a natural symbol for extraordinary.
+
+                               ---oooOOOooo---
+
+What the above boils down to is that there are some simple consequences to our decisions.  There are two big choices
+    (A) Are Modifiers allowed to be "unadorned" Names?
+    (B) May Selectors be omitted in the interests of brevity?
+In the examples below
+    gormless is a novel Modifier
+    rule Name = Stuff is a novel Selector definition-part
+    /\ is the extraordinary marker (prefix)
+
+Approach(A&B): If we admit unadorned Names as Modifiers then we have taken a very decisive step.  We are obliged to mark Selectors because restricting SelectedStuff doesn't work.  Since we are marking Selectors we may easily permit them to be omitted, since this satisfies the precondition for omission.  However, this does entail some modest restriction on the marking technique (i.e. it precludes the use of ":") and biases us against the use of "@" with an empty left-hand-side (otherwise we must accept restrictions that have to be learnt, not good).  Whatever marking technique we employ could be chosen as a general extraordinary-role marker.
+
+    define public gormless f( x ) => x enddefine
+    define /\rule fred = -etc-
+    define gormless /\rule fred = -etc-
+
+One solution would be to use the optional Modifier marking notation '[ ... ]' to double up as a Selector marker.  The convention would be that '[ ... ]' could only be used immediately before (or after) an explicit Selector.  
+
+    define public gormless f( x ) => x enddefine
+    define [] rule fred = -etc-
+    define [gormless] rule fred = -etc-
+
+Approach(!A&B): If we mark Modifiers we have only gained a very modest amount in terms of omitted Selectors.  We now need to choose between marking Selectors (again) or restricting the subsequent expression.  Requiring Selectors to be marked is pointless - it negates the value of marking Modifiers - and is dominated by Approach(A&B).  To take advantage of the restriction on Modifiers we must choose restricting the type of expression that follows a Selector.  As it happens there is a hybrid restriction that makes sense - a Selector must either be reserved _or_ always be followed by a Name _or_ be marked as extraordinary.
+
+    define public [gormless] f( x ) => x enddefine
+    define rule fred = -etc-
+    define [gormless] rule fred = -etc-
+
+Approach(A&!B): If we argue for mandatory Selectors then we are obliged to add a secondary "short" function definition, in my opinion.  Selectors must also be restricted by marking or restricting SelectedStuff or a hybrid approach.  Exclusively marked Selectors is a weak position since it is dominated by Approach (A&B).  A hybrid approach is by no means silly since the restrictions are modest and would permit a wide range of language extensions without the need for extraordinary marking.
+
+    function public [gormless] f( x ) => x endfunction
+    define rule fred = -etc-
+    define gormless rule fred = -etc-
+
+Approach(!A&!B): The original and entirely consistent syntax.  Only weakness is verbosity which means we need a "short" function definition form.
+
+    function public [gormless] f( x ) => x enddefine
+    define rule fred = -etc-
+    define [gormless] rule fred = -etc-
+-- 
+Steve
+
+
+---------------------------------------------------------------------
+Date:	17/Apr/03
+
+I have just come off the phone after a useful conversation with Chris Dollin.
+It looks like we have a candidate final syntax for the "define" keyword.
+We have been engaged in a very lengthy, low-intensity wrangling over how to
+achieve all our design criteria.  It has taken us a long time because we've
+wanted to keep things the syntax reasonably compact.
+
+SUMMARY
+-------
+
+Full form:
+
+    DEFINE ::=
+        define
+            [instance [<CLASSNAME>] | noninstance]
+            [generic | method | function | procedure]
+            CALL_FORM => STATEMENTS
+        enddefine
+
+    CALL_FORM ::= NAME( ARGLIST ) | <other versions not yet finally agreed>
+
+Keywords:
+    instance        implies an extra "this" parameter
+    noninstance     no implied parameters
+    procedure       declares a procedure
+    generic         declares a procedure that dispatches on some arg
+    function        declares a procedure that dispatches on no arg
+    method          defines an override
+
+Abbreviations:
+
+    * if generic/function/method/procedure is omitted, procedure is the
+      default
+
+    * outside a class, noninstance is the default
+        [and instance must specify a class]
+
+    * inside a class SPOO, instance<SPOO> is the default
+
+    * instance<CLASSNAME> is implicitly a dispatch parameter when used
+      with generic or method, non-dispatch when used with function,
+      and we have not resolved what it should mean with procedure.
+
+Redundancy:
+
+    A generic with no :- generates a warning/error
+    A function with one or more :- generates a warning/error
+
+
+EXAMPLES
+--------
+
+define class FooClass extends BarClass;
+    define fooProc() => S enddefine             # introduce new method
+    define method barProc() => S' enddefine;    # override method
+enddefine
+
+define gort( n ) => S'' enddefine               # introduce function
+define generic trog( x : FooClass ) =>          # introduce generic
+    S'''
+enddefine
+
+
+MOTIVATION
+----------
+We are trying to accomplish quite a few jobs with this syntax.  Firstly,
+we want to emphasize the difference between the base definition of a
+procedure and any overrides.  We believe that the inability to clearly
+mark an "override" in languages such as Java is a design blunder.  (And
+Java is the new design benchmark, of course.)
+
+In this proposal, the keyword "method" is used to introduce an override.
+The base definition must be introduced by generic/function/procedure.
+
+The keywords generic/function permit the programmer to redundantly state
+whether overrides are/aren't permitted respectively.  Although that is
+implied by the presence of a dispatch parameter, we believe that this is
+worth emphasizing.
+
+The keyword "procedure" avoids any commitment with regard to overrides
+and is mainly used to permit compact definitions that do not
+provoke warnings.  e.g.
+
+    define factorial( n : Num ) => .... enddefine;         # OK
+    define x.isMember( obj :- Any ) => ... enddefine;      # also OK
+
+Secondly, we wanted to make it possible to write any procedure or
+procedure part inside or outside a class definition.  This was
+accomplished by distinguishing instance and noninstance declarations.
+In other words, the only significance of placing a procedure
+definition inside a class would be one of convenience.
+
+Lastly we wanted to have a reasonably compact form for the important common
+cases and a completely general form to cover all eventualities.  The general
+form could be quite verbose - although it isn't too bad as it turns out.
+
+Getting the defaults right has proved to be tricky and we've had to
+abandon one of our minor goals in the process.  We wanted to avoid the
+meaning of a definition changing silently when you moved it from inside
+a class to outside a class (or vice versa).  That's been lost because of
+the instance/noninstance default is different inside a class.
+
+This is a pity but probably not a big deal in practice simply because
+the indentation habits of programmers.

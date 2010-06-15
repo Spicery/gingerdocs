@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
+<html>
+<head>
+	<title>Spice Memo (16th May 2001)</title>
+	<meta name="generator" content="BBEdit 6.1.2">
+</head>
+<body bgcolor="#FFFFFF">
+
+<h1>Memo: Meeting between Steve Leach (SFKL) and Chris Dollin (CJD), Wednesday 16th May 2001</h1>
+
+<p><b>Agenda:</b></p>
+<ol>
+	<li>Distinguishing original definitions from overriding definitions</li>
+	<li>Lightweight lists</li>
+	<li>Loops applied to finite maps</li>
+	<li>Constructing new values in Spice</li>
+	<li>Mixins, an experiment in multiple inheritance</li>
+</ol>
+
+
+<h2>1. Distinguishing Original Definitions From Overriding Definitions</h2>
+
+<p>
+<b>Background:</b> We have independently become convinced that it is a Good Idea to distinguish the first or primal definition of a method from subsequent overriding definitions.
+</p>
+
+<p>
+<b>Outcome:</b> Although we did not resolve "spelling" issues we have strong agreement that this distinction will be supported.  There will be 6 typical ways to introduce procedures.  All spelling is for illustration only.
+</p>
+
+<pre>
+define function f( A ) =&gt;
+	This introduces the first and only definition of f.  In effect, 
+	the "unique" annotation is implied.
+
+define [multifile|singlefile] generic function f( A ) =&gt;
+	This introduces the primal definition of f.  All overloadings of
+	f must have an argument shape that fits A.  We think there should
+	be an annotation that restricts overloads to be restricted to the
+	compilation unit that the definition appears in.  I have indicated
+	this with the multifile/singlefile annotation.  Multifile is the
+	default.
+
+define overload function f( A ) =&gt;
+	This introduces an overloading of an already established function.
+
+define method f( A ) =&gt;
+	This introduces the first and only definition of f.
+
+define generic method f( A ) =&gt;
+	This introduces the primal definition of a method inside a 
+	class definition.  Same comments as for generic function.
+
+define overload method f( A ) =&gt;
+	This introduces an overloading of an already established
+	method.
+</pre>
+
+
+<h2>2. Lightweight Lists</h2>
+
+<p>
+<b>Background:</b> In MillScript, SFKL has been exploring the opportunities naturally offered by implementing in Java.  In particular, the fact that MillScript Sequences are implemented as Java Lists allows MillScript programmers to enjoy multiple implementations of Sequence.  SFKL is of the opinion that this is a Good Thing.  CJD raises the issue of efficiency.  SFKL claims there is no serious conflict and the solution is the adoption of inextensible sequences as the default.
+</p>
+<p>
+<b>Outcome:</b> Sequences are an abstraction which have both lightweight and heavyweight implementations.  The two important lightweight implementations are singly linked lists and simple vectors.  We agree that these will appear as inextensible and unmodifiable classes.
+</p>
+<p>
+Other more heavyweight implementations will be available.  Selection of implementation is done simply by using the appropriate constructor.
+</p>
+<p>
+The <tt>{ ... }</tt> syntax is free to select any unmodifiable implementation of sequences.
+</p>
+
+
+<h2>3. Loops Applied To Finite Maps</h2>
+
+<p>
+<b>Background:</b> SFKL has been implementing the core polymorphic functions for sequences in MillScript.  This has given rise to a general  exploration of loop iterators.  The suggestion is that <tt><nobr><i>i</i> in <i>M</i></nobr></tt> is best understood as an iteration over the range of a map - sequences being a specialized map.
+</p>
+
+<p>
+<b>Outcome:</b> We agree to adopt a new iterator <tt><nobr><i>m</i> on <i>M</i></nobr></tt> which iterates over the maplets of a map (including sequences).  In particular, 
+</p>
+<pre>
+	for k ==&gt; v on m do ...
+</pre>
+will iterate over the key/value pairs of the maplets of m.  The construction
+<pre>
+	for i in m do ...
+</pre>
+is therefore understood to be equivalent to
+<pre>
+	for _ ==&gt; i on m do ...
+</pre>
+
+<p>We have a working understanding that only two forms of <tt>on</tt> need to be supported initially i.e. <tt><nobr><i>id</i> on <i>E</i></nobr></tt> and <tt><nobr><i>id</i> ==&gt; <i>id'</i> on <i>E</i></nobr></tt>.  However, our aim is to work towards (at least) one-way unification.
+</p>
+
+<h2>4. Constructing New Values In Spice</h2>
+
+<p><b>Background:</b> CJD raised the issue of constructing new values in Spice. This was not completed to either of our satisfaction.
+</p>
+
+<p>
+<b>Outcome:</b> We have resolved to distinguish three ideas - the external 
+constructors, the initializers and the local constructor "mint".
+</p>
+
+<p>
+The constructors are, on the whole, ordinary procedures.  However
+they are obliged to return a single value of the appropriate class
+(or subclass).  They also are privileged to have access to the local
+constructor "mint".
+</p>
+
+<p>
+Initializers are what programmers typically write.  For the purposes
+of illustration, these are introduced with the keyword "init" rather
+than the more conventional "new" in order to emphasize their 
+role of initializing an empty value.  Initializers are required to
+extend all the initializers of their subclasses.
+</p>
+
+<p>
+The local constructor "mint" takes a class, an initializer and some
+arguments.  It mints a new object and applies the initializer with
+the arguments passed through.
+</p>
+<pre>
+	mint( Spoo, Init, Args... ) -&gt; Spoo
+</pre>
+<p>
+The <tt>new</tt> operator takes as an argument EITHER a constructor OR
+an initializer OR a class.  Roughly speaking it works like this,
+inventing syntax wildly ...
+</p>
+<pre>
+	define operator new( c : Constructor )( args... ) =&gt;
+		actualConstructor( c )( args... )
+	enddefine;
+
+	define operator new( i : Initializer )( args ... ) =&gt;
+		# has access to mint somehow!
+		mint( i.initializerClass, i, args... )
+	enddefine;
+
+	define operator new( c : Class )( args ... ) =&gt;
+		new ( c.unnamedConstructor || c.unnamedInitializer )( args ... )
+	enddefine;
+</pre>
+<p>
+The syntax is illustrated below :-
+</p>
+<pre>
+	define class Spoo;
+		define new ( A ) =&gt; B : Spoo 
+	
+		This defines an unnamed constructor.  It can be accessed from
+		the class.  e.g. Spoo.unnamedConstructor.  It can be invoked
+		by using the class as a substitute i.e. new Spoo( A ).
+	
+	define class Spoo;
+		define init ( A ) =&gt; B 
+	
+		This defines an unnamed initializer.  It can be accessed from
+		the class.  e.g. Spoo.unnamedInitializer.  
+	
+	define class Spoo;
+		define new Foo( A ) =&gt; B : Spoo
+	
+		Foo is a named constructor of Spoo.  It can be passed as an
+		argument to new.
+	
+	define class Spoo;
+		define init Foo( A ) =&gt; B
+	
+		Foo is defined as a named initializer.  It must extend all 
+		the initializers of Spoo (none shown).  It can be used as an 
+		argument to mint, new, or it can be applied directly to 
+		rejuvenate a value.  e.g.
+			obj.rejuvenate( Foo )
+</pre>
+
+
+<h2>5. Mixins, An Experiment In Multiple Inheritance</h2>
+
+<p><b>Background:</b> SFKL raised the topic of compromising the multiple inheritance model.  Classes that could be inherited multiply would be marked as mixins, otherwise single inheritance would be used.  CJD proposed the possibility of, instead of annotating classes, using the verbs "extends" and "mixin" to dynamically determine the single vs multiple inheritance of the class.  We both liked this idea.
+</p>
+
+<p><b>Analysis:</b> We analysed the verb-based approach and discovered it had
+unacceptable implementation consequences.  In essence, we would have to
+generate two method bodies for each method - one fast and one slow.  Pity.
+</p>
+<p><b>Outcome:</b> We provisionally accept this proposal in some form, to be
+determined, as an experiment.  We both think that the performance benefits
+are well worth getting.
+</p>
+
+<p><b>Postscript by SFKL:</b> After further reflection on mixins SFKL now believe that a suggestion by CJD is the right compromise.  We should distinguish the classes that can only be singly-inherited.  Let's call these "royal" classes.  The rule is that a class may inherit from any number of commoner classes but a maximum of one royal class.  This gets the defaults the right way round.
+</p>
+
+</body>
+</html>

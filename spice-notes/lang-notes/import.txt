@@ -1,0 +1,43 @@
+Re: Import
+Date:	11 Mar 04
+
+The general form of an import looks like this
+
+	import [qualified] [ NICKNAME = ] PKGNAME [ facet FACETS ] [ into FACET ]
+	where 
+		NICKNAME is a simple name
+		PKGNAME is a compound name (may include dots)
+		FACETS is a comma-separated sequence of facet names
+		FACET is a simple name
+
+A qualified import means that references to imported identifiers must use
+an explicit nickname.  (n.b. Chris Dollin prefers to use the phrase 
+"alias" to nickname.)  
+
+To import "into" a facet means that the imported identifiers become part of
+that facet.  As a trivial consequence, those identifiers may not be shadowed.
+More important is the fact that this can be used to join together several
+subsidary packages into a single master package.  e.g.
+
+	package org.openspice.master_package;
+	import org.openspice.subpackage1 into public;
+	import org.openspice.subpackage2 into public;
+	import org.openspice.subpackage3 into public;
+
+
+--------------------------------------------------------------------------------
+
+A pervasive import is one which cannot be shadowed, although the imports are
+not actually included into the facets.  I haven't got a record of
+the agreed syntax for pervasive imports.  I expect that it looks like this:
+
+	pervasive import ....
+
+--------------------------------------------------------------------------------
+
+Importing "into" is the replacement for "public imports".  
+
+
+
+
+--------------------------------------------------------------------------------

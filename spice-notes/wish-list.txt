@@ -1,0 +1,35 @@
+This is a Wish-List for all the Features I'd Love Spice to have
+---------------------------------------------------------------
+
+Datatypes
+---------
+
+Dates			(by which I mean day-number, really)
+TimeOfDay		(by which I mean time with a 24-hour clock)
+A full-on localized date + time
+		
+Currency 		(see java.util.Currency)
+
+Colours			RGB values - and conversions to other values
+
+Vector graphics	(for static images)
+Raster graphics
+
+Styled text
+
+
+Easy-Access Reference Info
+--------------------------
+
+World atlas
+Phone directories
+Dictionary
+Thesaurus
+
+
+Personal Info Management
+------------------------
+Personal address book
+Personal calendar
+Personal journal/diary/logbook
+Personal wallet

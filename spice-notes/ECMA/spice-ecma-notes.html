@@ -1,0 +1,427 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>Evolving ECMAScript to add style rules and higher
+performance object-oriented scripting</title>
+<style>
+  body { 
+    margin-left: 10%; 
+    margin-right: 10%; 
+    font-family: sans-serif
+  }
+  h1 { margin-left: -8% }
+  h2,h3,h4,h5,h6 { margin-left: -4% }
+  pre { color: green; font-family: fixed }
+  em { font-style: italic }
+  strong { text-transform: uppercase; font-weight: bold }
+  .note {font-style: italic; color: rgb(192, 101, 101) }
+  .footnote {font-size: 80% }
+  .issue {
+    color: navy;
+    font-family: "Comic Sans MS", sans-serif;
+    font-weight: normal
+  }
+  blockquote {
+    color: navy;
+    font-family: "Comic Sans MS", sans-serif;
+    font-weight: normal
+  }
+  table {
+    font-family: sans-serif;
+    font-size: 80%;
+    background: rgb(255,255,153)
+  }
+  td {
+    font-size: 80%
+  }
+  div.references { margin-left: 4%; margin-right: 4% }
+  div.box { border: solid; border-width: thin }
+  div.color {
+    background: rgb(204,204,255);
+    padding: 0.5em;
+    border: none
+  }
+  p.changed {
+    padding-left: 0.2em;
+    border-left-width: thin;
+    border-color: red
+  }
+  .dropcap {
+     float: left;
+     font: bold 1.4em "Times New Roman", serif;
+     color: rgb(51, 0, 102);
+     background: rgb(255, 255, 153)
+  }
+</style>
+</head>
+<body bgcolor="#FFFFE0" text="black">
+<h1 align="center">Evolving ECMAScript to add style rules and boost
+performance</h1>
+
+<h2 align="center">A comparision between ECMAScript 262 and
+Spice</h2>
+
+<p align="center"><small>Dave Raggett &lt;dsr@w3.org&gt;<br>
+25th September 1998</small></p>
+
+<p class="footnote">This version incorporates a number of syntax
+changes inspired by discussions at ECMA. For instance, the use of
+'class' rather than 'prototype' and the ability to use reserved
+words as identifiers.</p>
+
+<h3 align="center">Abstract</h3>
+
+<blockquote>
+<p><em>Application developers frequently find the limitations of
+HTML get in the way. Wouldn't it be nice if you could just add your
+own tags and write a few lines of script to handle them? Well HP
+has been busy developing a solution based upon a new way to combine
+style sheets and scripting, building upon CSS and ECMAScript. The
+result called "Spice" allows you to add new style properties and to
+define or import support for new ways to render XML tags. This
+paper suggests how to extend ECMAScript 262 to add style rules and
+boost performance for flexible object-oriented scripting.</em></p>
+
+<p><em>HP has submitted Spice to the World Wide Web Consortium,
+see</em></p>
+
+<p align="center"><a href=
+"http://www.w3.org/TR/1998/NOTE-spice-19980123.html">
+http://www.w3.org/TR/1998/NOTE-spice-19980123.html</a></p>
+</blockquote>
+
+<h2>Style Rules</h2>
+
+<p>Style rules are an addition to ECMAScript and necessitate the
+introduction of "style" as a new reserved word. The application of
+style rules to markup trees is handled through libraries. This
+allows for different choices in how XML is parsed, e.g. do you keep
+the entire parse tree or just the ancestor elements and immediately
+preceding peers; do you apply style rules eagerly as tags are
+parsed or do you wait until the parse tree has been fully
+built?</p>
+
+<p>Style rules conform to the definitions in the W3C CSS2
+specification for the precedence of selectors and the cascading
+mechanism for associating style properties with elements in the
+markup parse tree. Note that you are not restricted to the
+properties defined in CSS2, and are free to use others as
+appropriate to new kinds of flow objects.</p>
+
+<p>Style rules: style keyword followed by CSS2 selector and
+property list:</p>
+
+<pre>
+style em { fontweight: italic; display: inline }
+</pre>
+
+<p>Style rules are sorted by specificity for the tag to which they
+apply:</p>
+
+<pre>
+style p { fontfamily: "Times New Roman", serif; display: block }
+
+style p.note { fontfamily: "MS Comic Sans", "sans-serif" }
+</pre>
+
+<p>As a result, p tags with the class "note" get the
+properties:</p>
+
+<pre>
+   fontfamily: "MS Comic Sans", "sans-serif"
+   display: block
+</pre>
+
+<p>while other p tags get the properties:</p>
+
+<pre>
+   fontfamily: "Times New Roman", serif;
+   display: block
+</pre>
+
+<h3>Hyphenation</h3>
+
+<p>CSS uses hyphens within style property names. This presents
+problems in a scripting language as the hyphen will be confused
+with the infix minus operator. As a result Spice doesn't allow you
+to hyphenate property names.</p>
+
+<p class="issue">What about hyphens in tag names and attribute
+names? One idea would be allow hyphens when immediately preceded by
+a backslash character, e.g. my\-tag which matches "my-tag".
+Alternatively, you could use the hexadecimal Unicode character code
+escape sequence as in my\u002Dtag. Note that a general escaping
+mechanism is needed to cater for the liberal definition of namechar
+in the XML 1.0 specification. This should perhaps apply to all
+ECMAScript identifiers.</p>
+
+<h2>Flow Objects</h2>
+
+<p>The display property names the flow object class for formatting
+the markup element the rule applies to. The above examples use
+inline flow objects for em elements and block for p elements.</p>
+
+<p>Flow objects are imported from libraries or written directly in
+the scripting language. The process of applying the style rules to
+a markup tree creates a corresponding hierarchy of flow
+objects.</p>
+
+<p>All flow objects must support a small set of methods:</p>
+
+<pre>
+   object.format(element);  // format markup element
+   object.append(child);    // append flow object as child
+</pre>
+
+<p>Additional methods support rendering to a window, reformatting
+upon changes, e.g. when the window is resized, and dispatching of
+events.</p>
+
+<p>Markup elements must support the properties:</p>
+
+<pre>
+   element.attributes;      // the set of attributes
+   element.content;         // the element's content
+   element.style;           // the element's style properties
+</pre>
+
+<p>Each attribute must support the properties:</p>
+
+<pre>
+   attribute.name;          // e.g. href
+   attribute.value;         // e.g. monica.jpg
+</pre>
+
+<p>The format method allows the flow object to look at the elements
+attributes and style properties to determine what styles to adopt.
+The format method is called after the new flow object has been
+appended to its parent flow object. This ensures that the flow
+object can ask its parent flow object for inherited styles, for
+example font size and family.</p>
+
+<p>At the minimum, style property values can be parsed as a
+sequence of lexical tokens, represented as text strings. For
+greater efficiency you can represent property values as symbolic
+expressions. Simple property values are identifiers such as <em>
+bold</em> or <em>center</em> or string literals such as <em>"Times
+New Roman"</em>. Compound property values may include both comma
+and space separated items. You can also use operators like + and /
+for expressions, and functions such as <em>rgb(128, 128,
+255)</em>.</p>
+
+<p>Spice defines a number of units such as "cm" for lengths, for
+instance <em>12cm</em>. Other common units are "px" for pixels,
+"pt" for points and "em" for em's where one em is the same length
+as the current font height. Less common are "s" for seconds and
+"Hz" for frequency. "%" is used for percentages, e.g. for
+expressing the font size relative to that used by the parent flow
+object.</p>
+
+<h3>Units</h3>
+
+<p>The common case is a number followed immediately by an
+identifier indicating the units of measure, e.g.</p>
+
+<pre>
+12pt        // height in points
+2.5cm       // distance in centimetres
+3s          // time in seconds
+1000Hz      // frequency in Hertz
+120%        // 120 percent
+</pre>
+
+<p>To allow units to be used with variables, a different syntax is
+appropriate to avoid syntactic ambiguities. For instance:</p>
+
+<pre>
+units(x, pt)    // x is in points
+</pre>
+
+<p>Spice allows you to declare units in terms of other units. In
+some cases this allows the compiler to reduce expressions at
+compile time. For some units such as the <em>em</em> (the height of
+the current font) you don't know the conversion factor at compile
+time. The meaning of the <em>%</em> unit also depends on the
+context, e.g. the height of the parent font, or the distance
+between the current left and right margins. The evaluation of
+symbolic expressions involving units is carried out in the context
+of an environment that provides the means to convert units. This
+environment is set up by flow objects to contain the current
+definition of 1pt, 1em and 100% etc. Note that the conversion of
+lengths such as points and inches to pixels is not fixed and can be
+adjusted to zoom the document's contents.</p>
+
+<p>Units can be handled in a similar fashion to semicolon
+omission. One way to think of this is as a filter between the
+lexer and the parser. The filter inserts missing semicolons and
+recognizes tokens acting as units of measure, labeling them as
+postfix operators. This approach avoids the need to treat units
+as reserved words, and leaves you free to use compiler generator
+technologies such as yacc for the parser.</p>
+
+<p>The % token is an interesting case as it also serves as the
+remainder operator. The filter can use a simple rule to identify
+whether a % token should be considered as the postfix percent
+operator or as the infix remainder operator: Choose the infix role
+when followed by a term that unambigously starts an expression,
+otherwise chose the prefix role. By making % bind more tightly
+than + the expression "10% + 3" is always interpreted as (10%) +
+3. While in "10% (+3)" or "10 % 3" the % is interpreted as
+remainder.</p>
+
+
+<h2>Importing Flow Object Classes</h2>
+
+<p>You will often want to use existing libraries of flow object
+classes. Such libraries could be written in Java, or C++ or even in
+ECMAScript. The import statement allows you to import named flow
+objects.</p>
+
+<p>Interoperability across vendors and platforms is crucial to the
+Web as it greatly increases the number of people who can read each
+document. This in turn encourages the creation of content, and
+helps to explain why the Web has grown so dramatically.</p>
+
+<p>Spice style sheets support interoperability by decoupling flow
+objects from their implementations. A Spice library (aka <em>spice
+rack</em>) names a set of flow objects with support for particular
+style properties. Each library is identified by a URL.</p>
+
+<p>Libraries are decoupled from their implementations. This makes
+it practical to provide different implementations of a library for
+each platform. Each flow object has a name such as "paragraph" that
+is local in scope to the library in which it is defined. The <em>
+import</em> statement is used to import flow objects from
+libraries, e.g.</p>
+
+<pre>
+    import document, block, inline from "http://www.w3.org/Style/std.lib";
+</pre>
+
+<p>Here 'document' and 'inline' etc. are names of flow objects from
+the (hypothetical) library identified by the URL
+&lt;http://www.w3.org/Style/std.lib&gt;.</p>
+
+<p>The <em>implements</em> statement is used to specify
+implementations for particular libraries, e.g.</p>
+
+<pre>
+    "css.spice" implements "http://www.w3.org/Style/std.lib" on "Spice";
+    "css.jar" implements "http://www.w3.org/Style/std.lib" on "Java";
+    "css.cab" implements "http://www.w3.org/Style/std.lib" on "ActiveX/win32";
+</pre>
+
+<p>Here "css.jar" and "css.cab" are relative URLs, defined as
+relative to the URL for the current style sheet. You can also use
+absolute URLs. The <em>on</em> keyword precedes a string naming the
+platform that this implementation applies to.</p>
+
+<p>In the absence of a matching implements statement, the import
+statement expects to get the implementation from the URL specified
+by the <em>from</em> keyword. If that too is missing, you can
+simply list the URLs for the files you want to import, for
+instance:</p>
+
+<pre>
+    import "housestyle.css";    // imports a CSS style sheet
+    import "koolbits.spice";    // imports a Spice style sheet
+</pre>
+
+<h2>Greater Performance</h2>
+
+<p>As the scripting language becomes more powerful, its performance
+will correspondingly become more important. Unfortunately,
+ECMAScript 262 presents barriers to effective compilation:</p>
+
+<h3>The difficulties</h3>
+
+<ul>
+<li>Objects are bound to a set of properties. This set can be
+changed dynamically. The binding can be represented as a view from
+objects to properties or as a view from properties to objects.
+ECMAScript allows each property to be accessed by name or by
+number. The numbers needn't be contiguous.</li>
+
+<li>Accessing a named property of an object involves a lookup
+process. The cost can be reduced by caching the result either with
+the indexing mechanism on the heap, or as local pointers in
+function definitions.</li>
+
+<li>Properties may be inherited from prototypes, which may be
+changed dynamically. This needs to be taken into account in
+determining when the cache is invalid.</li>
+
+<li>For function definitions, the compiler can allocate local
+pointers to cache lookups for properties accessed within the
+function definition . Code within loops can now use the local
+pointer rather than the heavyweight lookup mechanism.</li>
+
+<li>If the code includes a function call, the compiler can't be
+sure that the local pointer remains valid after the call.
+Unfortunately, this is a particularly common case. Threading would
+also pose problems if two threads accessed the same property
+concurrently.</li>
+</ul>
+
+<h3>A fresh approach</h3>
+
+<p>Dramatic improvements in speed and memory needs can be achieved
+by number of adjustments to the language semantics. The first step
+is to provide an explicit syntax for declaring the properties and
+methods of classes. For instance:</p>
+
+<pre>
+  class Warning extends block
+  {
+      method format(element)
+      {
+          this.style.borderStyle = solid;
+          this.append(new Text("Warning!"));
+          ProcessChildren(element, this);
+      }
+  }
+</pre>
+
+<p>The next step is to preclude the ability to change methods by
+assigning a new method at run-time. This ensures that the compiler
+can exploit a static dispatch mechanism. This limitation is not
+unduely restrictive, as languages such as C++, SmallTalk and Java
+demonstrate. In ECMAScript 262 you had to define class methods by
+assigning functions to properties, but this need goes away with the
+new syntax.</p>
+
+<p>To allow efficient code to be generated for local variables, the
+compiler wants to be able to allocate variables to known machine
+registers or known positions on the stack frame. This becomes
+possible if you can identify the scope of a variable statically.
+This precludes the ECMAScript <em>with</em> statement, and the use
+of <em>eval</em> with local variables. This is hard to work around
+because you don't know whether or not a procedure you call invokes
+these to look at this function's environment.</p>
+
+<p>Yet another way to improve performance is to allow people to
+provide optional type information, for instance to specify that a
+given variable will always be a number. For large data structures,
+knowing the types can dramatically reduce the time the garbage
+collector spends tracing the heap.</p>
+
+<p>ECMAScript 262 reserves a number of words for future use. Spice
+takes advantage of these where appropriate, but needs to reserve a
+few more, e.g. "style" and "method". To allow the language to grow
+it should be possible to add to the set of reserved words in
+revisions to the language. At the same time, older scripts in which
+these words have been used as variables should continue to work.
+How can this be arranged?</p>
+
+<p>One idea is for names occurring in variable declarations or the
+left hand side of assignments, or as class or function names to be
+treated identifiers regardless of whether or not they are reserved
+words. An exception is when the word has previously be used in its
+intended role as a reserved word. This makes it practical to detect
+typographical errors where an identifier has been mistyped so that
+it clashes with a reserved word.</p>
+
+<p>Further details are given in a companion papers.</p>
+</body>
+</html>
+

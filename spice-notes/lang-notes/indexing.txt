@@ -1,0 +1,170 @@
+Re: Indexing
+
+--------------------------------------------------------------------------------
+Date: 11/Dec/02
+
+
+I know I've been promising to write down my thoughts on the generalized
+indexing operator (we used to call it super-indexing) for a long while - but
+here they are at last.  As you'll see I haven't really got a polished answer
+but I do think that it makes a worthwhile statement.
+
+The background is that I wanted the index operator to deal with
+multi-dimensional arrays correctly, incorporate both splicing and mapping over
+indices, and include some mechanism for indexing from the end of an array as
+well as the start.  I had convinced myself that all of these were reasonable
+goals - what I found elusive is how they should be combined.
+
+For the purposes of this note I have invented some syntax.  Please bear in mind
+this syntax is for the purposes of presenting the ideas and is not a proposal
+as such.  (I am sure it is worth saying that I am very open to real proposals
+for indexing syntax.)  I have also adopted the convention that the variable U
+is a uni-dimensional array, and B is a bi-dimensional array (matrix).  A is
+simply an array.  Furthermore, although I am focused on arrays you should be
+aware that this is all supposed to work elegantly for finite maps and
+functions, too.
+
+My first concern was what
+   A[ 1, 2 ] =^= A[ ( 1, 2 ) ]
+should mean.  This is a natural question in Spice since expressions deliver
+multiple results very easily.  And there are two plausible answers.  It could
+mean that A is a 2D array and this is the element at (1,2).  Alternatively it
+could mean ( A[ 1 ], A[ 2 ] ).
+
+Eventually I settled on the latter interpretation.  However, I have somewhat
+cautiously added a restriction that indexing with single brackets always yields
+a single result.  If you intend to allow multiple results you must use the
+"fat" index operator A[[ 1, 2 ]]. In effect, using thin brackets is the same as
+adding a type restriction to Any.  i.e.
+    A[ E ] =^= ( A[[ E ]] : Any )
+Please note that this restriction is added purely to protect against accidents
+and could be removed at a later date if it was found to be excessively
+cautious.  I know I'd feel safer with these stabilizers attached.
+
+Even this simple device is very sweet.  It allows us to map a unary function F
+over a set of values quite elegantly.
+    F[[ E ]] =^= for i in { E } do F( i ) endfor
+And, delightfully, we can get the first two characters of a string S like this
+    val ( ch1, ch2 ) = S[[ 1, 2 ]];
+
+But what about indexing two (or more) dimensional arrays?  For this we need an
+extension to the notation and I've chosen the semi-colon.
+    B[[ E; E' ]]
+This leads to the very natural question, what happens when both E and E' yield
+multiple values?  Should it imply parallel or nested iteration?  I think it is
+best to see this as a nested iteration (otherwise splicing doesn't work
+nicely).  So the above is the same as
+    for j in { E } do for i in { E' } do B[ i; j ] endfor endfor
+(There is some ambiguity about the nesting order and this would be best
+resolved by considering it in terms of pattern matching i.e. see it as the
+conjunction of two patterns rather than a nested loop.)
+
+Next up, I was concerned with including slicing.  By this I mean a generalized
+subvector operator.  If S is a string, I want to be able to take the substring
+consisting of the first three characters by writing something like this S[| 1..
+3 |] where "[|"and "|]" are slice brackets (and "[[|" and "|]]" are their
+multiple-valued counterparts).
+
+But in the context of Spice, we don't always want to slice on a contiguous
+range.  For example, if we want to create a substring from every-other
+character in a string we might write
+    U[| for i from 1 by 2 to length( U ) do i endfor |]
+Of course, we would expect the compiler to recognize expressions such as
+    U[| a .. b |]              # a..b yields ( a, a+1, a+2, ..., b )
+and optimize appropriately.  Note that non-contiguous slicing is not just a
+frill.  Because indexing applies to all maps and functions, non-contiguous
+slicing is a basic requirement.
+
+You can combine pointwise-indexing and slicing naturally.  Here is how to take
+the head and tail of an array in one go.
+    U[[ 1, | 2 .. U.length | ]]
+
+Slices generalizes naturally to multiple dimensions.  Here is how to
+extract the lower quadrant of a 2D array as a 2D array.
+    B[| 1 .. B.dim( 1 ) div 2 | ; | 1 .. B.dim(2) div 2 |]
+where
+    A.dim( N )
+is the same as
+    bounds( A )[ N ]
+which is also the size of the Nth dimension of A.
+
+Slicing with contiguous ranges is one of the commonest cases.  And it is
+convenient to be able to denote the index of the last element of an array.  For
+this I have the device "~".  For the purposes of these notes the expression ~N
+where N is an integer means
+    A.dim( K ) + 1 - N
+where K is the position.  So
+    B[[ 1 .. ~1 ; 1 .. ~1 ]]  =^=
+    B[[ 1 .. B.dim( 1 ) ; 1 .. B.dim( 2 ) ]] =^=
+    B...
+(Again, it can be argued that ~N should be A.dim( K ) - N so that ~0 denotes
+the length.  This isn't daft by any means but I have made the most symmetrical
+choice.)
+
+Of course the tilde-device can be used in simple indexes.  Here's how to get
+the last element of a 1D array
+    U[ ~1 ]
+or the top-right corner of a matrix
+    B[ ~1; ~1 ]
+
+To get us in the spirit, here's one (cute but daft) way to iterate over
+adjacent pairs
+    for i in U[| 1 .. ~2 |]; j in U[| 2 .. ~1 ] do <blah> <blah> endfor
+(See the pattern matching proposal for an elegant way to do this.)
+
+Also our head and tail example can be written as
+    B[[ 1, | 2 .. ~1 | ]]
+and the lower quadrant example as
+    B[| 1 .. ~1 div 2 | ; | 1 .. ~1 div 2 |]
+
+Here is Pop11's allbutlast( n, x )
+    U[| 1 .. ~( n+1 ) |]
+and allbutfirst( n )
+    U[| n + 1 .. ~1 |]
+showing their symmetry.
+
+One problem with the tilde device is that it is not referentially transparent. 
+Because it knows the position K it cannot be moved freely but has to be
+expanded first before any transformation is allowed.  I can't get worked up
+about this but I thought I had better point it out.
+
+A variation on this device is the double-tilde expression ~~ which stands for 1
+.. ~1.  The purpose of this is to support the slicing of multi-dimensional
+arrays.  The following expression takes the first column of a 2D array and
+returns it as a 1D array.
+    B[ 1; | ~~ | ]
+And this expression explodes a 1-D array
+    U[[ ~~ ]] =^= U...
+And this copies it
+    U[| ~~ |]
+
+I have also considered the treble-tilde expression ~~~ which stands for a
+series of double-tildes.  This allows recursion over arrays of variable
+dimensions.  This is how we slice off the last dimension of an array A.
+    A[ |~~~|; 1 ]
+And this is how we explode an array of arbitrary dimensions
+    A[[ ~~~ ]] =^= A...
+And this is how we slice the second dimension off an array
+    A[ |~~|; 1; |~~~| ]
+And this is how to copy an array and preserve the bounds
+    A[|~~~|]
+OK!  OK!  It's not pretty but it might be possible to package it up so that you
+don't need a brain the size of a planet to understand the manual.
+
+With regard to indexing functions, it is worth drawing out a couple of points
+about this notation.  Firstly, the tilde devices cannot be applied to
+functions.  However, slicing is perfectly OK.  Consider this expression.
+    F[| for i in E do i endfor |]
+This is _roughly_ equivalent to
+    ( x => if x.member( E ) then F( x ) else absent endif )
+except for side-effects, of course.  And indexing in 2D simply means applying
+the function to 2 inputs.
+    F[[ E; E' ]] =^= for j in E do for i in E' do F( i, j ) endfor endfor
+
+These idioms seem to capture all the things I wanted to make convenient.  There
+are some other things that are significant (such as recursive idioms over
+arrays of variable rank) but I feel that these can be tackled via the
+procedural interface.
+
+Basically, I hope this will be a useful marker for the future and a good point
+to begin discussion from.

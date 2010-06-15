@@ -1,0 +1,973 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Adding Style and Behaviour to XML Pages with a dash of
+Spice</title>
+<style>
+  body { 
+    margin-left: 10%; 
+    margin-right: 10%; 
+    font-family: sans-serif
+  }
+  h1 { margin-left: -8% }
+  h2,h3,h4,h5,h6 { margin-left: -4% }
+  pre { color: green }
+  em { font-style: italic }
+  strong { text-transform: uppercase; font-weight: bold }
+  .note {font-style: italic; color: rgb(192, 101, 101) }
+  .footnote {font-size: 60% }
+  blockquote {
+    color: navy;
+    font-family: "Comic Sans MS", sans-serif;
+    font-weight: normal
+  }
+  table {
+    font-family: sans-serif;
+    font-size: 80%;
+    background: rgb(255,255,153)
+  }
+  td {
+    font-size: 80%
+  }
+  div.references { margin-left: 4%; margin-right: 4% }
+  div.box { border: solid; border-width: thin }
+  div.color {
+    background: rgb(204,204,255);
+    padding: 0.5em;
+    border: none
+  }
+  p.changed {
+    padding-left: 0.2em;
+    border-left-width: thin;
+    border-color: red
+  }
+  .dropcap {
+     float: left;
+     font: bold 1.4em "Times New Roman", serif;
+     color: rgb(51, 0, 102);
+     background: rgb(255, 255, 153)
+  }
+</style>
+</head>
+<body bgcolor="#FFFFE0" text="black">
+<small>&copy; Hewlett Packard 1998. All Rights
+Reserved.</small> 
+
+<h1 align="center">Adding Style and Behaviour to XML Pages with a
+dash of Spice</h1>
+
+<p align="center"><small>Dave Raggett &lt;dsr@w3.org&gt;<br>
+</small></p>
+
+<h3 align="center">Abstract</h3>
+
+<blockquote>
+<p><em>CSS is proving to be an easy to learn, effective approach
+for styling HTML pages. This paper shows how with a few simple
+extensions ECMAScript becomes a powerful and easy to learn way to
+style XML pages using extensible CSS rules together with scripted
+flow objects. The approach avoids any prior knowledge of the
+meaning of style properties, and there are no predefined
+flow-objects. Instead these are written in ECMAScript or imported
+as down-loadable Java classes and Active-X controls. This gives
+authors the freedom to create extensible Web applications without
+the need to wait for committees to agree on extensions to CSS or
+HTML. HP has submitted Spice to the World Wide Web Consortium,
+see</em></p>
+
+<p align="center"><a href=
+"http://www.w3.org/TR/1998/NOTE-spice-19980123.html">
+http://www.w3.org/TR/1998/NOTE-spice-19980123.html</a></p>
+
+<p class="footnote">This version incorporates a number of syntax changes
+inspired by work on refining the details of Spice and discussions at
+ECMA. For instance, the use of 'class' rather than 'prototype' and the
+use of 'slot' for defining class properties.</p>
+
+</blockquote>
+
+<h2>1. Background</h2>
+
+<h3>1.1. Introduction</h3>
+
+<p>CSS[<a href="#r1">1</a>] has proved to be highly effective and
+easy to learn for simple applications. Spice is designed to meet
+the needs of more complex applications for richer style sheets that
+offer capabilities such as:</p>
+
+<ul>
+<li>
+<p>The ability to layout documents using libraries of objects
+and to extend them via scripting</p>
+</li>
+
+<li>
+<p>Flexible scripting of dynamic effects, including multimedia
+presentations</p>
+</li>
+
+<li>
+<p>Generating multiple flow objects per markup element</p>
+</li>
+
+<li>
+<p>Processing elements out of the normal sequence</p>
+</li>
+
+<li>
+<p>Process the same elements more than once in different styles,
+for instance, to generate a table of contents from headings</p>
+</li>
+</ul>
+
+<p>Spice is an extended version of the ECMAScript language as
+defined by ECMA 262[<a href="#r2">2</a>], more commonly known as
+JavaScript[<a href="#r3">3</a>]. Spice is designed to make it
+simple to apply style and behaviour to XML[<a href="#r4">4</a>]
+documents, but can also be applied to HTML[<a href="#r5">5</a>].
+Spice builds upon familiarity with CSS. It uses the same syntax for
+representing style rules and allows you to cascade style
+information, including imported CSS style sheets.</p>
+
+<p>You are probably asking why not just use CSS? The answer is
+simple: Spice gives you much greater flexibility in adding style
+and behavior. Unlike CSS it doesn't make hardwired assumptions
+about what things you can render. Instead these are defined by
+downloadable flow objects that implement things like paragraphs,
+text emphasis, hypertext links etc. To get you started, CSS flow
+objects are made available as standard. When these aren't up to the
+job, you can write your own flow objects in Spice, Java[<a href=
+"#r6">6</a>] or ActiveX[<a href="#r7">7</a>].</p>
+
+<p>If you want to add a few extensions to common style sheets and
+flow objects, you can write a small style sheet for your extensions
+and import the common definitions. When the latter are cached or
+preloaded, only your extensions will need to be downloaded,
+speeding document display.</p>
+
+<h3>1.2. Relationship to DSSSL</h3>
+
+<p>DSSSL[<a href="#r8">8</a>] is the Document Style Semantics and
+Specification Language and is meant to work with SGML[<a href=
+"#r9">9</a>], the Standard Generalized Markup Language. DSSSL was
+developed by ISO over a period of many years. It is a very powerful
+but hard to learn language for styling SGML documents. DSSSL
+exploits the Scheme[<a href="#r10">10</a>] language to define rules
+for traversing document markup to generate a sequence of flow
+objects. DSSSL defines a large set of flow objects for printed
+documents.</p>
+
+<p>A DSSSL rule for an H1 element:</p>
+
+<pre>
+    (element H1
+        (make paragraph
+             font-family-name: "Times New Roman"
+             font-weight: 'bold
+             font-size: 20pt
+             quadding: 'center))
+</pre>
+
+<p>By contrast the Cascading Style Sheet (CSS) language is much
+easier to learn. You specify simple rules that specify one or more
+style properties such as font size, or color. Each rule has a <em>
+selector</em> specifying a pattern for matching to elements in the
+document markup.</p>
+
+<p>A CSS rule for an H1 element:</p>
+
+<pre>
+    H1 {
+        font-family: "Times New Roman";
+        font-weight: bold;
+        font-style: italic;
+        font-size: 20pt;
+        text-align: center;
+    }
+</pre>
+
+<p>A powerful feature in CSS is the ability to cascade rules
+defined in different style sheets. This makes it easy to extend
+existing style sheets by importing them and adding one or two new
+rules. It also allows you to split up your style rules to take
+advantage of the ability to inherit style properties from enclosing
+elements.</p>
+
+<p>Here H1 elements will inherit the font family from the rule for
+the enclosing BODY element.</p>
+
+<pre>
+    BODY {
+        font-family: "Times New Roman";
+        font-size: 12pt;
+        text-align: left;
+    }
+
+    H1 {
+        font-size: 20pt;
+        font-weight: bold;
+        text-align: center;
+    }        
+</pre>
+
+<h3>1.3. So what is Spice?</h3>
+
+<p>Spice is an amalgam of ideas from DSSSL, CSS and JavaScript.
+JavaScript is a popular scripting language for Web pages. Spice
+extends JavaScript to add cascading style rules using the same
+syntax as CSS. The rules further name the flow object class to be
+used to format each element.</p>
+
+<p>Flow objects can be written in Spice or imported from classes
+implemented in Java or as ActiveX controls. Each flow object has a
+format method that is used to format its contents. The method is
+passed an element in the document markup, the style properties
+specified by the cascading style rules and the current flow.</p>
+
+<p>You can use flow objects to generate additional flow objects,
+for example for list bullets or generated text for warnings. You
+can generate alternate flows for different media, such as for
+speech synthesis, or for alternative presentations, such as a table
+of contents generated from the document headings. Flow objects can
+exploit the full capabilities of the W3C Document Object Model[<a
+href="#r11">11</a>] for traversing the document markup.</p>
+
+<p>To further control the behaviour, you can write event handlers
+to script flow objects, whether or not these are implemented in
+Spice or in Java, etc. This gives you the ability to dynamically
+alter the document after it has been loaded.</p>
+
+<h3>1.4. Comparison with XSL</h3>
+
+<p>XSL[<a href="#r12">12</a>] is a proposal for a style sheet
+langage defined in XML. It uses an entirely new syntax for style
+rules and flow object constructors. By contrast, Spice uses CSS
+syntax for style rules and properties, leveraging people's
+investment in CSS. A detailed comparison between Spice and XSL is
+given in [<a href="#r13">13</a>].</p>
+
+<h2>2. Style Rules and Flow Objects</h2>
+
+<h3>2.1. Introduction to Style Rules</h3>
+
+<p>Style rules are used to assign style properties to each element
+in the document. Here is a rule that could be used for an HTML P
+element:</p>
+
+<pre>
+    style p
+    {
+        fontSize: 12pt;
+        display: block
+    }
+</pre>
+
+<p>This rule specifies two properties: <em>fontSize</em> and <em>
+display</em>. The latter names a flow object to be used to format
+the element and can be defined in Spice or Java or even as an
+ActiveX control.</p>
+
+<p>The display property is used to name a flow object that can be
+used to format "p" elements. The value "none" is reserved for the
+cases where you want to suppress the formatting of an element and
+its descendants, e.g. to suppress an element called "answer":</p>
+
+<pre>
+    style answer
+    {
+        display: none
+    }
+</pre>
+
+<p>If necessary, you can change the name of the property used to
+name the flow object. This feature is mainly relevant when
+rendering to other media, for which the term "display" is
+inappropriate.</p>
+
+<p>Flow objects are used for formatting different parts of a
+document and generally consist of things like blocks, list items,
+inline emphasis, tables etc. Properties like fontSize are passed to
+flow objects to control the formatting.</p>
+
+<p>The <em>import</em> statement can be used to import style sheets
+which then form part of the cascade. More details on this statement
+are given in a later section. You can even import CSS style
+sheets:</p>
+
+<pre>
+    import "funstyle.css";
+</pre>
+
+<p>Unlike CSS, Spice doesn't allow the use of hyphens within
+property names. This avoids confusion with the infix operator for
+minus. When CSS style sheets are imported into Spice, a name like
+<em>font-style</em> is automatically mapped to <em>
+fontStyle</em>.</p>
+
+<p>Another difference is to avoid problems with white space. You
+must use '*' when you want a selector to match any element. For
+instance:</p>
+
+<pre>
+    *[href]
+</pre>
+
+<p>matches any element with an attribute "href". Apart from this,
+the selector syntax is the same as for CSS2[<a href="#r14">14</a>].
+For example:</p>
+
+<pre>
+style ul p
+{
+    fontFamily: "Comic Sans MS"
+}
+</pre>
+
+<p>Matches all P elements that are descendants of a UL element.</p>
+
+<h3>2.2. Spice Tutorial</h3>
+
+<p>Spice makes it simple to create style sheets for documents. A
+small subset of HTML is used below to illustrate this. (<em>adapted
+from Paul Prescod's DSSSL tutorial[<a href="#r15">15</a>]</em>)</p>
+
+<p><b>Small but complete document and DTD</b></p>
+
+<pre>
+&lt;!DOCTYPE tinyhtml [
+&lt;!ELEMENT tinyhtml - - (h1|p)* &gt;
+&lt;!ELEMENT (h1|p) - - (#PCDATA|em|strong)* &gt;
+&lt;!ELEMENT (em|strong) - - (#PCDATA)&gt; ]&gt;
+
+&lt;tinyhtml&gt;
+&lt;h1&gt;This is a heading&lt;/h1&gt;
+&lt;p&gt;This is text&lt;/p&gt;
+&lt;p&gt;This is &lt;em&gt;bold&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;This is &lt;strong&gt;outrageous&lt;/strong&gt;&lt;/p&gt;
+&lt;/tinyhtml&gt;
+</pre>
+
+<p><b>The corresponding stylesheet</b></p>
+
+<pre>
+import document, block, inline;
+
+style tinyhtml
+{
+    fontFamily: "Arial";
+    fontSize: 12pt;
+    display: document
+}
+
+style h1
+{
+    fontWeight: bold;
+    fontSize: 1.5em;
+    textAlign: center;
+    display: block
+}
+
+style p
+{
+    textAlign: left;
+    display: block
+}
+
+style em
+{
+    fontStyle: italic;
+    display: inline
+}
+
+style strong
+{
+    fontWeight: bold;
+    display: inline
+}
+</pre>
+
+<p>This style sheet uses three kinds of flow objects: document,
+block and inline. These are imported from external definitions.
+This example uses standard flow objects defined for use with CSS,
+but you can also import flow objects from code written in Spice,
+Java or ActiveX. H1 and P elements are formatted using CSS <em>
+block</em>s. These are inserted in sequence into the document flow
+object created for the toplevel HTMLLITE element. In a similar
+manner the <em>inline</em> flow objects for EM and STRONG elements
+are inserted into the blocks used for the parent elements.</p>
+
+<p>Style properties are passed to flow objects to control the
+formatting. Property values are symbolic expressions whose
+evaluation is left to flow objects to deal with. Simple property
+values are identifiers such as <em>bold</em> or <em>center</em> or
+string literals such as <em>"Times New Roman"</em>. Compound
+property values may include both comma and space separated items.
+You can also use operators like + and / for expressions, and
+functions such as <em>rgb(128, 128, 255)</em>.</p>
+
+<p>Spice defines a number of units such as "cm" for lengths, for
+instance <em>12cm</em>. Other common units are "px" for pixels,
+"pt" for points and "em" for em's where one em is the same length
+as the current font height. Less common are "s" for seconds and
+"Hz" for frequency. "%" is used for percentages, e.g. for
+expressing the font size relative to that used by the parent flow
+object.</p>
+
+<h3>2.3. Inheritance</h3>
+
+<p>Flow objects inherit style properties from their parent flow
+object. This allows the font family to be specified once at the top
+level. The font size for H1 elements is set to 1.5em, which is
+twice the height of the current font size, as specified for the
+parent flow object. This yields a font size of 18pt. P elements are
+rendered in the font size for the document flow object, i.e. 12pt.
+The same goes for the flow objects for emphasis that are used to
+flow EM and STRONG elements.</p>
+
+<!--
+<p>Note: uninitialized identifiers such as bold and center are
+treated as a kind of symbolic value. They can be tested for
+equality and assigned to variables, but throw an undefined
+exception in other expressions, for instance, if you try to compare
+them to numbers. This is an extension to the set of primitive types
+defined in ECMA 262.</p>
+-->
+
+<h3>2.4. Definitions and Expressions</h3>
+
+<p>Let's expand the HTML subset to include several levels of
+headings. We could simply paste copies of the H1 rule and modify
+that, but to allow the styles of all headings to be changed in a
+single place, we can use shared definitions for property values as
+follows:</p>
+
+<pre>
+headingFont = "Times New Roman";
+headingWeight = bold;
+headingPosture = italic;
+
+style h1
+{
+    fontFamily: headingFont;
+    fontWeight: headingWeight;
+    fontStyle: headingPosture;
+    fontSize: 1.5em;
+    textAlign: center;
+    display: block
+}
+
+style h2
+{
+    fontFamily: headingFont;
+    fontWeight: headingWeight;
+    fontStyle: headingPosture;
+    fontSize: 1.2em;
+    textAlign: left;
+    display: block
+}
+</pre>
+
+<p>Property values can include expressions, for instance to compute
+the font size:</p>
+
+<pre>
+headingFontSize = 20pt;
+
+style h2
+{
+    fontFamily: headingFont;
+    fontWeight: headingWeight;
+    fontStyle: headingPosture;
+    fontSize: 0.7 * headingFontSize;
+    textAlign: left;
+    display: block
+}
+</pre>
+
+<h3>2.5. Taking control with custom flows</h3>
+
+<p>By default, each element is formatted by a single flow object
+which is inserted in sequence into its parent flow object. This
+works well when the structure of the flow objects mirrors the
+structure of the elements in the markup.</p>
+
+<p>Spice allows you to override the default processing by creating
+new classes of flow objects. These can be defined in Java or in
+Spice itself. A simple example is to insert some leading text for
+an element serving as a warning:</p>
+
+<p>Spice allows you to define flow objects with the full power of a
+scripting language. The following example defines a new flow object
+derived from the standard flow object <em>block</em>. It creates a
+block with a solid border and inserts the text string "Warning!" in
+the start of its contents:</p>
+
+<pre>
+    class Warning extends block
+    {
+        method format(element)
+        {
+            this.style.borderStyle = solid;
+            this.append(new Text("Warning!"));
+            ProcessChildren(element, this);
+        }
+    }
+
+    style warning
+    {
+        fontSize: 14pt;
+        display: Warning
+    }
+</pre>
+
+<p>Flow objects form a directed acyclic graph. The "flow" property
+specifies the parent flow, while the "children" property specifies
+the sequence of flow objects acting as children. The "format"
+method is passed the element in the document parse tree that the
+flow object is being applied to. The "append" method is used to
+append a new child to the sequence of children.</p>
+
+<p>ProcessChildren is a built-in method that iterates through the
+children of an element in the document parse tree, creating the
+flow objects named by their display properties and appending them
+to the current flow. It is defined as follows:</p>
+
+<pre>
+    function ProcessChildren(element, flow)
+    {
+        var child, subflow;
+
+        for (child in element.children)
+        {
+            if (child.display != null)
+            {
+                subflow = new child.display;
+                flow.append(subflow);
+                subflow.element = child;
+                subflow.format(element);
+            }
+            else // assume node is Text
+            {
+                flow.append(child);
+            }
+        }
+    }
+</pre>
+
+<p>This is the definition of the default methods for appending a
+child to a parent flow, and for formatting it.</p>
+
+<pre>
+    function Flow_append(node)
+    {
+        var size = this.children.length;
+        this.children[size] = node;
+        node.flow = this;
+    }
+
+    function Flow_format(element)
+    {
+        ProcessChildren(element, this);
+    }
+</pre>
+
+<p>The default behaviour maps each element to a single flow object
+according to the <em>display</em> property then invokes that
+object's format method. This is repeated for each of the element's
+children.</p>
+
+<h3>2.6. Out of Sequence Processing</h3>
+
+<p>Normally the flow objects are generated in the same sequence as
+the elements in the document. On occasion, there is the need to do
+process something out of sequence.</p>
+
+<p>An example is the aural rendering of table cells. HTML 4.0
+provides the means to associate each cell with one or more header
+cells. In the simplest case, you render the pertinent headers
+before the contents of each data cell.</p>
+
+<p>The first step is to use the <em>headers</em> attribute on the
+data cell to get the list of ID values for each of the headers. The
+next is to iterate through the list, getting each header in turn
+and processing it in the context of the current flow. Finally, the
+content of the current element is processed:</p>
+
+<pre>
+    var hdrefs = GetAttribute(element, "headers");
+
+    for (hdref in hdrefs)
+    {
+        header = GetElementByID(element, hdref);
+        ProcessChildren(header, this);      
+    }
+ 
+    ProcessChildren(element, this);
+</pre>
+
+<p>Other functions allow you to traverse the document markup tree
+using the full capabilities of the document object model defined by
+W3C.</p>
+
+<p>A more sophistocated approach is to process the headers in a
+different mode. Modes are explained in the next section.</p>
+
+<h3>2.7. Using modes for alternate renderings</h3>
+
+<p>Suppose you want to construct a table of contents for the
+document that is to appear in a side panel. The table of contents
+might consist of the headings from all of the sections in the
+document. If you use the style rules for the main part of the
+document, the headings will appear too large in the table of
+contents.</p>
+
+<p>The solution is to define a new set of rules within a mode
+declaration.</p>
+
+<pre>
+    mode toc
+    {
+        style *
+        {
+            display: none
+        }
+
+        style h1
+        {
+            level: 1
+            display: toc_entry
+        }
+
+        style h2
+        {
+            level: 2
+            display: toc_entry
+        }
+    }
+</pre>
+
+<p>In the format method for a flow object, you can then direct
+subsequent processing to use style rules for this mode using the
+<em>with mode</em> construct, as for example:</p>
+
+<pre>
+    with mode toc
+    {
+        ProcessChildren(element, toc);
+    }
+</pre>
+
+<p>The contents of the element are then processed using style rules
+defined for the mode "toc". Note that style rules cascade
+independently for each mode.</p>
+
+<p>If you don't need to define you own flow objects, you can use
+the <em>with mode</em> directive in style rules to specify the mode
+to be used to process a named flow object, e.g.</p>
+
+<pre>
+    style #toc
+    {
+        display: block with mode toc
+    }
+</pre>
+
+<p>You can specify that an element is to be processed in several
+modes as follows:</p>
+
+<pre>
+    style body
+    {
+        display: block with mode toc, block with mode regular
+    }
+</pre>
+
+<p>The default mode is named <em>regular</em>.</p>
+
+<p><em>Note: an open question is whether mode definitions can be
+nested. Another is whether to replace"with mode" by
+"using".</em></p>
+
+<h3>2.8. Media dependent style sheets</h3>
+
+<p>Suppose you want to write a style sheet that will render some
+parts of a document to a display and other parts to a speech
+synthesiser. The <em>media</em> declaration allows you to specify
+which media a group of rules can be used for:</p>
+
+<pre>
+    media aural
+    {
+        style body
+        {
+            volume: medium;
+            voiceFamily: male;
+            speak: normal
+        }
+
+        style abbr
+        {
+            volume: medium;
+            voiceFamily: female;
+            speak: spellOut
+        }
+    }
+</pre>
+
+<p>You can then direct subsequent processing to use style rules for
+this media using the <em>with media</em> construct, as for
+example:</p>
+
+<pre>
+    with media aural
+    {
+        ProcessChildren(element, tape);
+    }
+</pre>
+
+<p>The contents of the element are then processed using style rules
+defined for the media "aural". A comma separated list of media can
+be given following the <em>media</em> keyword.</p>
+
+<h3>2.9. Flow Objects, Events and Graphics</h3>
+
+<p>Spice introduces some short cuts for defining protoypes, which
+are ECMAScript's version of the object classes used in regular
+object oriented programming languages. This together with a few
+other features allows Spice to be compiled efficiently. Here is
+an example of a new class extending an imported class "block":</p>
+
+<pre>
+    class Warning extends block
+    {
+        method format(element)
+        {
+            this.style.borderStyle = solid;
+            this.append(new Text("Warning!"));
+            ProcessChildren(element, this);
+        }
+    }
+</pre>
+
+<p>This example is roughly equivalent to:</p>
+
+<pre>
+        function Warning()
+        {
+            this.name = "Warning";
+            this.flow = null;
+            this.children = new Array;
+        }
+
+        function Warning_layout(element)
+        {
+            this.style.borderStyle = solid;
+            this.append(new Text("Warning!"));
+            ProcessChildren(element, this);
+        }
+
+        new Warning;  // make sure prototype is created
+        Warning.prototype.append = block.prototype.append;
+        Warning.prototype.layout = Warning_layout;
+</pre>
+
+<p>Prototypes make it easy to define event handlers using the <em>
+when</em> statement:</p>
+
+<pre>
+    class Link extends inline
+    {
+        slot href = "http://www.w3.org/";
+
+        ...
+
+        when onmousedown
+        {
+            document.load(this.href);
+        }
+    }
+</pre>
+
+<p>This defines a flow object prototype for hypertext links,
+derived from the prototype for emphasis. Clicking on a link causes
+it to load the URL given in its href property. You can use the
+prototype construct to extend flow objects defined in other
+languages. This allows you to specify event handlers for such
+objects.</p>
+
+<p>The addition of a standard graphics library would allow flow
+objects to be written in Spice that render themselves as text and
+graphics. For instance exploiting graphical effects for decorating
+text, something that is currently solved using bitmapped graphics.
+Flow objects written in Java can exploit AWT for this purpose.</p>
+
+<h3>2.10. Libraries</h3>
+
+<p>Interoperability across vendors and platforms is crucial to the
+Web as it greatly increases the number of people who can read each
+document. This in turn encourages the creation of content, and
+helps to explain why the Web has grown so dramatically.</p>
+
+<p>Spice style sheets support interoperability by decoupling flow
+objects from their implementations. A Spice library (aka <em>spice
+rack</em>) names a set of flow objects with support for particular
+style properties. Each library is identified by a URL.</p>
+
+<p>Libraries are decoupled from their implementations. This makes
+it practical to provide different implementations of a library for
+each platform. Each flow object has a name such as "paragraph" that
+is local in scope to the library in which it is defined. The <em>
+import</em> statement is used to import flow objects from
+libraries, e.g.</p>
+
+<pre>
+    import document, block, inline from "http://www.w3.org/Style/std.lib";
+</pre>
+
+<p>Here 'document' and 'inline' etc. are names of flow objects from
+the (hypothetical) library identified by the URL
+&lt;http://www.w3.org/Style/std.lib&gt;.</p>
+
+<p>The <em>implements</em> statement is used to specify
+implementations for particular libraries, e.g.</p>
+
+<pre>
+    "css.spice" implements "http://www.w3.org/Style/std.lib" on "Spice";
+    "css.jar" implements "http://www.w3.org/Style/std.lib" on "Java";
+    "css.cab" implements "http://www.w3.org/Style/std.lib" on "ActiveX/win32";
+</pre>
+
+<p>Here "css.jar" and "css.cab" are relative URLs, defined as
+relative to the URL for the current style sheet. You can also use
+absolute URLs. The <em>on</em> keyword precedes a string naming the
+platform that this implementation applies to.</p>
+
+<p>In the absence of a matching implements statement, the import
+statement expects to get the implementation from the URL specified
+by the <em>from</em> keyword. If that too is missing, you can
+simply list the URLs for the files you want to import, for
+instance:</p>
+
+<pre>
+    import "housestyle.css";    // imports a CSS style sheet
+    import "koolbits.spice";    // imports a Spice style sheet
+</pre>
+
+<h3>2.11. How to specify the style sheet</h3>
+
+<p>If the user asks the browser for mydoc.xml, this is downloaded
+and parsed to build a tree-like representation of the markup. The
+Spice script specifying the style can be specified using the accepted
+XML convention. For instance:/p>
+
+<pre>
+  &lt;?xml-stylesheet href="docstyle.spice" type="text/spice" ?&gt;
+</pre>
+
+<p>In an HTML document you can use the LINK element, e.g.</p>
+
+<pre>
+  &lt;link rel="stylesheet" type="text/spice" href="docstyle.spice"&gt;
+</pre>
+
+<p>The document is formatted starting with the element that is the
+root of the tree. The first step is to find matching style rules
+for the root element. Style rules cascade in the same way as for
+CSS. Spice uses the CSS2 definitions for the precedence of matching
+style rules. The display property names the flow object to be used
+to lay out the root element, and in turn its children. The process
+collects the matching styles for each element, creates a flow
+object to lay it out, and so on until the whole of the document has
+been layed out.</p>
+
+<h2>3. References</h2>
+
+<div class="references">
+<p>[<a name="r1">1</a>]&nbsp;"Cascading Style Sheets, level 1
+(CSS)", H&aring;kon Wium Lie, Bert Bos, W3C, December 1996. see <a
+href="http://www.w3.org/TR/REC-css1">
+http://www.w3.org/TR/REC-css1</a></p>
+
+<p>[<a name="r2">2</a>]&nbsp;"ECMA-262", ECMAScript: A general
+purpose cross-platform programming language, ECMA June 1997, <a
+href="http://www.ecma.ch/">http://www.ecma.ch/</a> or <a href=
+"mailto:helpdesk@ecma.ch">helpdesk@ecma.ch</a></p>
+
+<p>[<a name="r3">3</a>]&nbsp;"JavaScript The Definitive Guide",
+David Flanagan, O'Reilly &amp; Asscoiates, Inc., <em>Sebastopol
+CA</em>, 1997, ISBN&nbsp;1-56592-234-4</p>
+
+<p>[<a name="r4">4</a>]&nbsp;"Extensible Markup Language (XML)",
+Tim Bray, Jean Paoli, C.M. Sperberg-McQueen, W3C, November 1997,
+see <a href="http://www.w3.org/TR/WD-xml">
+http://www.w3.org/TR/WD-xml</a></p>
+
+<p>[<a name="r5">5</a>]&nbsp;"HTML", W3C Recommendation for HTML
+4.0, December 1997, <a href="http://www.w3.org/TR">
+http://www.w3.org/TR</a>. For an easy to read user guide see,
+"<strong>Raggett on HTML 4</strong>", Dave Raggett, Jenny Lam, Ian
+Alexander &amp; Michael Kmiec, "Addison Wesley Longman <em>Reading
+Mass.</em>, 1997. ISBN&nbsp;0-201-17805-2</p>
+
+<p>[<a name="r6">6</a>]&nbsp;"The Java Language Specification",
+James Gosling, Bill Joy, &amp; Guy Steele, "Addison Wesley Longman
+<em>Reading Mass.</em>, 1996. ISBN&nbsp;0-201-63451-1</p>
+
+<p>[<a name="r7">7</a>]&nbsp;"Designing and Using Activex
+Controls", Tom Armstrong, M &amp;mp T Books, 1997.
+ISBN&amp;nsp1-558-51503-8</p>
+
+<p>[<a name="r8">8</a>]&nbsp;"ISO/IEC 10179:1996 Document Style
+Semantics and Specification Language (DSSSL)", A good place to
+start is at: <a href="http://www.jclark.com/dsssl/">
+http://www.jclark.com/dsssl/</a></p>
+
+<p>[<a name="r9">9</a>]&nbsp;"ISO 8879. Information Processing --
+Text and Office Systems - Standard Generalized Markup Language
+(SGML)", 1986. Available from <a href=
+"http://www.iso.ch/cate/d16387.html">
+http://www.iso.ch/cate/d16387.html</a>. Newcomers to SGML are
+recommended to read "A Gentle Introduction to SGML", at <a href=
+"http://www-tei.uic.edu/orgs/tei/sgml/teip3sg/SG.htm">
+http://www-tei.uic.edu/orgs/tei/sgml/teip3sg/SG.htm</a></p>
+
+<p>[<a name="r10">10</a>]&nbsp;"The Seasoned Schemer", Daniel P.
+Friedman, Matthias Felleisen, Duane Bibby, MIT Press, 1996,
+ISBN&nbsp;0-262-56100-X</p>
+
+<p>[<a name="r11">11</a>]&nbsp;"Document Object Model
+Specification", Lauren Wood, Jared Sorensen, Steve Byrne, Robert S.
+Sutor, W3C, October 1997. see <a href=
+"http://www.w3.org/TR/WD-DOM">http://www.w3.org/TR/WD-DOM</a></p>
+
+<p>[<a name="r12">12</a>]&nbsp;"A Proposal for XSL", Sharon Adler
+et al, August 1997. see <a href=
+"http://www.w3.org/TR/NOTE-XSL-970910">
+http://www.w3.org/TR/NOTE-XSL-970910</a></p>
+
+<p>[<a name="r13">13</a>]&nbsp;"A comparison of Spice and XSL"
+which can be found at: <a href=
+"http://www.w3.org/People/Raggett/spice-and-xsl.html">
+http://http://www.w3.org/People/Raggett/spice-and-xsl.html</a>.</p>
+
+<p>[<a name="r14">14</a>]&nbsp;"Cascading Style Sheets, level 2
+(CSS)", Bert Bos, H&aring;kon Wium Lie, Chris Lilley, Ian Jacobs,
+W3C, November 1997. see <a href="http://www.w3.org/TR/WD-css2">
+http://www.w3.org/TR/WD-css2</a></p>
+
+<p>[<a name="r15">15</a>]&nbsp;"Paul Prescod's DSSSL tutorial"
+which can be found at: <a href=
+"http://itrc.uwaterloo.ca/~papresco/dsssl/tutorial.html">
+http://itrc.uwaterloo.ca/~papresco/dsssl/tutorial.html</a>.</p>
+</div>
+
+<p><small><a href="http://www.w3.org/People/Raggett">Dave
+Raggett</a> &lt;<a href="mailto:dsr@w3.org">dsr@w3.org</a>&gt; is an
+engineer at Hewlett Packard's <a href="http://www.hpl.hp.co.uk">UK
+Laboratories</a>, and works on assignment to the World Wide Web
+Consortium, where he is the W3C lead for HTML.</small></p> </body>
+</body>
+</html>
+
+
+

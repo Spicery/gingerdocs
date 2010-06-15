@@ -1,0 +1,87 @@
+AUTOLOADING IN SPICE/PALANTIR
+
+Autoloading: a recursive, dependency-driven search for code resources
+and their automatic loading into a running process.
+
+There are two quite different situations that require autoloading in Spice.
+Firstly, an import of a package will initiate autoloading if the package
+is not already loaded.  This is import-driven package autoloading.
+
+Secondly, a reference to an undeclared identifier will trigger the
+autoloading within the scope of that package.  This is reference-driven
+identifier autoloading.  In addition, this type of autoloading incorporates
+the automatic conversion from other file formats (e.g. *.xml), based on
+the "extension" part of the file name.
+
+In the past, I have sometimes referred to this automatic conversion as
+auto-importing.  However, this is a different use of the word "import"
+to the usual Spice package import and hence confusing.  So I shall avoid
+this phrase in the future.
+
+Package autoloading involves searching for the location of the package
+bundle, loading up the core resources of the bundle, and establishing
+search paths for identifier-autoloading within that package.
+
+The search should be conducted according to the value of
+    spice_package_search_list
+which is a list of directories.  If looking for a package "foo.bar.gort"
+then the search will attempt to find a directory called
+    <dir>/pkg=foo_bar_gort
+where <dir> is a member of spice_package_search_list.
+
+Inside this bundle-directory will be autoloadable subdirectories.  These
+are named "auto=<facet>", the facet part of the name acting as a
+default when no explicit facet is supplied.  In addition there is a
+top-level Spice file that established the core resources of the package.
+e.g.
+    <dir>
+        pkg=foo_bar_gort
+            foo_bar_gort.spi          # loads core resources
+            auto=private
+            auto=public
+            auto=external
+            lib=public                   # see below
+
+When a package is loaded these autoloadable subdirectories are
+scanned and stub values are installed.  These stub values support
+introspection without excessive cost.
+
+Autoloadable files should not establish more than one identfier when
+loaded.  (This is checked in MillScript and I intend to enforce this
+in Palantir, too.)  When you need to write a file that loads several
+identifiers you write a library.
+
+There are two types of libraries: autoload-libraries and optional-libraries.
+The first type, autoload-library, is simply a means for aggregating
+autoloadable identifiers into a single file.  These are governed by the
+strict rule that they can only declare identifiers that are independently
+autoloadable!  To support this there is a special type of autoloadable
+file; a "*.qv" file (qv = "quod vide") contains the name of the library
+where the declaration of an identifier is found.
+
+So an autoload-library "myautolib" might declare some public variables
+"foo" and "bar" and we would expect to find files "foo.qv" and "bar.qv" in
+the autoloadable directory "auto=public".  These files would contain the
+string "myautolib", effectively pointing back to the library.
+
+Optional-libraries are the exact opposite.  These are libraries that
+cannot be autoloaded and represent optional extensions of a particular
+package.  It is very important to realise that an autoloadable identifier
+cannot make use of an optional-library.  The only place that an optional
+library can be loaded is in the startup file of a package.
+
+What lurks behind this reasoning is that autoloadable identifiers should
+be thought of as non-optional.  An implementation is expected to
+defer loading but it is _not_ required to do so.  Hence it is possible
+that loading a package loads every single autoloadable identifier if
+that is what is deemed convenient by the implementor.
+
+The point of an optional library is that it allows a developer to
+isolate functionality that is platform dependent or simply grossly
+expensive.  It is these intentions that gives rise to the restrictions
+on the two types of libraries.
+
+Autoloading libraries are declared in directories named according
+to the general scheme "lib=<facet>" and, as before, <facet> is the
+default facet to be assumed.  Optional libraries are declared in
+directories called "opt=<facet>".

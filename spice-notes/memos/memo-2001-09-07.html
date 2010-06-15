@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
+<html>
+<head>
+    <title>Spice Memo (7th September 2001)</title>
+    <meta name="generator" content="BBEdit 6.1.2">
+</head>
+<body bgcolor="#FFFFFF">
+
+<h1>Memo: Phone call between Steve Leach (SFKL) and Chris Dollin (CJD), Friday 07/09/2001.
+</h1>
+
+<ol>
+<li>
+<p>Prompted by a query from Mark Summers with regard to the declaration of
+facet names, we agreed to add a <tt>facets</tt> clause to package declarations.
+e.g.
+</p>
+<pre>
+	package foo.bar
+	facets alpha, beta
+	imports trog.gort;
+</pre>
+</li>
+
+<li>
+<p>We did not clarify the spelling of facets as facet/facets.</p>
+</li>
+
+<li>
+<p>We did not clarify whether or not facet names could be reserved
+words.  SFKL believes that they should following the same spelling rules
+as ordinary identifiers.
+</p>
+</li>
+
+<li>
+<p>
+We agreed to introduce <tt>facet common</tt> for the role of shared identifiers
+between the members of a package family. 
+</p>
+</li>
+
+<li>
+<p>We did not clarify whether <tt>common</tt> was to have the same syntactic status
+as <tt>public</tt> and <tt>private</tt>.  [SFKL tends to think this is what being well-known 
+means.]
+</p>
+</li>
+
+<li>
+<p>We talked about threads, coroutines and tasks.  Although there is no
+absolutely clear terminology, SFKL says that there is a reasonable agreement
+that threads and coroutines share memory but threads are preemptively 
+scheduled and share memory whereas coroutines are cooperatively scheduled.
+The term "tasks" is set aside for preemptively scheduled processes that
+run in separate virtual machines, possibly on separate processors.
+</p>
+</li>
+
+<li>
+<p>SFKL suggests that Spice should have coroutines and tasks but not
+threads - in view of the mess Java makes of them.
+</p>
+</li>
+
+<li>
+<p>CJD suggests that tasks should be able to communicate via <em>shared</em>
+variables (borrowing Eiffel vocabulary).  These shared variables become
+implicit synchronization points, obviously enough.
+</p>
+</li>
+
+<li>
+<p>
+We had a long discussion about the way to avoid embedding package names
+in programs.  The problem is <tt>import &lt;package name&gt;</tt>.  We agreed that this
+needed addressing later.
+</p>
+</li>
+
+
+<li>
+<p>We also discussed whether or not packages and/or facet names should
+refer to run-time representations of the same.  SFKL was against this.
+His argument is that the package mechanism is merely a way of managing
+the mapping from syntactic names to semantic entities for the 
+convenience of the human programmer.  
+</p>
+</li>
+
+
+<li>
+<p>SFKL outlined the "publish" mechanism proposed for Palantir 
+(a web application server with embedded Spice interpreter)
+which <em>does</em> make a run-time representation of explicitly
+selected packages available.  The hope is that this limits the 
+damage done by exposing the programmer selected names.
+</p>
+</li>
+
+</ol>
+
+</body>
+</html>

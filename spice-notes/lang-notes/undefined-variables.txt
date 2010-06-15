@@ -1,0 +1,56 @@
+Re: 	Undefined Variables
+
+---------------------------------------------------------------------
+Date:	12/Jul/03
+
+I believe we allow
+	var x;
+to introduce -x- initially bound to -absent- (i.e. the default instance of
+class Any).  
+
+Do we allow
+	var x...;
+and if so, what is its initial value?
+
+At the moment, JSpice does permit it and initializes it with an empty List.
+
+I'm quite flexible on this topic.  I would be quite happy to forbid
+the use of "val x" and "val x..." (except as the target of an assignment)
+without an initial value.  That would sidestep some awkward observations 
+that our constituency of occasional programmers might find themselves 
+asking.
+
+  IF  (val x := 99) gives zero results
+  WHY DOESN'T (val x) give one result?
+
+The answer to the above question is, of course, that (val x) is just
+a shorthand for (val x = <default>) but it is not a very "Spicy"
+answer.  It is not Spicy because it means inventing invisible expressions
+that are different from the empty expression.
+
+---------------------------------------------------------------------
+
+Date:	18/Jul/03
+
+On Saturday 12 Jul 2003 1:07 pm, Stephen Leach wrote:
+> Hi Chris,
+>
+> I believe we allow
+> 	var x;
+> to introduce -x- initially bound to -absent- (i.e. the default instance of
+> class Any).
+
+Yes. With some discomfort ...
+
+> Do we allow
+> 	var x...;
+> and if so, what is its initial value?
+
+I implement it as setting x to "undefined", but that looks like a cop-out. I'm
+strongly tempted to simply disallow uninitialised declarations completely.
+(-> val x counts as initialised). I might be prepared to make an exception
+for "var x". Not allowing uninitialised declarations does away with all the
+"default value" machinery.
+
+-- 
+Chris the Hedgehog

@@ -1,0 +1,39 @@
+RECOMPILATION PROBLEMS IN SPICE/POPLOG
+
+There are several recompilation issues in Spice.
+
+    (1) Efficiency
+    (2) Fragment compilation & implicit package context
+    (3) Package "cancellation"
+
+The efficiency issue is relatively simple.  Spice depends on a certain amount
+of type inference to be reasonably efficient.  This can only be utilized for
+constant identifiers.  This implies that recompilation would simply create new
+identifiers with all the disadvantages that that implies e.g. Standard ML.
+
+The solution here is to arrange for there to be two modes of compilation.  In
+the development mode, type inference is ignored and recompilation can re-use
+existing identifiers safely.  In deployment (or library) mode, information
+discovered through type inference is retained and actively exploited.
+Recompilation is either forbidden or works by creating new identifiers.
+
+Fragment compilation is more subtle.  When a code fragment is compiled, there
+has to be an active search for the package context.  This will either be
+because there is an explicit package statement included in the
+compilation-unit or, more likely, by inferring the context from -popfilename-.
+
+When the Spice compiler is invoked, it has to actively establish the package
+context before compiling any code.  Package statements can override this
+default context.
+
+Packages can be "cancelled" in two different ways.  Firstly, we can simply zap
+the package out of the package namespace.  However, this does not work very
+nicely if there are any remaining links to the old package e.g. through
+exports.  Secondly we can empty a package, effectively detatching the
+identifer records from their home.  In this latter case we can choose to reuse
+the identifier records or not.
+
+Package deprecation supports the latter notion.  Records are detatched and
+saved for possible later reuse.  My fear is that this is not strict enough to
+avoid occasional disasterous muddles.  The different generations can easily
+coexist under this lenient policy.

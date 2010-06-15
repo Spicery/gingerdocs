@@ -1,0 +1,39 @@
+
+So far so good.
+
+There are several pre-flights activities:
+
+    (1) Calculating section numbers - and attaching them somewhere
+    (2) Constructing the contents table
+    (3) Constructing the all-syntax list
+    (4) Constructing the all-issues list <-- superfluous ??
+
+Since the contents table depends on having a list/tree/mapping from
+section numbers/identifiers to titles, it would seem like a good
+idea to try to compute section numbers first.
+
+;;; -----------------------------------------------------------
+
+
+What the hell is going on in bar.txt?  The \syntax\$ seems to be generating
+nonsense.
+
+*   The | value has been dropped
+
+*   Strange <code></code> values are being inserted.
+
+;;; -----------------------------------------------------------
+
+
+My current focus is on meaning.p
+
+*   ChildStrength has been defined procedurally but I think this
+    is probably be a mistake.  The repair procedure needs to know
+    whether or not to attempt to introduce a paragraph.  This means
+    that the Kernel should state whether the children must be
+        1.  strong
+        2.  weak
+        3.  non_meaning
+        4.  disallowed
+
+;;; -----------------------------------------------------------

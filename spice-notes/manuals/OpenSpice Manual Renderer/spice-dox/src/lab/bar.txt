@@ -1,0 +1,20 @@
+\title
+    Spice language manual (v4.0, February 2002)
+\endtitle
+
+\part a gentle introduction to Spice
+
+\chapter introduction
+
+This document describes (etc)
+
+
+\syntax\$ ProcedureDef
+    FullProcedureDef
+    | FunctionDef
+    | CompactDef
+\endsyntax
+
+\endchapter
+
+\endpart

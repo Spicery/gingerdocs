@@ -1,0 +1,2370 @@
+<html>
+<head>
+<title>
+a gentle (but very rapid) introduction to Spice, v1.3, 23rd September 1998
+
+</title>
+</head>
+<body>
+<h1>
+a gentle (but very rapid) introduction to Spice, v1.3, 23rd September 1998
+
+</h1>
+<h1>
+<a name="here1"></a>
+1 introduction
+</h1>
+<p>
+This document is a thought-sorting draft of an introduction to Spice.
+It's intended to be read by:
+</p>
+<p>
+<ul>
+<li>
+other project members, to see if the language plays out in the way they
+expected from the design document and discussions
+</li>
+<li>
+programmers who are interested in a quick tour of what Spice has to offer,
+who don't want the full details but do want to know its idiosyncracies.
+</li>
+</ul>
+</p>
+<p>
+<strong>table of contents</strong>
+
+</p>
+<p>
+<br>
+<a href="#here1">1 introduction</a>
+<br>
+<a href="#here2">2 simple expressions</a>
+<br>
+ &nbsp; 
+<a href="#here3">2.1 hello, world</a>
+<br>
+ &nbsp; 
+<a href="#here4">2.2 1, 2, buckle my shoe</a>
+<br>
+<a href="#here5">3 variables</a>
+<br>
+ &nbsp; 
+<a href="#here6">3.1 typed variables</a>
+<br>
+<a href="#here7">4 function definitions</a>
+<br>
+ &nbsp; 
+<a href="#here8">4.1 typed arguments</a>
+<br>
+ &nbsp; 
+<a href="#here9">4.2 typed results</a>
+<br>
+ &nbsp; 
+<a href="#here10">4.3 indefinite arguments</a>
+<br>
+<a href="#here11">5 arrays</a>
+<br>
+<a href="#here12">6 dot and infix notation</a>
+<br>
+ &nbsp; 
+<a href="#here13">6.1 dot and infix function definition</a>
+<br>
+<a href="#here14">7 ifs and buts</a>
+<br>
+ &nbsp; 
+<a href="#here15">7.1 elselessness and elseif</a>
+<br>
+ &nbsp; 
+<a href="#here16">7.2 short conditionals</a>
+<br>
+ &nbsp; 
+<a href="#here17">7.3 unless</a>
+<br>
+<a href="#here18">8 simple loops</a>
+<br>
+ &nbsp; 
+<a href="#here19">8.1 while and break (and return)</a>
+<br>
+ &nbsp; 
+<a href="#here20">8.2 until loops</a>
+<br>
+ &nbsp; 
+<a href="#here21">8.3 for</a>
+<br>
+<a href="#here22">9 multiple values</a>
+<br>
+ &nbsp; 
+<a href="#here23">9.1 void context</a>
+<br>
+ &nbsp; 
+<a href="#here24">9.2 multiple-value loops</a>
+<br>
+ &nbsp; 
+<a href="#here25">9.3 explode</a>
+<br>
+<a href="#here26">10 procedures as values</a>
+<br>
+ &nbsp; 
+<a href="#here27">10.1 first-class procedures</a>
+<br>
+ &nbsp; 
+<a href="#here28">10.2 lambda-expressions</a>
+<br>
+ &nbsp; 
+<a href="#here30">10.3 hole-expressions</a>
+<br>
+ &nbsp; 
+<a href="#here31">10.4 combining functions</a>
+<br>
+<a href="#here32">11 classes</a>
+<br>
+ &nbsp; 
+<a href="#here33">11.1 class definition</a>
+<br>
+ &nbsp; 
+<a href="#here34">11.2 updaters</a>
+<br>
+ &nbsp; 
+<a href="#here35">11.3 methods</a>
+<br>
+ &nbsp; 
+<a href="#here36">11.4 constructors</a>
+<br>
+ &nbsp; 
+<a href="#here37">11.5 inheritance</a>
+<br>
+ &nbsp; 
+<a href="#here38">11.6 overloading functions</a>
+<br>
+<a href="#here39">12 type-expressions and &quot;as&quot;</a>
+<br>
+ &nbsp; 
+<a href="#here40">12.1 union types</a>
+<br>
+ &nbsp; 
+<a href="#here41">12.2 multiple</a>
+<br>
+ &nbsp; 
+<a href="#here42">12.3 lots</a>
+<br>
+ &nbsp; 
+<a href="#here43">12.4 arrays (and based arrays)</a>
+<br>
+ &nbsp; 
+<a href="#here44">12.5 optional types</a>
+<br>
+ &nbsp; 
+<a href="#here45">12.6 &quot;as&quot; (and based arrays)</a>
+<br>
+<a href="#here46">13 modules</a>
+<br>
+ &nbsp; 
+<a href="#here47">13.1 public and private</a>
+<br>
+ &nbsp; 
+<a href="#here48">13.2 imports</a>
+<br>
+ &nbsp; 
+<a href="#here49">13.3 readonly</a>
+<br>
+ &nbsp; 
+<a href="#here50">13.4 qualified access and aliases</a>
+<br>
+ &nbsp; 
+<a href="#here51">13.5 pervasive import</a>
+<br>
+<a href="#here52">14 switches</a>
+<br>
+<a href="#here53">15 styles and properties</a>
+<br>
+<a href="#here54">16 numeric literals</a>
+<br>
+<a href="#here55">17 units</a>
+<br>
+<a href="#here56">18 enumerations</a>
+<br>
+<a href="#here57">19 symbols and tables</a>
+<br>
+<a href="#here58">20 all sorts of unmentionable things</a>
+<br>
+ &nbsp; 
+<a href="#here59">20.1 extended relational expressions</a>
+<br>
+ &nbsp; 
+<a href="#here60">20.2 op</a>
+<br>
+ &nbsp; 
+<a href="#here61">20.3 super and extends</a>
+<br>
+ &nbsp; 
+<a href="#here62">20.4 shared slots</a>
+<br>
+ &nbsp; 
+<a href="#here63">20.5 properties</a>
+<br>
+ &nbsp; 
+<a href="#here64">20.6 exceptions</a>
+<br>
+ &nbsp; 
+<a href="#here65">20.7 memo-expressions</a>
+<br>
+ &nbsp; 
+<a href="#here66">20.8 parallel iteration</a>
+<br>
+<a href="#here67">21 the standard library</a>
+</p>
+<h1>
+<a name="here2"></a>
+2 simple expressions
+</h1>
+<p>
+In this and subsequent sections we assume the reader has access to a Spice
+system into which they can type Spice code and have it executed.
+</p>
+<p>
+<h2>
+<a name="here3"></a>
+2.1 hello, world
+</h2>
+<p>
+A long-standing Unix-spawned tradition is that one's first program in a new
+language should be the one that prints &quot;Hello, World&quot; or some suitable
+variant, so here it is in Spice:
+</p>
+<p>
+<blockquote>
+<p>
+println( &quot;hello, world.&quot; );
+
+</p>
+</blockquote>
+</p>
+<p>
+Pasting this into your Spice evaluation should result in &quot;hello, world&quot; being
+displayed somewhere obvious.
+</p>
+<p>
+<strong>&quot;hello, world.&quot;</strong> is a <i>string literal</i> representing a sequence of characters.
+Most characters can appear as themselves in a string, but specific exceptions
+are all three quoting characters (<i>string quotes</i> <strong>&quot;</strong>, <i>reserved quotes</i> <strong>'</strong>,
+and <i>symbol quotes</i> <strong>`</strong>) and the <i>escape character</i> backslash.
+</p>
+<p>
+<strong>println</strong> is the name of a built-in <i>procedure</i>. We'll see later that Spice
+has several kinds of procedure, including <i>functions</i>, <i>methods</i>, and
+<i>constructors</i>; we use the term &quot;procedure&quot; to refer to them all without
+distinction.
+</p>
+<p>
+The syntax <strong>F(X)</strong> is one form of <i>procedure call</i>; it evaluates the procedure
+<strong>F</strong> (which in this case is easy) and the argument(s) <strong>X</strong> (ditto) and then
+<i>calls</i> the procedure, supplying it with the values of the arguments. The
+procedure does something (such as printing its argument) and returns some
+results, which we throw away.
+</p>
+<p>
+The semicolon is a <i>statement separator</i>, signifying the end of one statement
+and (possibly) the beginning of another. Spice scripts often don't need them,
+because Spice treats newline as a semicolon in many ways, but it can only
+do this when it knows how the next line starts -- and we don't want to type
+the next line yet.
+</p>
+</p>
+<p>
+<h2>
+<a name="here4"></a>
+2.2 1, 2, buckle my shoe
+</h2>
+<p>
+<strong>println</strong> isn't restricted to strings; it can do numbers, too.
+</p>
+<p>
+<blockquote>
+<p>
+println( 1 );
+</p>
+<p>
+println( 1_032 );
+</p>
+<p>
+println( 40 + 2 );
+
+</p>
+</blockquote>
+</p>
+<p>
+Evaluating these should result in the values <strong>1</strong>, <strong>1032</strong>, and <strong>42</strong> being
+printed. The underbar in <strong>1_032</strong> is just a visual
+separator. Spice has the &quot;usual&quot; arithmetic operators, <strong>+</strong>, <strong>-</strong>, <strong>*</strong>, and
+<strong>/</strong>, although they have some extra wrinkles we'll meet later.
+</p>
+<p>
+<blockquote>
+<p>
+<i>Aside</i>. It is wise to write Spice operators with surrounding spaces. For the
+reasons why, see the later section on numeric literals.
+
+</p>
+</blockquote>
+</p>
+</p>
+<p>
+What's more, <strong>println</strong> can take multiple arguments:
+</p>
+<p>
+<blockquote>
+<p>
+println( 1, 2, &quot;buckle my shoe&quot; );
+
+</p>
+</blockquote>
+</p>
+<p>
+which will print <strong>1 2 buckle my shoe</strong>. Note that the second
+and subsequent arguments are printed preceeded by a space, and that there's
+only one newline printed, at the end. The degenenerate case <strong>println()</strong> with
+no arguments just prints a newline.
+</p>
+<h1>
+<a name="here5"></a>
+3 variables
+</h1>
+<p>
+You can declare variables to hold values.
+</p>
+<p>
+<blockquote>
+<p>
+<strong>var</strong> x = 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10;
+</p>
+<p>
+println( x );
+
+</p>
+</blockquote>
+</p>
+<p>
+which will print <strong>55</strong>. The value <strong>x</strong> holds can be changed
+by assignment:
+</p>
+<p>
+<blockquote>
+<p>
+x = x * 10; println( x );
+
+</p>
+</blockquote>
+</p>
+<p>
+will print <strong>550</strong>. Using the word <strong>const</strong> instead of <strong>var</strong>
+makes an <i>unassignable</i> variable (rather an oxymoron, but there it is).
+</p>
+<p>
+Variables must be declared before they are used, either for their value or to
+assign to them. If you try to use an undeclared identifier, the Spice
+compiler will complain. (Usually it will take a <i>recovery action</i> which is to
+declare the identifier for you as a top-level variable, but your code is still
+technically illegal. It's so easy to declare variables in Spice that we
+encourage writers to disable this particular recovery action.)
+</p>
+<p>
+<h2>
+<a name="here6"></a>
+3.1 typed variables
+</h2>
+<p>
+It's possible to specify that a variable is restricted to holding values of a
+given type. For example,
+</p>
+<p>
+<blockquote>
+<p>
+<strong>var</strong> count = 0 <strong>is</strong> Int;
+</p>
+<p>
+# or <strong>var</strong> count: Int = 0;
+</p>
+<p>
+count = &quot;of Monte Christo&quot;;
+
+</p>
+</blockquote>
+</p>
+<p>
+declares <strong>count</strong> as a variable of type <strong>Int</strong>, restricted to integer values
+and then throws an error when it attempts
+to assign a string (of type <strong>String</strong>) to it. If a variable is declared with a
+type but no initial value, then the <i>default value</i> for that type is used to
+initialise the variable; the default value of type <strong>Int</strong> is <strong>0</strong>:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>var</strong> anInt <strong>is</strong> Int; println( anInt );
+
+</p>
+</blockquote>
+</p>
+<p>
+will print <strong>0</strong>. If there's no type then the variable is
+declared to be of type <strong>Any</strong> (which means what it sounds like); the default
+value of <strong>Any</strong> is called <strong>absent</strong> (and sometimes <strong>null</strong>, but <strong>absent</strong> is
+preferred).
+</p>
+</p>
+<h1>
+<a name="here7"></a>
+4 function definitions
+</h1>
+<p>
+There's no magic about procedures that the user cannot harness. A simple
+way to define your own procedure is to write a <strong>function</strong> definition:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> add( x, y ) =&gt; x + y <strong>enddefine</strong>
+</p>
+<p>
+<strong>define function</strong> subCStyle( x, y ) { x - y }
+</p>
+<p>
+println( add( 1, 2 ), subCStyle( 4, 3 ) );
+
+</p>
+</blockquote>
+</p>
+<p>
+Two functions are defined, <strong>add</strong> and <strong>subCStyle</strong>, and then invoked in the
+usual way, resulting in <strong>3 1</strong> being printed. Spice allows two styles of
+definition; in the first, the <i>function body</i> starts after the <strong>=&gt;</strong> symbol and
+extends until <strong>enddefine</strong>; in the second, it is wrapped inside C-style braces.
+This is a general rule of Spice: C-style constructs are supported, but the
+closing-keyword style is also available.
+</p>
+<p>
+Note that there's no need to use <strong>return</strong> to specify the procedure's return
+value; the last expression executed in a procedure will specify its result
+in all the simple cases.
+</p>
+<p>
+<h2>
+<a name="here8"></a>
+4.1 typed arguments
+</h2>
+<p>
+The arguments to a function can be typed in the same way that variables can.
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> addChecked( x <strong>is</strong> Int, y <strong>is</strong> Int ) =&gt; x + y <strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+Calls to <strong>addChecked</strong> with non-<strong>Int</strong> arguments will throw an error. Spice
+can sometime take advantage of the type information to produce better code
+or more informative error messages. Later on, we'll see how type information
+can be used to write <i>polymorphic</i> or <i>overloaded</i> functions.
+</p>
+</p>
+<p>
+<h2>
+<a name="here9"></a>
+4.2 typed results
+</h2>
+<p>
+The result of a function can also be typed.
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> addToInt( x, y ) <strong>returns</strong> Int =&gt; x + y <strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+The result from <strong>addToInt</strong> must be an <strong>Int</strong> value; if not an error will be
+thrown. Again, the Spice compiler may be able to use this information to
+generate better code or error messages.
+</p>
+</p>
+<p>
+<h2>
+<a name="here10"></a>
+4.3 indefinite arguments
+</h2>
+<p>
+How does <strong>println</strong> manage to have arbitrarily many arguments? It uses an
+<strong>indefinite argument</strong>, marked with the ellipsis notation:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> gather( rosebuds... ) =&gt; rosebuds <strong>enddefine</strong>
+</p>
+<p>
+println( gather( &quot;while&quot;, &quot;ye&quot;, &quot;may&quot; ) );
+
+</p>
+</blockquote>
+</p>
+<p>
+<strong>rosebuds</strong> is an indefinite argument whose value is all of the (remaining)
+arguments to the function. This prints as <strong>[while ye may]</strong>, which
+is the way <i>array values</i> are printed; the arguments are turned into an array.
+(We'll see more about arrays soon.)
+</p>
+<p>
+It's possible to have one or more <i>definite</i> arguments before the final
+indefinite argument:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> foo( x, y... ) =&gt; println( x ); println( y ) <strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+<strong>foo</strong> needs at least one argument <strong>x</strong> but takes arbitrarily many more, which
+are gathered into <strong>y</strong>. It then prints both <strong>x</strong> and <strong>y</strong>; if there are no extra
+arguments, then <strong>y</strong> is an <i>empty array</i>, which prints as <strong>[]</strong>.
+</p>
+<p>
+<strong>foo</strong> has two statements in its body, separated by semicolons. The result from
+<strong>foo</strong> is the result (whatever it may be) from the last call of <strong>println</strong>;
+<strong>println</strong> returns its last argument as its result, so <strong>foo</strong> returns the
+array of its remaining arguments arguments as <i>its</i> result.
+</p>
+<p>
+The name of the indefinite argument can be omitted, in which case the name
+<strong>arguments</strong> is assumed.
+</p>
+</p>
+<h1>
+<a name="here11"></a>
+5 arrays
+</h1>
+<p>
+Spice allows arrays to be constructed using <i>array expressions</i>, which are
+expression sequences enclosed in square brackets:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>var</strong> lots = [27, &quot;now&quot;, &quot;is&quot;, &quot;the&quot;, &quot;time&quot;, 42]; println( lots );
+
+</p>
+</blockquote>
+</p>
+<p>
+which will print <strong>[27 now is the time 42]</strong>. Arrays can
+contain values of any type (unless otherwise specified). Individual elements
+can be extracted (and updated) by indexing:
+</p>
+<p>
+<blockquote>
+<p>
+println( lots[1] ); lots[1] = &quot;anguish&quot;; println( lots );
+
+</p>
+</blockquote>
+</p>
+<p>
+which will print <strong>now</strong> and <strong>[27 anguish is the time 42</strong>.
+Spice arrays are by default based at <strong>0</strong>, so element <strong>1</strong> is the second
+element, but an array can be based at <strong>any</strong> integer value using the function
+<strong>rebase</strong>:
+</p>
+<p>
+<blockquote>
+<p>
+var newlots = rebase( lots, 1 );
+</p>
+<p>
+newlots[1] = &quot;first&quot;, println( newlots ), println( lots );
+
+</p>
+</blockquote>
+</p>
+<p>
+which prints <strong>[first anguish is the time 42]</strong>, twice. <strong>rebase</strong>
+does not alter its array argument; it makes a new array which shares the same
+collection of elements, so updating one updates the other.
+</p>
+<p>
+The function <strong>length</strong> delivers the number of elements in its array argument,
+and the function <strong>arrayBase</strong> delivers the base of its array argument:
+</p>
+<p>
+<blockquote>
+<p>
+println( length( lots ), arrayBase( lots ), arrayBase( newlots ) );
+
+</p>
+</blockquote>
+</p>
+<p>
+which will print <strong>6 0 1</strong>.
+</p>
+<h1>
+<a name="here12"></a>
+6 dot and infix notation
+</h1>
+<p>
+It's often useful and clearer to write calls to one-argument functions,
+expecially those that just extract components from structured values like
+arrays, using <i>dot notation</i>:
+</p>
+<p>
+<blockquote>
+<p>
+println( lots.length, lots.arrayBase, newlots.arrayBase );
+
+</p>
+</blockquote>
+</p>
+<p>
+is just another way of writing the previous calls. In fact you can call
+procedures of <i>any</i> number of arguments using dot notation, because of a
+general rule of the language:
+</p>
+<p>
+<blockquote>
+<p>
+X.f(Y) == f(X,Y) == X @f Y, and X.f == f(X) == X @f
+
+</p>
+</blockquote>
+</p>
+<p>
+<blockquote>
+<p>
+<i>aside</i>. We'll see later that when <strong>p</strong> has bee declared to be a <strong>property</strong>,
+the expression <strong>x.p</strong> is <i>not</i> equivalent to <strong>p(x)</strong>; this is to retain backwards
+compatability with ECMAScript.
+
+</p>
+</blockquote>
+</p>
+<p>
+The forms <strong>X @f Y</strong> and <strong>X @f</strong> are a way of writing any function call as an
+infix or postfix expression, which is often useful when you have a long chain
+of function applications each of shich supplies the &quot;left&quot; argument to the
+next.
+</p>
+<p>
+For example <strong>[1,2,3,4].rebase(1)</strong>, or equivalently <strong>[1,2,3,4] @rebase 1</strong>, are
+infix ways of calling <strong>rebase</strong>. The principal difference between <strong>.</strong> and <strong>@</strong>
+is that <strong>.</strong> is much more tightly binding -- it's the most binding infix
+operator -- and <strong>@</strong> is loosely binding, being only just tighter than the
+logical connectives <strong>&amp;&amp;</strong> and <strong>||</strong>.
+</p>
+<p>
+Different styles of function call are used to make it clear what's an argument to
+hat.
+</p>
+<p>
+<h2>
+<a name="here13"></a>
+6.1 dot and infix function definition
+</h2>
+<p>
+Although the plain fucntion definition syntax we've seen already is enough,
+because of the equivalence of the different notations we've described,
+Spice allows you to define a function in the style in which you expect it
+to be called:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> x @addWithAt y =&gt; x + y <strong>enddefine</strong>
+</p>
+<p>
+<strong>define function</strong> x.addWithDot(y) =&gt; x + y <strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+The arguments can still be typed using <strong>is</strong>, but it can look rather clunky, so
+you can use the alternative syntax for <strong>is</strong>, which is <strong>:</strong>, and for a function
+defined with dot-notation, the special <strong>on</strong> syntax:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> x:Int @addWithAtColon y:Int =&gt; x + y <strong>enddefine</strong>
+</p>
+<p>
+<strong>define function</strong> <strong>on</strong> Int x.addWithDotColon(y:Int) =&gt; x + y <strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+All four of these definitions define functions which add two values together,
+the second pair demanding that those values be <strong>Int</strong>s, and all of them can be
+called in all the different ways we have discussed.
+</p>
+<p>
+We'll see later how these notations tie into the more common object-oriented
+approaches, and why the <strong>on</strong> syntax is so-called.
+</p>
+</p>
+<h1>
+<a name="here14"></a>
+7 ifs and buts
+</h1>
+<p>
+So far, all of our expressions have been unconditional -- get the arguments,
+do something, deliver the result; no choices are involved.
+</p>
+<p>
+Spice has <i>conditional expressions</i> for expression choices, and <i>relational
+expressions</i> for tests.
+</p>
+<p>
+<blockquote>
+<p>
+<strong>if</strong> lots.length &lt; 10 <strong>then</strong> &quot;short&quot; <strong>else</strong> &quot;long&quot; <strong>endif</strong>.println;
+
+</p>
+</blockquote>
+</p>
+<p>
+The relational expression <strong>lots.length &lt; 10</strong> compares the length of <strong>lots</strong>
+(which is probably still <strong>6</strong>) with <strong>10</strong> and delivers <strong>true</strong> if it's less than
+and <strong>false</strong> if it's equal or greater. <strong>true</strong> and <strong>false</strong> are the built-in
+values of type <strong>Bool</strong>. Spice also has the obvious <strong>&gt;</strong>, <strong>&lt;=</strong>, and <strong>&gt;=</strong>
+relations, and the not-so-obvious <strong>==</strong> for equality and <strong>!=</strong> for inequality;
+<strong>!=</strong> can also be spelled <strong>/==</strong>.
+</p>
+<p>
+<blockquote>
+<p>
+Spice also supports the traditional C-style <strong>if</strong> construct:
+</p>
+<p>
+<strong>if</strong> (Expr) Statement <strong>else</strong> Statement
+
+</p>
+</blockquote>
+</p>
+<p>
+The conditional expression tests the boolean value; if it is <strong>true</strong> its value
+is its <strong>then</strong> arm, if it is <strong>false</strong> its value is its <strong>else</strong> arm, and if it's
+not boolean, an error is thrown. (Unlike various other languages, <strong>0</strong>, the
+null string <strong>&quot;&quot;</strong>, and the null reference <strong>null</strong> (or <strong>absent</strong>), are <i>not</i>
+alternatives to <strong>false</strong>, and values such as <strong>1</strong>, <strong>&quot;yes&quot;</strong>, and <strong>println</strong> are
+<i>not</i> alternatives to <strong>true</strong>.)
+</p>
+<p>
+<strong>println</strong> is being called here with dot notation, with its argument being the
+result of the <strong>if</strong>-expression, here the string <strong>short</strong>.
+</p>
+<p>
+<h2>
+<a name="here15"></a>
+7.1 elselessness and elseif
+</h2>
+<p>
+The <strong>else</strong> part of a conditional is optional. If you miss it out, it's as
+though you'd written one with no expression following. Where you don't want a
+result from the <strong>if</strong>-expression, there's no problem; if you do, it will usualy
+generate the value <strong>absent</strong>. The exact rules will be described later.
+</p>
+<p>
+If you want to write a chain of tests, rather than ending up with
+ever-more-deply nested <strong>if</strong>-<strong>endif</strong> structures, Spice lets you introduce
+additional tests with <strong>elseif</strong>:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>if</strong> x == &quot;hello&quot; <strong>then</strong>
+</p>
+<p>
+println( &quot;well hello there" )
+</p>
+<p>
+<strong>elseif</strong> x == &quot;goodbye&quot; <strong>then</strong>
+</p>
+<p>
+println( &quot;sorry to see you go&quot; )
+</p>
+<p>
+<strong>else</strong>
+</p>
+<p>
+println( &quot;eh? what does&quot;, x, &quot;mean?&quot; )
+</p>
+<p>
+<strong>endif</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+You can have as many <strong>elseif</strong>s as you need.
+</p>
+</p>
+<p>
+<h2>
+<a name="here16"></a>
+7.2 short conditionals
+</h2>
+<p>
+Spice also permits &quot;short&quot; conditional expressions, for which it uses the same
+syntax as C (because most of the alternatives have all been taken): the
+expression <strong>X ? T : F</strong> is equivalent to <strong>if X then T else F endif</strong>.
+</p>
+</p>
+<p>
+<h2>
+<a name="here17"></a>
+7.3 unless
+</h2>
+<p>
+Spice has an alternate form of <strong>if</strong>, the <strong>unless</strong> (with closing keyword
+<strong>endunless</strong>) which is the same except the sense of the (first) test is
+inverted.
+</p>
+</p>
+<h1>
+<a name="here18"></a>
+8 simple loops
+</h1>
+<p>
+Spice has several loop structures, falling into two main categories; <strong>while</strong>
+loops, which iterate until a condition is satisfied, and <strong>for</strong> loops, which
+iterate over collections.
+</p>
+<p>
+<h2>
+<a name="here19"></a>
+8.1 while and break (and return)
+</h2>
+<p>
+Suppose we want to iterate over the elements of an array <strong>lots</strong>.
+Here's one way to do it with <strong>while</strong>:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>var</strong> i = 0;
+</p>
+<p>
+<strong>while</strong> i &lt; lots.length <strong>do</strong> ... lots[i] ...; i += 1 <strong>endwhile</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+The expression <strong>i += 1</strong> is equivalent to <strong>i = i + 1</strong>, but more compact,
+especially when <strong>i</strong> is some complex expression.
+</p>
+<p>
+For example, to find the element of an array containing a specific element by
+linear search:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> findIndex( a, x ) =&gt;
+</p>
+<p>
+<strong>var</strong> i = 0;
+</p>
+<p>
+<strong>while</strong> i &lt; a.length <strong>do</strong>
+        <strong>if</strong> a[i] == x <strong>then</strong> <strong>return</strong> i <strong>endif</strong>;
+        i += 1
+    <strong>endwhile</strong>;
+</p>
+<p>
+absent;
+</p>
+<p>
+<strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+The <strong>return</strong> expression evaluates its operand (if any) and then exits from
+the procedure with those results as the procedure result. <strong>==</strong> compares
+the element <strong>a[i]</strong> with <strong>x</strong> using whatever equality test is defined by the
+type of <strong>x</strong>. If the <strong>while</strong> loop terminates, then the final expression in the
+procedure body, <strong>absent</strong>, is the procedure result.
+</p>
+<p>
+There's another way to write this. In Spice, <strong>while</strong> loops are <i>expressions</i>,
+and can deliver values.
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> findIndex( a, x ) =&gt;
+</p>
+<p>
+<strong>var</strong> i = 0;
+</p>
+<p>
+<strong>while</strong> i &lt; a.length <strong>with result</strong> absent <strong>do</strong>
+        <strong>if</strong> a[i] == x <strong>then</strong> <strong>break</strong> i <strong>endif</strong>;
+        i += 1
+    <strong>endwhile</strong>;
+</p>
+<p>
+<strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+The result from a <strong>while</strong> is given by any <strong>break</strong> it executes; a <strong>break</strong>
+terminates the loop and, if it has an operand, delivers that as its value. If
+the <strong>break</strong> is never executed, then the loop's result is given by its <strong>with
+result</strong> clause.
+</p>
+</p>
+<p>
+<h2>
+<a name="here20"></a>
+8.2 until loops
+</h2>
+<p>
+Spice has an inverted <strong>while</strong> loop, the <strong>until</strong> loop, which is introduced with
+<strong>until</strong>, ends with <strong>enduntil</strong>, and is the same except the sense of the loop
+termination test is inverted.
+</p>
+</p>
+<p>
+<h2>
+<a name="here21"></a>
+8.3 for
+</h2>
+<p>
+Spice has several styles of <strong>for</strong> loop. The simplest is the <strong>from</strong>-<strong>to</strong>
+variant, in which we can write our linear search:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> findIndex( a, x ) =&gt;
+</p>
+<p>
+<strong>for</strong> i <strong>from</strong> 0 <strong>to</strong> a.length - 1 <strong>with result</strong> absent <strong>do</strong>
+</p>
+<p>
+<strong>if</strong> a[i] == x <strong>then</strong> <strong>break</strong> i <strong>endif</strong>;
+</p>
+<p>
+<strong>endfor</strong>;
+</p>
+<p>
+<strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+The variable <strong>i</strong> is automatically declared as a varible that exists only while
+the loop is executing; it takes values from the <strong>from</strong> value (here, <strong>0</strong>) to
+the <strong>to</strong> value (here, <strong>a.length - 1</strong>) inclusive. Like the <strong>while</strong> loop,
+<strong>for</strong> loops are expressions, and can deliver values.
+</p>
+<p>
+The other principal variant, which isn't quite so useful here, is the <strong>in</strong>
+variant:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> findIndex( a, x ) =&gt;
+</p>
+<p>
+<strong>var</strong> x = 0
+</p>
+<p>
+<strong>for</strong> ax <strong>in</strong> a: Array <strong>with result</strong> absent <strong>do</strong>
+</p>
+<p>
+<strong>if</strong> ax == x <strong>then</strong> <strong>break</strong> i <strong>else</strong> i += 1 <strong>endif</strong>;
+</p>
+<p>
+<strong>endfor</strong>;
+</p>
+<p>
+<strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+<strong>ax</strong> is automatically declared, and takes its values from successive elements
+of the array. However, since we want the index <strong>i</strong> of the element, we have to
+maintain a count ourselves. Later on we'll see other iterations that are more
+effective.
+</p>
+</p>
+<h1>
+<a name="here22"></a>
+9 multiple values
+</h1>
+<p>
+So far, we've seen Spice expressions and procedures which deliver <i>single</i>
+results. Spice expressions can deliver <i>multiple</i> results, often avoiding the
+need to construct new objects or to use &quot;reference parameters&quot; (which Spice
+hasn't got).
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> plusOrMinus( x, y ) =&gt; (x + y, x - y) <strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+The comma keeps both its left and right operand values (exactly as it does in
+a function argument list); <strong>plusOrMinus</strong> delivers <i>two</i> values.
+</p>
+<p>
+<blockquote>
+<p>
+println( plusOrMinus( 20, 17 ) );
+
+</p>
+</blockquote>
+</p>
+<p>
+will print <strong>37 3</strong>.
+</p>
+<p>
+<h2>
+<a name="here23"></a>
+9.1 void context
+</h2>
+<p>
+Some expressions, in particular the left operands of semi-colon and top-level
+expressions, are evaluated in <i>void context</i>; they are evaluated and their
+results thrown away. The Spice system you are using to test our examples runs
+them in void context.
+</p>
+<p>
+Sometimes you need to make it explicit that, whatever else would have
+happened, you want no values to escape. The expression <strong>none E</strong> evaluates E in
+a new multiple-value context and then throws away all the answers, delivering
+none. The expression <strong>none</strong> is a shorthand for <strong>none ()</strong>, representing no
+values. Similarly, the expression <strong>one E</strong> evaluates <strong>E</strong> and turns it into one
+value: if <strong>E</strong> delivered no values, <strong>one</strong> returns <strong>absent</strong>; if <strong>E</strong> delivers one
+value, <strong>one</strong> returns that; and if <strong>E</strong> delivers several values, <strong>one</strong> returns
+the first one.
+</p>
+</p>
+<p>
+<h2>
+<a name="here24"></a>
+9.2 multiple-value loops
+</h2>
+<p>
+Loops discard the results from their bodies by default. To get the results
+from all the iterations, you have to follow <strong>do</strong> with the keyword <strong>all</strong>:
+</p>
+<p>
+<blockquote>
+<p>
+println( <strong>for</strong> i <strong>from</strong> 1 <strong>to</strong> 10 <strong>do</strong> <strong>all</strong> i*i <strong>endfor</strong> )
+
+</p>
+</blockquote>
+</p>
+<p>
+to print <strong>1 2 9 16 25 36 49 64 81 100</strong>.
+</p>
+</p>
+<p>
+<h2>
+<a name="here25"></a>
+9.3 explode
+</h2>
+<p>
+One built-in function produces multiple results as a matter of course;
+<strong>explode</strong>. <strong>explode</strong> takes one argument and explodes it into its constituents
+(if any) as a multiple result. Applied to an array, it explodes it into its
+elements; applied to a string, it explodes it into its characters. Applied
+to an atomic object (a number, a character, a boolean, <strong>absent</strong>) it delivers
+<i>no</i> values.
+</p>
+</p>
+<h1>
+<a name="here26"></a>
+10 procedures as values
+</h1>
+<p>
+Spice procedures are not restricted to being defined and called; there are
+several ways they can be manipulated.
+</p>
+<p>
+<h2>
+<a name="here27"></a>
+10.1 first-class procedures
+</h2>
+<p>
+Spice procedures are <i>first-class values</i>; they can be passed as parameters,
+return as results, and stored into variables and data-structures (such as
+arrays; we'll see more later).
+</p>
+<p>
+This is particularly useful when you need to do something to all the elements
+of a collection, but the details of how the collection are kept is secret
+(eg to allow you to change it later); you write a function that walks over
+the collection and does &quot;something&quot; to each element. Since all we've got
+is arrays, that forms our first example; let's suppose that <strong>them</strong> is
+a secret array variable.
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> appCollection( f ) =&gt;
+</p>
+<p>
+<strong>for</strong> x <strong>in</strong> them: Array <strong>do</strong> x.f <strong>endfor</strong>
+</p>
+<p>
+<strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+Now the expression <strong>appCollection(println)</strong> or, equivalently,
+<strong>println.appCollection</strong>, will print all the elements of <strong>them</strong>. If the
+elements <i>do</i> something sensible when passed to some function <strong>mangle</strong>, then
+<strong>mangle.appCollection</strong> will mangle all of them.
+</p>
+<p>
+<strong>appCollection</strong> isn't as general as it might be; <strong>f</strong> might deliver multiple
+results, but each call of <strong>f</strong> gets discarded (because it's in a loop body).
+But we can fix that:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> appCollection( f ) =&gt;
+</p>
+<p>
+<strong>for</strong> x <strong>in</strong> them: Array <strong>do</strong> <strong>all</strong> x.f <strong>endfor</strong>
+</p>
+<p>
+<strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+Now <strong>appCollection</strong> returns all the values that <strong>f</strong> returns for the caller
+to do with as they like. Of course, we might want to construct a new
+collection from the old one by mangling each element:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> mapCollection( f ) =&gt; [f.appCollection] <strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+which gathers up the results from <strong>appCollection</strong> and makes a new collection
+(here, array) out of them.
+</p>
+</p>
+<p>
+<h2>
+<a name="here28"></a>
+10.2 lambda-expressions
+</h2>
+<p>
+Passing functions as arguments, and applying them, is all very well, but it
+can get tedious defining trivial functions to use. For example, if
+we want to make a new collection by incrementing every element of the
+old one, we can write:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> inc( x ) =&gt; x + 1 <strong>enddefine</strong>
+</p>
+<p>
+inc.mapCollection.println;
+
+</p>
+</blockquote>
+</p>
+<p>
+If <strong>them</strong> is, say, the collection <strong>[0 8 41]</strong> then this will print <strong>[1 9 42]</strong>.
+But it's tedious to have to define a function, put it
+somewhere in the code, give it a suitably mnenomic (but short) name, then then
+pass it. Wouldn't it be nice if you could write the function right where you
+were going to pass it?
+</p>
+<p>
+Of course the answer is, &quot;yes&quot;, otherwise we wouldn't have posed the question.
+The expression <strong>(A =&gt; E)</strong>, where <strong>A</strong> is an argument list (with the brackets
+omitted) and <strong>E</strong> is a sequence of expressions, is called a <strong>lambda expression</strong>
+(for historical reasons to do with Church's <i>lambda calculus</i>) or a <i>procedure
+literal</i>. Lambda-expressions are intended to be used for <i>short</i> procedures;
+otherwise they can make the code look cluttered.
+</p>
+<p>
+Instead of defining <strong>inc</strong> above, we can write <strong>(x =&gt; x +
+1).mapCollection.println</strong> for the same effect. To double each element, use
+<strong>(x =&gt; x * 2)</strong>; to square it, use <strong>(x =&gt; x * x)</strong>; to replace it with <strong>0</strong>
+use <strong>(x =&gt; 0)</strong>.
+</p>
+<p>
+<h3>
+<a name="here29"></a>
+10.2.1 &quot;full lexical scope&quot;
+</h3>
+<p>
+Because we haven't said you can't, the reader may suppose that you can write
+lambda-expressions within procedures, and similarly, that those expressions
+may refer to, even assign to, local variables of those procedures. And you
+can.
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> konst( x ) =&gt; (ignored =&gt; x) <strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+<strong>konst</strong> (so-called because <strong>const</strong> is a Spice reserved word) is a function
+that makes constant functions; <strong>konst(E)</strong> is a function that delievrs the
+value of <strong>E</strong> whatever it's applied to, so <strong>konst(0)</strong> is a function [of one
+argument] that always delivers <strong>0</strong>. The variable <strong>x</strong> which is the parameter to
+<strong>konst</strong> is available to the lambda-expression even after <strong>konst</strong> has finished
+executing.
+</p>
+<p>
+This behaviour -- that the variables of a function are visible to
+lambda-expressions within that function, and that they live on after the
+function exits -- is called <i>full lexical scoping</i>. It's relatively uncommon
+in programming languages, but it is your friend.
+</p>
+</p>
+</p>
+<p>
+<h2>
+<a name="here30"></a>
+10.3 hole-expressions
+</h2>
+<p>
+Lots of little lambda-expressions are just an operator (or function call)
+with one (or two) arguments &quot;missing&quot;; like <strong>inc</strong> and its brethren above.
+For these Spice allows you to write a special form of lambda-expression, the
+<i>hole expression</i>, which is a function call or operator invocation with
+some of its arguments replaced by <i>holes</i>. The usual hole is written <strong>_</strong>,
+and it stands for &quot;the [first] argument&quot;; it makes the application or
+invocation into a lambda expression.
+</p>
+<p>
+So <strong>(_ + 1)</strong> (the brackets are unnecessary) is another way of writing <strong>(x =&gt;
+x + 1)</strong>, where <strong>x</strong> has been replaced by the hole and the argument declaration
+is unnecessary.
+</p>
+<p>
+<strong>(_ - 1)</strong> is the function that subtracts <strong>1</strong> from things, <strong>(42 - _)</strong> is
+the function that subtracts things from <strong>42</strong>, and <strong>(_ * _)</strong> is the
+function that squares things.
+</p>
+<p>
+Just in case you ever want to use holes for functions with more than one
+argument, there are as many holes as you like, written <strong>_1</strong>, <strong>_2</strong>, and so
+on; <strong>_</strong> is shorthand for <strong>_1</strong>. A hole-expression has as many implied
+arguments as the biggest hole it uses; the Spice compiler will be curious
+about expressions with missing holes (eg <strong>_19 + 1</strong>).
+</p>
+</p>
+<p>
+<h2>
+<a name="here31"></a>
+10.4 combining functions
+</h2>
+<p>
+Because it's possible to write functions that take and deliver other
+functions, its possible to write <i>combining functions</i> who's job is just
+to manipulate other functions; this can result in a style known as <i>higher
+order programming</i>.
+</p>
+<p>
+The standard function <strong>Then</strong> [note the capital T!] takes two functions
+<strong>f</strong> and <strong>g</strong> and returns a new function that takes some arguments <strong>X</strong>,
+applies <strong>f</strong> to them, and then applies <strong>g</strong> to the result; it might be written
+as:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> Then( f <strong>is</strong> Function, g <strong>is</strong> Function ) <strong>is</strong> Function =&gt;
+</p>
+<p>
+(args... =&gt; args.explode.f.g)
+</p>
+<p>
+<strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+Note that <strong>explode</strong> generates arbitrarily many results, all of which become
+arguments to <strong>f</strong>; all of <strong>f</strong>s results become arguments to <strong>g</strong>; and all
+of <strong>g</strong>s results become the results of the lambda-expression. Nothing
+special has to be done by the programmer to keep tabs of how many arguments
+and results are returned.
+</p>
+</p>
+<h1>
+<a name="here32"></a>
+11 classes
+</h1>
+<p>
+So far we've only uses (some) of the built-in Spice types: integers, strings,
+arrays, and procedures. Spice also allows you to define your own data-types
+using <i>classes</i>.
+</p>
+<p>
+<h2>
+<a name="here33"></a>
+11.1 class definition
+</h2>
+<p>
+A class definition allows you to define a new (kind of) <i>object</i> which you
+can use in your code. The simplest class definition introduces an object
+with named slots:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define class</strong> Pair
+</p>
+<p>
+<strong>slot</strong> front = absent <strong>is</strong> Any
+</p>
+<p>
+<strong>slot</strong> back = absent <strong>is</strong> Any
+</p>
+<p>
+<strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+This defines a new class object, <strong>Pair</strong>, with two slots called <strong>front</strong> and <strong>back</strong>.
+The <strong>slot</strong> declaration is just like a <strong>var</strong> declaration, except that it
+makes variables &quot;inside&quot; objects; you can leave out the initialiser and type
+in the usual way.
+</p>
+<p>
+The name <strong>Pair</strong> becomes a new type name, and you can use it in the type part
+of a variable declaration or procedure argument.
+</p>
+<p>
+You can print out the class if you wish; <strong>Pair.println</strong> will print something
+like <strong>&lt;Class &lt;Pair front:absent back:absent&gt;&gt;</strong>. (We say
+&quot;something like&quot; because it's possible to change the default way objects get
+printed.)
+</p>
+<p>
+You can see the values in the slots. <strong>front</strong> and <strong>back</strong> are actually
+<i>procedures</i> and you call them in the usual way; <strong>Pair.front</strong> and
+<strong>Pair.back</strong>. Of course, this is pretty useless, because you <i>know</i> what's
+there, and you can't change the values of slots in classes.
+</p>
+<p>
+You can make new <strong>Pair</strong> objects with the expression <strong>new Pair()</strong>. Each such
+object also has a <strong>front</strong> and a <strong>back</strong>, which start off as copies of the
+values in the class, and which you <i>can</i> change. Every object also
+responds to the function <strong>typeof</strong> by delivering its class object.
+</p>
+</p>
+<p>
+<h2>
+<a name="here34"></a>
+11.2 updaters
+</h2>
+<p>
+Suppose we've declared <strong>var p = new Pair();</strong> so that <strong>p</strong> holds a new <strong>Pair</strong>
+object. We can assign to the <strong>front</strong> and <strong>back</strong> slots of <strong>p</strong>:
+</p>
+<p>
+<blockquote>
+<p>
+p.front = 1, p.back = &quot;two&quot;, p.front.println, p.back.println;
+
+</p>
+</blockquote>
+</p>
+<p>
+prints <strong>1 two</strong>. In Spice, it's possible to call procedures
+on the left-hand-side of an assignment, in which case what happens is that
+the <i>updater</i> of that procedure is called. Just as Spice makes procedures
+to access the <strong>slot</strong>-slots of a class value, it gives them updaters
+to change those values.
+</p>
+<p>
+<blockquote>
+<p>
+<i>technical note</i>. Unlike some languages (Common Lisp, Dylan), it is the
+procedure <i>value</i> that has the updater, not the procedure <i>name</i>. This means
+that you can call the updaters of procedures passed as parameters or stored
+into data structures. We stole/////re-used this behaviour from Pop11.
+
+</p>
+</blockquote>
+</p>
+<p>
+You can define your own updaters if you wish:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> x.foo = y =&gt; println( &quot;updating&quot;, x, &quot;with&quot;, y ) <strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+The <strong>= y</strong> says this this is defining the updater of <strong>foo</strong> (and there had
+better be a definition for <strong>foo</strong> elsewhere; you can't define the updater of a
+procedure that doesn't exist) and that <strong>y</strong> is the name of the parameter which
+is the &quot;right-hand-side of the assignment&quot;. <strong>y</strong> can be typed, as usual.
+</p>
+<p>
+While an updater can do whatever it likes, it is very stongly advised that
+updaters are given only to access functions, and that they do the &quot;obvious
+thing&quot;; after an assignment <strong>x.foo = E</strong> then the expression <strong>x.foo</strong> should
+deliver the value <strong>E</strong> that was assigned.
+</p>
+<p>
+If <strong>foo</strong> is a procedure, then <strong>foo.updater</strong> is the updater of that procedure,
+if it has one, and <strong>absent</strong> otherwise.
+
+</p>
+</p>
+<p>
+<h2>
+<a name="here35"></a>
+11.3 methods
+</h2>
+<p>
+A class can also define <i>methods</i> which act on objects of the type it
+defines.
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define class</strong> Pair
+</p>
+<p>
+<strong>slot</strong> front = absent <strong>is</strong> Any
+</p>
+<p>
+<strong>slot</strong> back = absent <strong>is</strong> Any
+</p>
+<p>
+<strong>define method</strong> wipe() =&gt; this.front = absent; this.back = absent; <strong>none</strong> <strong>enddefine</strong>
+</p>
+<p>
+<strong>define method</strong> setPair(x,y) =&gt; this.front = x; this.back = y; <strong>none</strong> <strong>enddefine</strong>
+</p>
+<p>
+<strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+This version of <strong>Pair</strong> defines two methods, <strong>wipe</strong> and <strong>setPair</strong>. <strong>wipe</strong> sets
+both slots to <strong>absent</strong>, and <strong>setPair</strong> sets them to the given parameter values.
+The name <strong>this</strong> is bound to an implicit additional parameter, which is the
+instance of <strong>Pair</strong> to be changed.
+</p>
+<p>
+The expression <strong>none</strong> delivers no values; there doesn't seem to be a sensible
+value to deliver from either of these methods.
+</p>
+<p>
+Methods are procedures, and you call them in the usual ways; if <strong>p</strong> is an
+instance of this <strong>Pair</strong>, then <strong>p.wipe</strong> will wipe it, and <strong>p.setPair(1,2)</strong> will
+set its <strong>front</strong> to <strong>1</strong> and its <strong>back</strong> to <strong>2</strong>. You can tell from this that
+<strong>this</strong> is bound to the <i>first</i> argument value. In fact, if it takes your
+fancy, you can use a different name than <strong>this</strong>, using the same
+function-definition syntax that we saw earlier:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define method</strong> self.wipe =&gt; self.front = absent; self.back = absent; <strong>none</strong>
+<strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+would be a suitable replacement for <strong>Pair</strong>'s version of <strong>wipe</strong>.
+</p>
+<p>
+We'll see more about methods when we discuss inheritance, later.
+</p>
+</p>
+<p>
+<h2>
+<a name="here36"></a>
+11.4 constructors
+</h2>
+<p>
+The <strong>new Pair()</strong> syntax is a bit limited, because you can't easily set new
+values for the <strong>slot</strong>-slots. If you want to create a new object <i>and</i> set the
+values of its slots, you must define a <i>constructor</i>. Here, <strong>Pair</strong> gets a
+third outing:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define class</strong> Pair
+</p>
+<p>
+<strong>slot</strong> front = absent <strong>is</strong> Any
+</p>
+<p>
+<strong>slot</strong> back = absent <strong>is</strong> Any
+</p>
+<p>
+<strong>define method</strong> <strong>new</strong> pair(x,y) =&gt; this.front = x, this.back = y <strong>enddefine</strong>
+</p>
+<p>
+<strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+You can make a new initialised <strong>Pair</strong> by writing <strong>new pair(&quot;hello&quot;,&quot;world&quot;)</strong>.
+This works by making a copy of <strong>Pair</strong> and then handing that on as the <strong>this</strong>
+for <strong>pear</strong>. Any values returned by a constructor are discarded; the result of
+a <strong>new</strong> expression is the newly constructed object.
+</p>
+<p>
+You can have as many constructor definitions as you like for a class. As a
+special favour, you can use <strong>method new P</strong> inside a definition of a class
+<strong>P</strong> to define overloadings of its constructor call.
+</p>
+<p>
+<blockquote>
+<p>
+<i>Aside</i>. We've
+now met all the types of procedure you can have in Spice; functions,
+methods, constructors, and the different flavours of lambda-expressions.
+There are <i>predicates</i> which can tell them apart, although you will usually
+only need these when you're debugging code.
+</p>
+<p>
+<ul>
+<li>
+<strong>x.isProcedure</strong> is <strong>true</strong> when <strong>x</strong> is any kind of procedure, and <strong>false</strong>
+otherwise.
+</li>
+<li>
+<strong>x.isMethod</strong> is <strong>true</strong> if <strong>x</strong> is defined by a <strong>method</strong> definition,
+and <strong>false</strong> otherwise;
+</li>
+<li>
+<strong>x.isFunction</strong> if <strong>x</strong> is defined by a <strong>function</strong>
+definition, and <strong>false</strong> otherwise;
+</li>
+<li>
+<strong>x.isConstructor</strong> is <strong>true</strong> when <strong>x</strong> has
+been defined with <strong>method new</strong>, and <strong>false</strong> otherwise;
+</li>
+<li>
+and <strong>x.isLambda</strong> is
+<strong>true</strong> when <strong>x</strong> is the result of a lambda-expression or hole-expression, and
+<strong>false</strong> otherwise.
+</li>
+</ul>
+</p>
+</blockquote>
+</p>
+</p>
+<p>
+<h2>
+<a name="here37"></a>
+11.5 inheritance
+</h2>
+<p>
+A class can <i>extend</i> an existing class. Here's one example; we might
+choose to make triples an extension of pairs.
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define class</strong> Triple <strong>extends</strong> Pair
+</p>
+<p>
+<strong>slot</strong> side
+</p>
+<p>
+<strong>define method</strong> <strong>new</strong> triple(x, y, z) =&gt; this.pair(x,y), this.side = z <strong>enddefine</strong>
+<strong>endclass</strong>
+</p>
+</blockquote>
+</p>
+<p>
+<strong>Triple</strong> has all the slots that <strong>Pair</strong> does, and one more: <strong>side</strong>. <strong>front</strong> and
+<strong>back</strong> automatically work on <strong>Triple</strong>s. <strong>Triple</strong>s <i>are</i> <strong>Pair</strong>s, and then
+some. The constructor <strong>triple</strong> works by first invoking the constructor <strong>pair</strong>
+to do the first two elements and then assigning the third itself.
+</p>
+<p>
+Not just <strong>front</strong> and <strong>back</strong>, but <i>any</i> function that works on <strong>Pair</strong>s and
+doesn't explicity include non-<strong>Pair</strong>s will work on <strong>Triple</strong>s.
+
+</p>
+</p>
+<p>
+<h2>
+<a name="here38"></a>
+11.6 overloading functions
+</h2>
+<p>
+How does this happy state of affairs come about? In Spice, functions can
+be <i>overloaded</i>; they can have different definitions which apply to different
+argument types. Here's a trivial example. We've chosen to use the short syntax
+version of <strong>is</strong>, which is <strong>:</strong>, in the definitions:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> size( x: Int ) =&gt; x @logToBase 2 <strong>enddefine</strong>
+</p>
+<p>
+<strong>define function</strong> size( x: String ) =&gt; x.length <strong>enddefine</strong>
+</p>
+<p>
+<strong>define function</strong> size( x: Any ) =&gt; 0 <strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+This defines the <strong>size</strong> of an integer to be its bitswidth (and blows up if <strong>x</strong>
+is <strong>0</strong>), the <strong>size</strong> of a string to be its length, and the size of anything
+else to be <strong>0</strong>. The choice of which definition of <strong>size</strong> to use is made when
+<strong>size</strong> is called, by looking at the types of its arguments.
+</p>
+<p>
+When the argument type is the name of a class (like <strong>Pair</strong>), then
+it will accept values of any of its extensions (like <strong>Triple</strong>), <i>unless</i>
+there is a definition for that extension, in which case that definition
+&quot;wins&quot;. This is how method definitions work; they are overloaded on their
+<strong>this</strong> (ie first) argument.
+</p>
+<p>
+It's possible to overload functions on more than one argument, but early
+versions of the Spice compiler will apologetically reject such definitions;
+your compiler may or may not be such an early version.
+</p>
+</p>
+<h1>
+<a name="here39"></a>
+12 type-expressions and &quot;as&quot;
+</h1>
+<p>
+So far we've said little about the type-expressions that can be written
+following <strong>is</strong>, except that certain built-in names (<strong>Any</strong>, <strong>Int</strong>, <strong>String</strong>)
+are allowed, and the names of any classes.
+</p>
+<p>
+In fact types can be expressed with <i>expressions</i>, which have the same syntax
+as value-expressions, but with different meanings for some of the built-in
+operators. There are five important type-expressions in Spice; the <i>union</i>,
+<i>multiple</i>, <i>lots</i>, <i>array</i>, and <i>non-optional</i> types.
+</p>
+<p>
+<h2>
+<a name="here40"></a>
+12.1 union types
+</h2>
+<p>
+If <strong>T</strong> and <strong>U</strong> are types, then <strong>T|U</strong> is the <i>union</i> of <strong>T</strong> and <strong>U</strong>, the type
+of values which are either <strong>T</strong>s or <strong>U</strong>s.
+</p>
+</p>
+<p>
+<h2>
+<a name="here41"></a>
+12.2 multiple
+</h2>
+<p>
+If <strong>T</strong> and <strong>U</strong> are types, then <strong>T, U</strong> is the <i>multiple type</i> which is a value
+of type <strong>T</strong> then a value of type <strong>U</strong>.
+</p>
+</p>
+<p>
+<h2>
+<a name="here42"></a>
+12.3 lots
+</h2>
+<p>
+If <strong>T</strong> is a type, <strong>T**</strong> is the <i>lots of T</i> type, which is some unspecified
+number of <strong>T</strong>s as multiple values. The return type of a procedure defaults to
+being <strong>Any**</strong>.
+</p>
+</p>
+<p>
+<h2>
+<a name="here43"></a>
+12.4 arrays (and based arrays)
+</h2>
+<p>
+If <strong>T</strong> is a type, then <strong>T[]</strong> is the type <i>array of T</i> or <i>T row</i>. Note
+carefully that the Spice array constructor <strong>[E]</strong> <i>always</i> makes values of
+type <strong>Any[]</strong>, because Spice arrays can hold any kind of value; to make eg
+an <strong>Int[]</strong> you have to invoke a special constructor <strong>IntArray(E)</strong>.
+</p>
+<p>
+The type <strong>T[N]</strong>, where <strong>N</strong> is an integer expression which the compiler can
+evaluate, is an array of <strong>T</strong> <i>based at N</i>. If <strong>N</strong> is omitted, it defaults to
+<strong>0</strong>, so <strong>T[]</strong> expects <strong>0</strong>-based arrays. See the entry for <strong>as</strong> below for some
+interesting alternatives.
+</p>
+</p>
+<p>
+<h2>
+<a name="here44"></a>
+12.5 optional types
+</h2>
+<p>
+Unless otherwise specified, <strong>absent</strong> is not permitted where a value of a
+specific (non-<strong>Any</strong>) type is expected; so a variable typed as <strong>Int</strong> cannot
+legally be given <strong>absent</strong> as its value. This can be over-ridden by using the
+<strong>optional</strong> type constructor; if <strong>T</strong> is a type, <strong>T??</strong> is the type which all the
+values of type <strong>T</strong> and also the value <strong>absent</strong>.
+</p>
+</p>
+<p>
+<h2>
+<a name="here45"></a>
+12.6 &quot;as&quot; (and based arrays)
+</h2>
+<p>
+So far we've seen <strong>is</strong> (and its shorthand, <strong>:</strong>) used for typing variables and
+arguments. There's another type-word, <strong>as</strong>, which you can use. A variable (or
+argument) typed with <strong>as</strong> has the type given to it but, whenever you assign to
+it or initialise it, the value you assign is <i>converted to</i> that given type by
+running the type's <i>conversion procedure</i>. For a type named <strong>T</strong> the conversion
+procedure is traditionally called <strong>toT</strong>.
+</p>
+<p>
+The most important use for this is that the conversion procedure for the based
+array type <strong>T[N]</strong> will use <strong>rebase</strong> to convert the assigned value (if it is an
+array) to a new array based at <strong>N</strong>; Spice promises that if the assigned value
+already is an <strong>N</strong>-based array, it will be passed through unchanged.
+</p>
+</p>
+<h1>
+<a name="here46"></a>
+13 modules
+</h1>
+<p>
+So far we've seen fragments of Spice code out of context for illustrative
+purposes. In real life, Spice code code should be organised into <i>modules</i>.
+A module is a collection of procedures, variables, and classes (and styles,
+which we'll see later) which work together to provide a coherent service to
+the programmer who uses those modules.
+</p>
+<p>
+A module starts with a <i>module header</i>, which identifies the module and the
+version of Spice it was intended for, specifies any other modules it may need,
+and then continues with the <i>module body</i>, which is a sequence of variable,
+procedure, class, and other declarations, or the kind we've discussed
+elsewhere.
+</p>
+<p>
+The header starts with the <i>spice specification part</i>, which consists of
+the reserved word <strong>spice</strong>, a version string, and possibly some <i>preference
+settings</i>. The version string is a string specifying the version of Spice
+that the module is supposed to work with, and the preference settings control
+the Spice compiler -- see later for details.
+</p>
+<p>
+Otherwise the header starts with the reserved word <strong>module</strong> and the module
+name, which is a series of simple names deparated by dots. For example,
+</p>
+<p>
+<blockquote>
+<p>
+<strong>spice</strong> &quot;release.2.0&quot;;
+</p>
+<p>
+<strong>module</strong> this.is.an.example;
+
+</p>
+</blockquote>
+</p>
+<p>
+Spice does not constrain module names to conform to file names on your local
+system, but it's a good idea to put a module whose name ends in <strong>.foo</strong> in a
+file called <strong>foo</strong>.
+</p>
+<p>
+<blockquote>
+<p>
+<i>technical note</i>. An IDE for Spice is <i>required</i> not to insist that module
+names form a path through a fileing system hierarchy, and is <i>required</i> to
+accept module name components longer that the local filing system component
+names, and with &quot;strange&quot; characters in.
+</p>
+</blockquote>
+</p>
+<p>
+<h2>
+<a name="here47"></a>
+13.1 public and private
+</h2>
+<p>
+A module exists to make a service available to its users, which it does by
+making some of its identifiers visible to those users. By default, <i>none</i> of
+the identifiers in a module are visible. However, declarations can be marked
+as <i>public</i> by writing <i>declaration qualifiers</i> in square brackets after
+the introductory keyword. To make a public variable, for example:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>var</strong> [public] exposed = &quot;hello&quot; : String
+
+</p>
+</blockquote>
+</p>
+<p>
+declares a public string-only variable called <strong>exposed</strong>. You can mark a
+variable <strong>private</strong> instead, but since this is the default, it won't make much
+difference.
+</p>
+<p>
+You can declare a function <strong>public</strong> in the same way:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define function</strong> [public] inc( x ) =&gt; x + 1 <strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+More importantly, you can declare a <strong>class</strong> public. If you do so, the
+class name is public, <i>and so are all the non-slot methods declared in
+it</i>. The slot methods (ie the names of <strong>slot</strong>-variables) are still private by
+default; you can declare them public explicitly, and you can declare the other
+methods private explicitly.
+</p>
+<p>
+Incidentally, <strong>private</strong> and <strong>public</strong> are <i>not</i> reserved words.
+</p>
+</p>
+<p>
+<h2>
+<a name="here48"></a>
+13.2 imports
+</h2>
+<p>
+<strong>public</strong> is one side of the coin; <strong>imports</strong> is the other. A module can
+<i>import</i> another one in its header.
+</p>
+<p>
+<blockquote>
+<p>
+<strong>module</strong> using.example;
+</p>
+<p>
+<strong>import</strong> this.is.an.example;
+
+</p>
+</blockquote>
+</p>
+<p>
+This makes all the public identifiers from <strong>this.is.an.example</strong> visible inside
+<strong>using.example</strong>. If you don't specify where this other module is to be found,
+the Spice compiler will use a set of rules to locate it; but you can force its
+hand:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>import</strong> this.is.an.example <strong>from</strong> &quot;/users/hedgehog/example.spi&quot;;
+</p>
+<p>
+<strong>import</strong> this.is.an.example <strong>from</strong> &quot;http://cdollin/Spice/Modules/example.spi&quot;;
+
+</p>
+</blockquote>
+</p>
+<p>
+Following the <strong>from</strong> is an expression (almost always a string literal) with
+the URL for the source of the module.
+</p>
+<p>
+Imported modules need not be written in Spice; Spice can import CSS
+stylesheets and (eventually) a subset of Javascript. Maybe even Java ...
+</p>
+</p>
+<p>
+<h2>
+<a name="here49"></a>
+13.3 readonly
+</h2>
+<p>
+It's possible to qualify public variables and slots as <i>read only</i>, which
+means that they can be read but not changed by importing modules. For ordinary
+variables, all that need be done is to prohibit assignment to them; but
+for slots, which are accessed by procedures, it's not quite so simple.
+</p>
+<p>
+When a slot is marked read-only
+</p>
+<p>
+<blockquote>
+<p>
+<strong>slot</strong> [readonly, public] magic = 42;
+
+</p>
+</blockquote>
+</p>
+<p>
+then the compiler makes <i>two</i> versions of <strong>magic</strong>; one for local use, and one
+for export. <i>Only the local version has an updater</i>. This can cause the
+interesting situation:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>module</strong> defines.magic;
+</p>
+<p>
+<strong>define class</strong> P
+</p>
+<p>
+<strong>slot</strong> [public, readonly] magic = 72;
+</p>
+<p>
+<strong>enddefine</strong>
+</p>
+<p>
+<strong>define function</strong> isEqual( x ) =&gt; println( x === magic ) <strong>enddefine</strong>
+</p>
+<p>
+<strong>endmodule</strong>
+</p>
+<p>
+<strong>module</strong> Q
+</p>
+<p>
+<strong>import</strong> defines.magic;
+</p>
+<p>
+testEqual( magic );
+</p>
+<p>
+<strong>endmodule</strong>
+</p>
+</blockquote>
+</p>
+<p>
+which will print <strong>false</strong> as the exported <strong>magic</strong> is a different function to the
+local one.
+</p>
+</p>
+<p>
+<h2>
+<a name="here50"></a>
+13.4 qualified access and aliases
+</h2>
+<p>
+It's possible to import a module, but to declare that you need to specify its
+name everywhere you specify its variables:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>import</strong> [qualified] defines.magic;
+
+</p>
+</blockquote>
+</p>
+<p>
+To refer to <strong>magic</strong> now you need to prefix it with the last part
+if its module name: <strong>magic::magic</strong>. (Requiring the <i>entire</i> module name would be
+overkill; module names are supposed to be long and descriptive.)
+</p>
+<p>
+The main use of <strong>qualified</strong> is to allow an imported module to define lots of
+useful names (usually constants) without polluting your own modules
+namespaces.
+</p>
+<p>
+If you don't like the last part of the module name, or if it would be
+ambiguous, you can change the part you specify:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>import</strong> [qualified(boo)] defines.magic;
+
+</p>
+</blockquote>
+</p>
+<p>
+Now <strong>boo</strong> is an alias for <strong>defines.magic</strong> and we can write <strong>boo::magic</strong>.
+</p>
+</p>
+<p>
+<h2>
+<a name="here51"></a>
+13.5 pervasive import
+</h2>
+<p>
+A module that imports some identifiers -- say, <strong>brick</strong> and <strong>concrete</strong> -- from
+another module does not by default re-export them; they're not part of its
+<i>public interface</i>. They can be injected into the public interface by
+qualifying the import with <strong>public</strong>:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>import</strong> [public] defines.magic;
+
+</p>
+</blockquote>
+</p>
+<p>
+Now this module exports <strong>magic::magic</strong>.
+</p>
+</p>
+<h1>
+<a name="here52"></a>
+14 switches
+</h1>
+<p>
+The power of Spice's overloaded functions means that you won't write switches
+so often as you might in a more conventional language. But you still need to
+be able to choose from finite selections of integer and string values, so
+Spice has a general <strong>switch</strong> construct:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>switch</strong> x <strong>into</strong>
+</p>
+<p>
+<strong>case</strong> 1: statement1();
+</p>
+<p>
+<strong>case</strong> 2, 3: statement2();
+</p>
+<p>
+<strong>case</strong> &quot;hello&quot;:
+<strong>case</strong> &quot;world&quot;: statement3();
+</p>
+<p>
+<strong>default</strong>: statement4();
+</p>
+<p>
+<strong>endswitch</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+If <strong>x</strong> has the value <strong>1</strong>, then <strong>statement1()</strong> is executed. If it has the value
+<strong>2</strong> or <strong>3</strong>, then <strong>statement2()</strong> is executed. If it has the value <strong>&quot;hello&quot;</strong> or
+<strong>&quot;world&quot;</strong>, <strong>statement3()</strong> is executed. And if it has none of these values,
+<strong>statement4()</strong> is executed.
+</p>
+<p>
+Note that the values in the switch can be integers or strings (or symbols);
+indeed the <strong>case</strong> values need not be compile-time constants. (However, the
+switch construct is more efficient with compile-time constants, and more
+efficient with integers than with strings and symbols.) If a switch has a
+compile-time case label of <strong>N</strong> then that takes priority over any run-time case
+label evaluating to <strong>N</strong>.
+</p>
+<p>
+Also note that there's no need for a <strong>break</strong> or similar construct to leave the
+<strong>switch</strong>; the case body starts with its first statement and ends just before
+the next <strong>case</strong> or <strong>default</strong>. (You can, of course, only have one
+<strong>default</strong> per <strong>switch</strong>).
+</p>
+<p>
+If there's no <strong>default</strong>, it's as though <strong>default: none;</strong> had been written.
+
+</p>
+<h1>
+<a name="here53"></a>
+15 styles and properties
+</h1>
+<p>
+[Extensive but to-be-done.]
+</p>
+<h1>
+<a name="here54"></a>
+16 numeric literals
+</h1>
+<p>
+So far we've taken numbers pretty much for granted, writing them as digit
+sequences with the occasional <strong>_</strong> for visual clarity. Spice has a rather
+extensive set of <i>numeric literals</i> and they don't all represent numbers.
+</p>
+<p>
+A numeric literal starts with a digit and consists of a series of digits,
+letters, underbars, dots, colons, plus signs, and minus signs. This allows
+all the usual numbers: <strong>42</strong>, <strong>1_024</strong>, <strong>1_000_000</strong>, <strong>0xff</strong>, <strong>98.4</strong>,
+<strong>273.16</strong>. But it also allows odd literals like <strong>47px</strong>, <strong>100red</strong>, <strong>192.2.4</strong>,
+<strong>10:13pm</strong>, <strong>4-July-1998</strong>. Whatever can these mean?
+</p>
+<p>
+There are a few simple rules. First, a numeric literal consisting entirely of
+digits and underbars is a <i>decimal integer</i> and means what it looks like it
+means. Second, a numeric literal that consists of one or more digits, a dot,
+and then one or more digits is a <i>floating literal</i>, and <i>that</i> means what it
+looks like it means.
+</p>
+<p>
+A numeric literal that consists of a series of decimal digits, the letter <strong>x</strong>
+(in either case), and then a series of letters and digits is a <i>based
+integer</i>; the number before the <strong>x</strong> is the base, and the alphanumerics after
+it are the digits in the extended base, with <strong>a</strong> (either case) being
+digit <strong>10</strong> up to <strong>z</strong> (either case) being digit <strong>26</strong>. If there are digits that
+don't fit the base (<strong>8x.9</strong>, <strong>16x.gh</strong>) it is an error. The effect of <strong>16x.</strong> can
+also be obtained (for compatability reasons) by <strong>0x</strong>.
+</p>
+<p>
+A numeric literal that consists of a decimal integer or a floating literal,
+followed by an optional dot and then a series of letters, is a <i>unit literal</i>,
+representing a measurement with the magnitude given by the number and units
+given by the letters (which form the <i>unit name</i>); for more details, see
+later.
+</p>
+<p>
+<blockquote>
+<p>
+<i>technical note</i>. This means that <strong>0xfe</strong> is ambiguous; are this
+based integers or unit literals? It is a based integer. To get a based
+integer to have a units specification, you must put in the &quot;optional&quot; dot,
+so that you write <strong>0xf.fe</strong> to get <strong>15</strong> in units <strong>fe</strong>.
+
+</p>
+</blockquote>
+</p>
+<h1>
+<a name="here55"></a>
+17 units
+</h1>
+<p>
+To support its use in laying out Web pages (and for other graphic operations),
+Spice values can have <i>units</i>. Several units are built-in to the language,
+notably <i>inches</i> (<strong>in</strong>), <i>millimeters</i> (<strong>mm</strong>), <i>points</i> (<strong>pt</strong>), and <i>pixels</i>
+(<strong>px</strong>).
+</p>
+<p>
+Writing a unit literal is easy, as described earlier; <strong>4in</strong> is four inches,
+<strong>27mm</strong> is twenty-seven millimetres, <strong>100px</strong> is one hundred pixels. These
+pre-defined names are also available as postfix operators, so <strong>x in</strong> and
+<strong>(y + 1)px</strong> are legal, and by special dispensation of the dot operator can
+appear as functions using dot, so <strong>x.pt</strong> is also legal.
+</p>
+<p>
+<blockquote>
+<p>
+Thus <strong>100.px</strong> is legal, as a unit literal, and <strong>100 .px</strong> (with a space) is
+legal, as the integer 100 passed to the <strong>px</strong> function using dot-notation. The
+two values are of course equal.
+</p>
+</blockquote>
+</p>
+<p>
+The arithmetic operators work on values with units in the &quot;natural&quot; way,
+so you can add and subtract values with like units. (You can't just add a
+number to a unit value, though; <strong>42in + 1</strong> will generate a run-time error.)
+What's more, if the units are different but have the same underlying
+dimension (eg both lengths), then they can still be added and subtracted, by
+converting them to a common scale.
+</p>
+<p>
+You can multiply values with units by numbers, in the obvious way. You can
+multiply values with units together, too; <strong>6in * 7in</strong> is <strong>42 in in</strong>, or
+42 square inches. Division works in the corresponding inverse way.
+</p>
+<p>
+<blockquote>
+<p>
+More to follow when I've cleared up the details.
+
+</p>
+</blockquote>
+</p>
+<h1>
+<a name="here56"></a>
+18 enumerations
+</h1>
+<p>
+Sometimes you want a collection of distinct named values, for example as
+the names of options (<strong>small</strong>, <strong>medium</strong>, <strong>large</strong>, <strong>jumbo</strong>). Rather than using
+<strong>const</strong> integer variables (which can be confused with plain integer values) or
+strings/symbols (vulnerable to silent mis-spellings), Spice allows you to
+define <i>enumeration values</i>:
+</p>
+<p>
+<blockquote>
+<p>
+<strong>define enum</strong> Size = small, medium, large, jumbo <strong>enddefine</strong>
+
+</p>
+</blockquote>
+</p>
+<p>
+<strong>Size</strong> becomes a new type name, and <strong>small</strong>, <strong>medium</strong>, <strong>large</strong>, and <strong>jumbo</strong>
+become new values of that type. <strong>print(medium)</strong> will print <strong>medium</strong>; the
+values retain their names. Each value also has an associated small integer,
+starting at <strong>1</strong> (for the first) and taking on successive values; you can see
+this number using <strong>magnitude</strong>, so <strong>large.magnitude.println</strong> will print <strong>3</strong>,
+and you can construct enum values from numbers: <strong>new Size(4)</strong> is identical to
+<strong>jumbo</strong>. Using values outside the range will generate an error.
+</p>
+<p>
+Spice's enumerations are just shorthand. An <strong>enum</strong> type is a class
+extending the built-in <strong>Enum</strong> class, which has slots for the name and
+magnitude of its values. Each <strong>enum</strong> value is an instance of its class
+with the slots set appropriately.
+</p>
+<p>
+<blockquote>
+<p>
+Spice implementors are encouraged to implement <strong>enum</strong> values as efficiently as
+possible, taking advantage of their specialised nature.
+
+</p>
+</blockquote>
+</p>
+<h1>
+<a name="here57"></a>
+19 symbols and tables
+</h1>
+<p>
+[to be done]
+</p>
+<h1>
+<a name="here58"></a>
+20 all sorts of unmentionable things
+</h1>
+<p>
+<h2>
+<a name="here59"></a>
+20.1 extended relational expressions
+</h2>
+<p>
+[<strong>a &lt;= b &lt;= c</strong> &quot;works&quot; and has the expected meaning.]
+</p>
+</p>
+<p>
+<h2>
+<a name="here60"></a>
+20.2 op
+</h2>
+<p>
+[<strong>op Operator</strong> and <strong>op class</strong>; turning operators into their corresponding
+procedures; noting that <strong>op &amp;&amp;</strong> etc don't evaluate their arguments specially.]
+</p>
+</p>
+<p>
+<h2>
+<a name="here61"></a>
+20.3 super and extends
+</h2>
+<p>
+[invoking the next most general procedure definition on an overloaded
+procedure; specifying same using <strong>extends</strong>.]
+</p>
+</p>
+<p>
+<h2>
+<a name="here62"></a>
+20.4 shared slots
+</h2>
+<p>
+[<strong>shared x:T</strong> in a class makes a slot shared by all instances of the
+class.]
+</p>
+</p>
+<p>
+<h2>
+<a name="here63"></a>
+20.5 properties
+</h2>
+<p>
+[<strong>property p:T</strong> in a class makes a property which is copy-on-write in the
+instances of that class.]
+</p>
+</p>
+<p>
+<h2>
+<a name="here64"></a>
+20.6 exceptions
+</h2>
+<p>
+[<strong>throw E</strong> and catching exceptions with <strong>try-catch-endtry</strong>]
+</p>
+</p>
+<p>
+<h2>
+<a name="here65"></a>
+20.7 memo-expressions
+</h2>
+<p>
+[ensuring that clean up gets done using <strong>memo E</strong>]
+</p>
+</p>
+<p>
+<h2>
+<a name="here66"></a>
+20.8 parallel iteration
+</h2>
+<p>
+[iterating over several things at once with <strong>for x in A, y in B</strong>]
+</p>
+</p>
+<h1>
+<a name="here67"></a>
+21 the standard library
+</h1>
+<p>
+Spice has a large library of standard values and procedures.
+They are described in the manual.
+</p>
+</body>
+</html>

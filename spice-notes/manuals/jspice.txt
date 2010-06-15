@@ -1,0 +1,529 @@
+                       The Spice Programming Language
+
+[1]	Literals
+
+[1.1]	Numbers
+
+	123
+	-456
+	+789
+
+--	todo:	different radixes.
+
+
+[1.2] Strings, Symbols and Characters
+
+	"foo"
+	"\thello\sworld\r\n"
+
+
+[1.2.1]	Escape Sequences
+	
+	\a			Alert (ASCII 0x07)
+	\b			Backspace (ASCII 0x08)
+	\f			Form feed (ASCII 0x0C)
+	\n			Linefeed or newline (ASCII 0x0A)
+	\r			Carriage return (ASCII 0x0D)
+	\s			Space (ASCII 0x20)	
+	\t			Horizontal tab (ASCII 0x09)
+	\v			Vertical tab (ASCII 0x0B)
+	\\			Backslash
+	\"			Double quote
+	\'			Single quote
+	\`			Backquote
+	\^C			A control character whose encoding is C - 64,
+				with C in the range [64,95].
+	\&<name>;	HTML entity
+	\( Expr )	Expression interpolation
+			
+			
+Note sure about these
+	\ddd		The character whose encoding is the number ddd, three decimal
+				digits denoting an integer in the range [0,255].
+	\xXX		The character whose encoding is the number XXXX,
+				two hexadecimal digts denoting an integer in the
+				ordinal range of the alphabet.
+	\uXXXX		The character whose encoding is the number XXXX, 
+				four hexadecimal digits denoting an integer in the 
+				ordinal range of the alphabet.
+				
+--	todo:	List all the HTML entities explicitly.
+
+[*]	Variables
+
+From memo-2001-09-10.html:-
+
+SFKL raises the question of whether absent/true/false should be treated as reserved words or ordinary identifiers. CJD analyses the issue as follows.
+	
+In favour of identifiers: they have no properties that cannot be possessed by identifiers, bar one (below). The parser does not need to know that they are special, so they don't need special tokens. Having them as identifiers reduces the load on the lexer.
+	 	
+In favour of reserved words: you don't want to be able to [re]declare them.
+	 	
+The one property: they can't be redeclared.
+	 4.  	
+CJD suggests the following resolution: add another standard attribute, pervasive. Pervasive identifiers cannot be redeclared in a nested scope. Then make true/false/absent/nil/termin/String/Absent/Small/Vector etc pervasive. Hence they are then neither reserved words nor ordinary identifiers. SFKL observes that the pervasive attribute could be applied at the level of packages and/or facets.
+
+[*] Environment Variables
+
+The "$" symbol is to be reserved. The intended use is accessing environment variables.  (memo-2001-05-01.html)
+
+	$ is reserved						(memo-2001-05-01.html)
+
+--	todo:	I propose that the notation used is ${NAME}
+
+
+[*]	Operators
+
+[*.*]	Relational Operators and 
+
+	=
+	==
+	/=
+	/==
+	<
+	>
+	<=
+	>=
+
+[*.*]	Factory Operators
+
+	E ==> E		maplet operator			(from memo-2001-05-01.html)
+	E ++ E		append					(from memo-2001-05-01.html)
+	
+--	todo: from memo-2001-05-01.html
+	 8.  	Both agreed that "%" and "//" should be reserved. Roles not determined. CJD pointed out that "/:" is currently allocated the roles of "fractional" division and that perhaps "//" should take over that role.
+
+
+
+[*]	Indexing
+
+From memo-2001-07-10.html:-
+
+	 2.  	The issue of the meaning of indexing was raised. kers wants an operator that indexes from a to (a + b - 1). sfkl described how he was now viewing the legitimate argument to indexing as either an ordinary value or a special "iterator" value. (The term "iterator" is deliberately suggestive of the Java Iterator/Enumeration classes, of course.)
+
+In MillScript a .. b returns a Iterator from a to b. So, to get the effect of a .. ( a + b - 1 ) one needs to define a suitable operator. e.g. a --+ b.
+
+To extend this, one also would like a family of operators on Iterator - something for generating a new empty Iterator and something for adding stuff onto the "front" or "back" of the Iterator. The overall aim is to unify the subrange notation with the for-loop syntax. A convenience function "fromtoby" would be provided.
+
+    # Inefficient implementation that provides easy-to-understand definition.
+    # However, the real fromToBy wouldn't necessarily be finite (i.e. the
+    # 'to' argument could be infinity.)
+    define function fromToBy( a, b, d ) =>
+        new Iterator(
+            var i = a;
+            for while i <= b do
+                i, i := i + d
+            endfor
+        )
+    enddefine;
+
+    # And the one kers wants.  Similarly 'n' can be infinity.
+    define function fromByTimes( a, d, n ) =>
+        new Iterator(
+            var i = a;
+            for j from 1 to n do
+                i, i := i + d
+            endfor
+        )
+    enddefine;
+
+
+
+3.	So sfkl hopes to be able to write all of the following (spelling aside)
+    data[ a .. b ]             (same as data[ fromToBy( a, b, 1 ) ] )
+    for i in a .. b            (same as for i from a to b)
+    data[ a --+ b ]            (same as data[ fromByTimes( a, 1, b ) ] )
+    for i in a --+ b           (same as for i from a to a + b - 1)
+    data[ rev( a .. b ) ]      (same as data[ fromToBy( b, a, -1 ) ] )
+    for i from b downto a      (etc)
+    data[ rev( a --+ b ) ]
+    for i from a + b - 1 downto a 
+
+
+
+[*] Assignment
+
+As agreed in memo-2001-06-18.html.
+
+     x := y
+     y =: x
+     x <- y
+     y -> x
+     x <<- y
+     y ->> x
+
+However, SFKL notes that we still lack total-nondestructive assignment and proposes that we add
+
+     x ::= y
+     y =:: x
+
+
+to this list the the R-to-L and L-to-R versions of this assignment.
+
+-- todo:  However, the meaning of these assignments got close scrutiny in 2003 and this has to be documented too.  Most of this was concerned with the (inevitable) discrepancy between pattern-matching and assignments.
+
+
+[*]	Regular Expressions
+
+Discussion taken from memo-2001-09-28.html
+
+	 1.  	Prompted by the addition of regular expressions to Spice/Palantir, SFKL and CJD noted several incompatibilities between Spice strings and the conventional regular expression syntax, exemplified by Perl 4. In particular, \s means a space inside a Spice string but a 1-character regexp that matches any whitespace character inside Perl. Also \( starts a Spice string insertion but means a 1-character regexp matching an open parenthesis in Perl.
+	 2.  	
+We perceive two distinct kinds of compatibility, compatibility with Perl regexps and compatibility with Spice strings. We decided to resolve this conflict by having two syntaxes for regular expressions traditional and native. The traditional syntax would maximize compatibility with Perl / JavaScript / Java. The native syntax would vary the convention to suit the Spice programmer.
+	 3.  	
+The traditional regular expression would be introduced with // and terminate with /. This allows cut and paste of regular expressions. e.g. //abc.*def/
+	 4.  	
+The native syntax will use /" and terminate with ". This emphasizes the connection to Spice strings. It will also allow us to make a better selection of metacharacters (such as avoiding the troublesome ".") e.g. /"abc?*def"
+
+
+
+From memo-2001-07-10.html:-
+
+	 1.  	We agreed to adopt the syntax
+     //......./
+
+
+for regular expressions. The bit in the middle should conform to GNU's regexp stuff. Seehttp://www.cacas.org/~wes/java/.
+
+Later note: With Java 1.4 there is now a standard Java regular expression package. This is an equally plausible candidate on which to base the regular expression stuff. 
+
+The operations should be as follows, spelling issues aside,
+    isMatch( regexp, str ) -> Boolean
+    hasMatch( regexp, str ) -> Absent | Binding
+    split( regexp, str ) -> { String }
+    allMatches( regexp, str ) -> { Binding }
+
+    bindingMatchString( Binding ) -> String
+    bindingMatched( Binding ) -> String
+    bindingMatchedLimits( Binding ) -> ( lo : Int, hi : Int )
+    bindingMatchVar( Binding, Int ) -> String
+    bindingMatchVarLimits( Binding, Int ) -> ( lo : Int, hi : Int )
+
+
+Note that the defaults should be
+    regexp( str ) ----> isMatch( regexp, str )
+
+    binding()     ----> bindingMatched( binding )
+    binding[ n ]  ----> bindingMatchVar( binding, n )
+
+
+
+[*]	Lightweight Lists
+
+From memo-2001-05-16.html:-
+
+Background: In MillScript, SFKL has been exploring the opportunities naturally offered by implementing in Java. In particular, the fact that MillScript Sequences are implemented as Java Lists allows MillScript programmers to enjoy multiple implementations of Sequence. SFKL is of the opinion that this is a Good Thing. CJD raises the issue of efficiency. SFKL claims there is no serious conflict and the solution is the adoption of inextensible sequences as the default.
+
+Outcome: Sequences are an abstraction which have both lightweight and heavyweight implementations. The two important lightweight implementations are singly linked lists and simple vectors. We agree that these will appear as inextensible and unmodifiable classes.
+
+Other more heavyweight implementations will be available. Selection of implementation is done simply by using the appropriate constructor.
+
+The { ... } syntax is free to select any unmodifiable implementation of sequences.
+
+
+[*]	The New Operator
+
+From memo-2001-05-16.html:-
+
+
+Background: CJD raised the issue of constructing new values in Spice. This was not completed to either of our satisfaction.
+
+Outcome: We have resolved to distinguish three ideas - the external constructors, the initializers and the local constructor "mint".
+
+The constructors are, on the whole, ordinary procedures. However they are obliged to return a single value of the appropriate class (or subclass). They also are privileged to have access to the local constructor "mint".
+
+Initializers are what programmers typically write. For the purposes of illustration, these are introduced with the keyword "init" rather than the more conventional "new" in order to emphasize their role of initializing an empty value. Initializers are required to extend all the initializers of their subclasses.
+
+The local constructor "mint" takes a class, an initializer and some arguments. It mints a new object and applies the initializer with the arguments passed through.
+        mint( Spoo, Init, Args... ) -> Spoo
+
+
+The new operator takes as an argument EITHER a constructor OR an initializer OR a class. Roughly speaking it works like this, inventing syntax wildly ...
+        define operator new( c : Constructor )( args... ) =>
+                actualConstructor( c )( args... )
+        enddefine;
+
+        define operator new( i : Initializer )( args ... ) =>
+                # has access to mint somehow!
+                mint( i.initializerClass, i, args... )
+        enddefine;
+
+        define operator new( c : Class )( args ... ) =>
+                new ( c.unnamedConstructor || c.unnamedInitializer )( args ... )
+        enddefine;
+
+
+The syntax is illustrated below :-
+        define class Spoo;
+                define new ( A ) => B : Spoo 
+        
+                This defines an unnamed constructor.  It can be accessed from
+                the class.  e.g. Spoo.unnamedConstructor.  It can be invoked
+                by using the class as a substitute i.e. new Spoo( A ).
+        
+        define class Spoo;
+                define init ( A ) => B 
+        
+                This defines an unnamed initializer.  It can be accessed from
+                the class.  e.g. Spoo.unnamedInitializer.  
+        
+        define class Spoo;
+                define new Foo( A ) => B : Spoo
+        
+                Foo is a named constructor of Spoo.  It can be passed as an
+                argument to new.
+        
+        define class Spoo;
+                define init Foo( A ) => B
+        
+                Foo is defined as a named initializer.  It must extend all 
+                the initializers of Spoo (none shown).  It can be used as an 
+                argument to mint, new, or it can be applied directly to 
+                rejuvenate a value.  e.g.
+                        obj.rejuvenate( Foo )
+
+
+
+[*]	Cascading Ifs
+
+From memo-2001-09-10.html:-
+
+We agreed to allow then and do to be interchangeable in the context of if and unless syntax. So the following example is legal Spice syntax.
+    if x > 0 then
+        unless x > y then
+            p()
+        endunless
+    elseif y > 0 do
+        unless x > y do
+            q()
+        endunless 
+    endif
+
+
+[*]	For Loops
+
+[*.*]	Side-conditions: while and until
+
+From memo-2001-09-10.html:-
+
+	 2.  	SFKL believes that then and do should be interchangeable throughout Spice but this option is incompatible with the use of then in the while and until syntax. SFKL requests a reconsideration of the latter decision. CJD agrees to this, this issue being finding a viable replacement for the keyword then.
+
+
+[*.*]	Loops Applied To Finite Maps
+
+From memo-2001-05-16.html:-
+
+Background: SFKL has been implementing the core polymorphic functions for sequences in MillScript. This has given rise to a general exploration of loop iterators. The suggestion is that i in M is best understood as an iteration over the range of a map - sequences being a specialized map.
+
+Outcome: We agree to adopt a new iterator m on M which iterates over the maplets of a map (including sequences). In particular,
+        for k ==> v on m do ...
+
+will iterate over the key/value pairs of the maplets of m. The construction
+        for i in m do ...
+
+is therefore understood to be equivalent to
+        for _ ==> i on m do ...
+
+
+We have a working understanding that only two forms of on need to be supported initially i.e. id on E andid ==> id' on E. However, our aim is to work towards (at least) one-way unification.
+
+
+[*]	Class Definitions
+
+
+[*.*]	Mixins, An Experiment In Multiple Inheritance
+
+From memo-2001-05-16.html:-
+
+Background: SFKL raised the topic of compromising the multiple inheritance model. Classes that could be inherited multiply would be marked as mixins, otherwise single inheritance would be used. CJD proposed the possibility of, instead of annotating classes, using the verbs "extends" and "mixin" to dynamically determine the single vs multiple inheritance of the class. We both liked this idea.
+
+Analysis: We analysed the verb-based approach and discovered it had unacceptable implementation consequences. In essence, we would have to generate two method bodies for each method - one fast and one slow. Pity.
+
+Outcome: We provisionally accept this proposal in some form, to be determined, as an experiment. We both think that the performance benefits are well worth getting.
+
+Postscript by SFKL: After further reflection on mixins SFKL now believe that a suggestion by CJD is the right compromise. We should distinguish the classes that can only be singly-inherited. Let's call these "royal" classes. The rule is that a class may inherit from any number of commoner classes but a maximum of one royal class. This gets the defaults the right way round.
+
+[*] Holes
+
+[*.*] Holes and Operators
+
+	? op ?								(memo-2001-05-01.html)
+
+[*.*] Holes and Short Circuit Operators
+
+Furthermore, it is agreed that "?" is able to deal with short-circuit operators as well. In particular, "? and ?" means the functional version of boolean and. Compilers are expected to generate code that avoids needless copying when all the arguments are holes. (memo-2001-05-01.html)
+
+	? or ?								(memo-2001-05-01.html)
+	? and ?								(memo-2001-05-01.html)
+
+[*.*]	Numbered Holes
+
+[*.*]	Variadic Holes
+
+
+Hence we can now use multiple "..." operators in a since initialization
+or assignment, eliminating one of the annoying restrictions we felt
+obliged to add.  And my original plan of using "?..." to denote
+a variadic hole is now revealed as broken.  "?..." has the proper
+meaning of the explode operator.
+
+    [Glory:~] steve% jspice                                                                
+    Welcome to JSpice
+    :-) ?...("xyz");
+    'x'
+    'y'
+    'z'
+    :-)
+
+So this implies we need a different symbol to denote a variadic hole.
+Maybe "???" would work?
+
+
+
+	
+[*] Functions: Simple
+
+[*.*]	Expressions
+
+[*.*.*]	Curried Functions
+
+Discussion taken from memo-2001-09-19.html
+
+We agreed to extend the bodies of all function definitions to allow currying via repeated arrows. For example :-
+        # define form
+        define function K( x ) => y => x enddefine;
+        
+        # millscript form
+        function K( x ) => y => x endfunction;
+        
+        # short form
+        fun x => y => x endfun;
+        
+        # very short form
+        ( x => y => x )
+
+
+In essence, the arrow can be seen as introducing a body which now may include a lambda form.
+
+[*.*]	Declarations
+
+
+[*]	Procedures: Compound 
+
+
+
+[*.*]	Symmetric Multiple Dispatch
+
+[*.*]	Symmetric Multiple Inheritance
+
+[*.*]	super
+
+Description taken from memo-2001-10-15.html
+
+Within a method definition the keyword -super- is used to invoke the next most general version of the method i.e. call-next-method. However, to resolve ambiguity it may be decorated with a signature to select a unique preference from the available choices. (No spelling for this decoration was chosen and so, for the purposes of this memo, I shall write this as percent-decorated-brackets.)
+
+To illustrate this idea, here is how the technique resolves our two examples above.
+
+The resolution of situation (1a) is that the programmer is required to implement M for X and indicate preference. e.g.
+    define method M( x : X ) =>
+        # Choose P's definition, not Q's.
+        super[% P %]( x )
+    enddefine
+
+
+The resolution of situation (1b) is that the programmer is required to implement M for (P,P) and indicate preference e.g.
+    define method M( p1 : P, p2 : P ) =>
+        # Choose the definition whose first parameter is closest to A.
+        super[% A, _ %]( p1, p2 )
+    enddefine
+
+
+Note that the "_" symbol may be used to indicate no preference for a particular argument position, and "_..." for variadic arguments.
+		
+We think it should be an error for the signature-based preference mechanism to specify a signature that "skips" an intervening definition. However, there are further subtle problems that can arise here with respect to inheritance transparency. i.e. when someone adds new intervening classes into the implementation of a class. It is possible that the signature used for selection should be read in a more flexible fashion - choose the next method whose signature looks most like this.
+
+[*.*]	Distinguishing Original Definitions From Overriding Definitions
+
+From memo-2001-05-16.html:-
+
+Background: We have independently become convinced that it is a Good Idea to distinguish the first or primal definition of a method from subsequent overriding definitions.
+
+Outcome: Although we did not resolve "spelling" issues we have strong agreement that this distinction will be supported. There will be 6 typical ways to introduce procedures. All spelling is for illustration only.
+define function f( A ) =>
+        This introduces the first and only definition of f.  In effect, 
+        the "unique" annotation is implied.
+
+define [multifile|singlefile] generic function f( A ) =>
+        This introduces the primal definition of f.  All overloadings of
+        f must have an argument shape that fits A.  We think there should
+        be an annotation that restricts overloads to be restricted to the
+        compilation unit that the definition appears in.  I have indicated
+        this with the multifile/singlefile annotation.  Multifile is the
+        default.
+
+define overload function f( A ) =>
+        This introduces an overloading of an already established function.
+
+define method f( A ) =>
+        This introduces the first and only definition of f.
+
+define generic method f( A ) =>
+        This introduces the primal definition of a method inside a 
+        class definition.  Same comments as for generic function.
+
+define overload method f( A ) =>
+        This introduces an overloading of an already established
+        method.
+
+
+
+	
+[*] Types
+
+	T??			T or absent
+	
+	
+[*]	Packages
+
+From memo-2001-09-07.html:-
+
+Prompted by a query from Mark Summers with regard to the declaration of facet names, we agreed to add afacets clause to package declarations. e.g.
+        package foo.bar
+        facets alpha, beta
+        imports trog.gort;
+
+	 2.  	We did not clarify the spelling of facets as facet/facets.
+	 
+	 3.  	
+We did not clarify whether or not facet names could be reserved words. SFKL believes that they should following the same spelling rules as ordinary identifiers.
+	 4.  	
+We agreed to introduce facet common for the role of shared identifiers between the members of a package family.
+	 5.  	
+We did not clarify whether common was to have the same syntactic status as public and private. [SFKL tends to think this is what being well-known means.]
+
+We had a long discussion about the way to avoid embedding package names in programs. The problem isimport <package name>. We agreed that this needed addressing later.
+	10.  	
+We also discussed whether or not packages and/or facet names should refer to run-time representations of the same. SFKL was against this. His argument is that the package mechanism is merely a way of managing the mapping from syntactic names to semantic entities for the convenience of the human programmer.
+	11.  	
+SFKL outlined the "publish" mechanism proposed for Palantir (a web application server with embedded Spice interpreter) which does make a run-time representation of explicitly selected packages available. The hope is that this limits the damage done by exposing the programmer selected names.
+
+
+From memo-2001-08-30.html:-
+
+	 1.  	"public import" to be revised to permit inclusion into other facets. We suggest either of the following :-
+    import [alias =] packagename [facet facetname] [into facetname]
+    [facet facetname] import [alias =] packagename [facet facetname]
+
+
+Note that "into" will remain a reserved word.
+
+
+[*]	Lightweight Processes
+
+From memo-2001-09-07.html:-
+
+	 6.  	We talked about threads, coroutines and tasks. Although there is no absolutely clear terminology, SFKL says that there is a reasonable agreement that threads and coroutines share memory but threads are preemptively scheduled and share memory whereas coroutines are cooperatively scheduled. The term "tasks" is set aside for preemptively scheduled processes that run in separate virtual machines, possibly on separate processors.
+	 7.  	
+SFKL suggests that Spice should have coroutines and tasks but not threads - in view of the mess Java makes of them.
+	 8.  	
+CJD suggests that tasks should be able to communicate via shared variables (borrowing Eiffel vocabulary). These shared variables become implicit synchronization points, obviously enough.

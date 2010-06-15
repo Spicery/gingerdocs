@@ -1,0 +1,4697 @@
+\documentclass{report}
+\setlength{\parindent}{0in}
+\setlength{\parskip}{2mm}
+\title{Spice language manual (v4.0, February 2002)
+}
+\author{Chris Dollin}
+\begin{document}
+\maketitle
+\tableofcontents
+
+
+
+
+\part{a gentle introduction to Spice}
+\chapter{introduction}
+
+
+This document describes the programming language Spice, which was developed,
+from an idea of Dave Raggett's, by Chris Dollin and Steve Leach. The initial
+design work was done in autumn 1998 and subsequent modifications made as
+implementations progressed.
+
+The original language contained stylesheets and its syntax was closer to
+ECMAScript; the current language has lost stylesheets, which need more
+work to be useful in a general-purpose programming language, and its syntax
+has no C-like basis. The rest of the developed language remains.
+
+Spice is {\em dynamically typed}; by default, types are run-time entities
+attached to values, rather than compile-time entities attached to expressions.
+This gives flexibility in program development, at the cost of reduced
+up-front error detection and some run-time overhead. Type annotations
+can be added to variable declarations, and the compiler will use these for
+error checking and optimisation.
+
+Spice is {\em expression oriented}; (almost) all of the constructs of the
+language return values, including loops. Spice is {\em multiple valued};
+expressions denote a "row" of zero or more values. The number of values an
+expression denotes is not a compile-time property.
+
+Spice is {\em higher order}; it supports functions as values, full lexical
+scoping, and has a syntax for function literals (aka lambda-expressions).
+
+Spice is {\em multiply dispatched}; functions can be defined piecemeal
+("overloaded") on differing combinations of argument types, and when the
+function is called, the piece with the "best fitting" formal arguments is
+executed. The usual single-receiver dynamic dispatch of object-oriented
+languages (Smalltalk, C++, Java) is a special case of Spice's multi-methods,
+which are inspired by CLOS and ObjectClass.
+
+Spice is {\em class neutral}; new overloadings of any generic function can appear
+in any package where that function is visible, and there is no special syntax
+that distinguishes the invocation of an overloaded function from a
+non-overloaded one. Classes do not provide namespaces.
+
+The remainder of this document is in two parts; an introductory guide,
+intended to give a practicing programmer a taste of Spice, followed by a
+semi-formal reference manual describing the language as of February 2002.
+
+\section{notes}
+
+
+{\bf author}: Chris Dollin, {\bf version}: 3.0a, {\bf date}: December 2001
+
+{\bf to be done}: regular expressions, facet definitions, which modifiers are
+marked, {\bf super} and {\bf extends}, {\bf var} and {\bf const} to have only one blob.\chapter{a gentle introduction to Spice}
+
+
+In this and subsequent sections we speak as though the reader has access to a
+Spice system into which they can type Spice code and have it executed. Unlucky
+readers will have to take the results on trust.
+
+\section{hello, world}
+
+
+A long-standing Unix-spawned tradition is that one's first program in a new
+language should be the one that prints "Hello, World" or some suitable
+variant, so here it is in Spice:
+
+\begin{quote}
+\begin{verbatim}
+println( "hello, world." );
+\end{verbatim}
+\end{quote}
+Pasting this into your Spice evaluation should result in "hello, world" being
+displayed somewhere obvious.
+
+{\bf "hello, world."} is a {\em string literal} representing a sequence of characters.
+Most characters can appear as themselves in a string, but specific exceptions
+are all three quoting characters ({\em string quotes} {\bf "}, {\em reserved quotes} {\bf '},
+and {\em symbol quotes} {\bf `}) and the {\em escape character} $\setminus$.
+
+{\bf println} is the name of a built-in {\em procedure}. We'll see later that Spice
+has several kinds of procedure, including {\em functions}, {\em methods}, and
+{\em constructors}; we use the term "procedure" to refer to them all without
+distinction.
+
+The syntax {\bf F(X)} is one form of {\em procedure call}; it evaluates the procedure
+{\bf F} (which in this case is easy) and the argument(s) {\bf X} (ditto) and then
+{\em calls} the procedure, supplying it with the values of the arguments. The
+procedure does something (such as printing its argument) and returns some
+results, which we throw away.
+
+The semicolon is a {\em statement separator}, signifying the end of one statement
+and (possibly) the beginning of another. Sometimes they are not necessary, but
+this introduction willput them all in.\section{one, two, buckle my shoe}
+
+
+{\bf println} isn't restricted to strings; it can do numbers, too.
+
+\begin{quote}
+\begin{verbatim}
+println( 1 );
+println( 1_032 );
+println( 40 + 2 );
+\end{verbatim}
+\end{quote}
+Evaluating these should result in the values {\bf 1}, {\bf 1032}, and {\bf 42} being
+printed. The underbar in {\bf 1\_032} is just a visual separator. Spice has the
+"usual" arithmetic operators, {\bf +}, {\bf -}, {\bf *}, and {\bf /}, although they have some
+extra wrinkles we'll meet later.
+
+What's more, {\bf println} can take multiple arguments:
+
+\begin{quote}
+\begin{verbatim}
+println( 1, 2, "buckle my shoe" );
+\end{verbatim}
+\end{quote}
+which will print {\bf 1 2 buckle my shoe}. Note that the arguments are printed
+preceeded by a space (this behaviour can be changed), and that there's
+only one newline printed, at the end. The degenenerate case {\bf println()} with
+no arguments just prints a newline.\section{variables}
+
+
+You can declare variables to hold values.
+
+\begin{quote}
+\begin{verbatim}
+var x = 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10;
+println( x );
+\end{verbatim}
+\end{quote}
+which will print {\bf 55}. The value {\bf x} holds can be changed
+by assignment:
+
+\begin{quote}
+\begin{verbatim}
+x := x * 10; println( x );
+\end{verbatim}
+\end{quote}
+will print {\bf 550}. Using the word {\bf const} instead of {\bf var}
+makes an {\em unassignable} variable (rather an oxymoron, but there it is).
+
+Variables must be declared; trying to use a name that hasn't been declared is
+an error, even if you're assigning to it, unlike eg Basic or Javascript.\section{typed variables}
+
+
+It's possible to specify that a variable is restricted to holding values of a
+given type. For example,
+
+\begin{quote}
+\begin{verbatim}
+var count: Small = 0;
+someActionsHere();
+count := "of Monte Christo";
+\end{verbatim}
+\end{quote}
+declares {\bf count} as a variable of type {\bf Small}, restricted to "small" integer
+values (typically in the range plus-or-minus half-a-billion) and then throws
+an error when it attempts to assign a string (of type {\bf String}) to it. If a
+variable is declared with a type but no initial value, then the {\em default
+value} for that type is used to initialise the variable; the default value of
+type {\bf Small} is {\bf 0}:
+
+\begin{quote}
+\begin{verbatim}
+var anInt: Small; println( anInt );
+\end{verbatim}
+\end{quote}
+will print {\bf 0}. If there's no type then the variable is declared to be of type
+{\bf Any} (which means what it sounds like); the default value of {\bf Any} is called
+{\bf absent}.\chapter{function definitions}
+
+
+There's no magic about procedures that the user cannot harness. A simple
+way to define your own procedure is to write a {\bf function} definition:
+
+\begin{quote}
+\begin{verbatim}
+define function add( x, y ) => x + y enddefine
+println( add( 1, 2 ) );
+\end{verbatim}
+\end{quote}
+{\bf add} is defined and then  invoked in the usual way, resulting in {\bf 3} being
+printed.
+
+Note that there's no need to use a special {\bf return} statement to specify the
+procedure's return value; the value of the procedure body is returned as the
+procedure result, and the body here is the sum-expression {\bf x+y}.
+
+\section{typed arguments}
+
+
+The arguments to a function can be typed in the same way that variables can.
+
+\begin{quote}
+\begin{verbatim}
+define function addChecked( x: Small, y: Small ) =>
+    x + y
+enddefine
+\end{verbatim}
+\end{quote}
+Calls to {\bf addChecked} with non-{\bf Int} arguments will throw an error. Spice
+can sometime take advantage of the type information to produce better code
+or more informative error messages. Later on, we'll see how type information
+can be used to write {\em polymorphic} or {\em overloaded} functions.\section{typed results}
+
+
+The result of a function can also be typed.
+
+\begin{quote}
+\begin{verbatim}
+define function addToInt( x, y ) returns Small =>
+    x + y
+enddefine
+\end{verbatim}
+\end{quote}
+The result from {\bf addToInt} must be an {\bf Small} value; if not an error will be
+thrown. Again, the Spice compiler may be able to use this information to
+generate better code or error messages.\section{indefinite arguments}
+
+
+How does {\bf println} manage to have arbitrarily many arguments? It uses an
+{\em indefinite argument}, marked with ellipsis notation:
+
+\begin{quote}
+\begin{verbatim}
+define function gather( rosebuds... ) => rosebuds enddefine
+println( gather( "while", "ye", "may" ) );
+\end{verbatim}
+\end{quote}
+{\bf rosebuds} is an indefinite argument whose value is all of the (remaining)
+arguments to the function. This prints as {\bf \{while ye may\}}, which
+is the way {\em array values} are printed; the arguments are turned into an array.
+(We'll see more about arrays soon.)
+
+It's possible to have one or more {\em definite} arguments before or after a final
+indefinite argument:
+
+\begin{quote}
+\begin{verbatim}
+define function foo( x, y... ) as
+    println( x ); println( y )
+enddefine
+\end{verbatim}
+\end{quote}
+{\bf foo} needs at least one argument {\bf x} but takes arbitrarily many more, which
+are gathered into {\bf y}. It then prints both {\bf x} and {\bf y}; if there are no extra
+arguments, then {\bf y} is an {\em empty array}, which prints as {\bf \{\}}. {\bf println}
+returns no results, so {\bf foo} returns no results.\chapter{arrays}
+
+
+Spice allows arrays to be constructed using {\em array expressions}, which are
+expression sequences enclosed in braces:
+
+\begin{quote}
+\begin{verbatim}
+var lots = {27, "now", "is", "the", "time", 42};
+    println( lots );
+\end{verbatim}
+\end{quote}
+which will print {\bf \{27 now is the time 42\}}. Arrays can contain values of any
+type. Individual elements can be extracted by indexing:
+
+\begin{quote}
+\begin{verbatim}
+println( lots[2] ); lots[2] := "anguish"; println( lots );
+\end{verbatim}
+\end{quote}
+which will print {\bf now} and {\bf \{27 anguish is the time 42\}}. Spice arrays are
+based at {\bf 1}, so element {\bf 2} is the second element. The function
+{\bf length} delivers the number of elements in its array argument.
+
+\begin{quote}
+\begin{verbatim}
+println
+        (
+        length( lots ),
+        arrayBase( lots ),
+        arrayBase( newlots )
+        );
+\end{verbatim}
+\end{quote}
+which will print {\bf 6 0 1}.\chapter{dot and infix notation}
+
+
+It's often useful and clearer to write calls to one-argument functions,
+expecially those that just extract components from structured values like
+arrays, using {\em dot notation}:
+
+\begin{quote}
+\begin{verbatim}
+println( lots.length, lots.arrayBase, newlots.arrayBase );
+\end{verbatim}
+\end{quote}
+is just another way of writing the previous calls. In fact you can call
+procedures of {\em any} number of arguments using dot notation, because of a
+general rule of the language:
+
+\begin{quote}
+\begin{verbatim}
+X.f(Y) == f(X,Y) == X @f Y, and X.f == f(X) == X @f
+\end{verbatim}
+\end{quote}
+The forms {\bf X @f Y} and {\bf X @f} are a way of writing any function call as an
+infix or postfix expression, which is often useful when you have a long chain
+of function applications each of which supplies the "left" argument to the
+next.
+
+The principal difference between {\bf .} and {\bf @} is that {\bf .} is much more tightly
+binding -- it's the most binding infix operator -- and {\bf @} is loosely binding,
+being only just tighter than the logical connectives {\bf and} and {\bf or}.
+
+Different styles of function call are used to make it clear what's an argument to
+what.
+
+\section{dot and infix function definition}
+
+
+Although the plain fucntion definition syntax we've seen already is enough,
+because of the equivalence of the different notations we've described,
+Spice allows you to define a function in the style in which you expect it
+to be called:
+
+\begin{quote}
+\begin{verbatim}
+define function x @addWithAt y as x + y enddefine
+define function x.addWithDot(y) as x + y enddefine
+\end{verbatim}
+\end{quote}
+The arguments can still be typed using {\bf :}, and for a function
+defined with dot-notation, the special {\bf on} syntax:
+
+\begin{quote}
+\begin{verbatim}
+define function x:Small @addWithAtColon y:Small as
+    x + y
+enddefine
+define function on Small x.addWithDotColon(y:Small) as
+    x + y
+enddefine
+\end{verbatim}
+\end{quote}
+All four of these definitions define functions which add two values together,
+the second pair demanding that those values be {\bf Int}s, and all of them can be
+called in all the different ways we have discussed.
+
+We'll see later how these notations tie into the more common object-oriented
+approaches, and why the {\bf on} syntax is so-called.\chapter{ifs and buts}
+
+
+So far, all of our expressions have been unconditional -- get the arguments,
+do something, deliver the result; no choices are involved.
+
+Spice has {\em conditional expressions} for expression choices, and {\em relational
+expressions} for tests.
+
+\begin{quote}
+\begin{verbatim}
+if lots.length < 10 then "short" else "long" endif.println;
+\end{verbatim}
+\end{quote}
+The relational expression {\bf lots.length $<$ 10} compares the length of {\bf lots}
+(which is probably still {\bf 6}) with {\bf 10} and delivers {\bf true} if it's less than
+and {\bf false} if it's equal or greater. {\bf true} and {\bf false} are the built-in
+values of type {\bf Bool}. Spice also has the obvious {\bf $>$}, {\bf $<$=}, and {\bf $>$=}, and {\bf =}
+for equality, and the less obvious {\bf /=} for inequality.
+
+The conditional expression tests the boolean value; if it is {\bf true} its value
+is its {\bf then} arm, if it is {\bf false} its value is its {\bf else} arm, and if it's
+not boolean, an error is thrown. (Unlike various other languages, {\bf 0}, the
+null string {\bf ""}, and the null reference {\bf absent}, are {\em not}
+alternatives to {\bf false}, and values such as {\bf 1}, {\bf "yes"}, and {\bf println} are
+{\em not} alternatives to {\bf true}.)
+
+{\bf println} is being called here with dot notation, with its argument being the
+result of the {\bf if}-expression, here the string {\bf short}.
+
+\section{elselessness and elseif}
+
+
+The {\bf else} part of a conditional is optional. If you miss it out, it's as
+though you'd written one with no expression following. Where you don't want a
+result from the {\bf if}-expression, there's no problem; if you do, it will
+usually generate the value {\bf absent}. (See the reference section for more
+details.)
+
+If you want to write a chain of tests, rather than ending up with
+ever-more-deply nested {\bf if}-{\bf endif} structures, Spice lets you introduce
+additional tests with {\bf elseif}:
+
+\begin{quote}
+\begin{verbatim}
+if x == "hello" then
+    println( "well hello there!" )
+elseif x == "goodbye" then
+    println( "sorry to see you go" )
+else
+    println( "eh? what does", x, "mean?" )
+endif
+\end{verbatim}
+\end{quote}
+You can have as many {\bf elseif}s as you need.\section{ands and ors}
+
+
+The test of an {\bf if} can be composed using the special operators {\bf and} and
+{\bf or}. {\bf X or Y} is true if {\bf X} is or if {\bf Y} is, but {\bf Y} is only evaluated if
+{\bf X} is {\bf false}. Similarly {\bf X and Y} is {\bf true} if both {\bf X} and {\bf Y} are {\bf true},
+but {\bf Y} is not evaluated if {\bf X} is false.
+
+That's what makes these operators "special": their right operand is only
+evaluated if its value is needed.\section{short conditionals}
+
+
+Spice also permits "short" conditional expressions, for which it uses the same
+syntax as Algol68 (by coincidence): the expression {\bf (X $\mid$ T $\mid$ F)} is
+equivalent to {\bf if X then T else F endif}.\section{unless}
+
+
+Spice has an alternate form of {\bf if}, the {\bf unless} (with closing keyword
+{\bf endunless}) which is the same except the sense of the (first) test is
+inverted.\chapter{loops}
+
+
+Spice has a rich {\bf for} loop construct, which allows iteration over
+collections, termination on conditions, and specification of loop results.
+A subset of those is available in the {\bf repeat} construct.
+
+\section{repeat}
+
+
+Suppose we want to iterate over the elements of an array {\bf lots}.
+Here's one way to do it with {\bf repeat while}:
+
+\begin{quote}
+\begin{verbatim}
+var i = 0;
+repeat while i < lots.length do
+        ;;; stuff involving lots[i] ...;
+        i +:= 1
+    endrepeat
+\end{verbatim}
+\end{quote}
+The expression {\bf i +:= 1} is equivalent to {\bf i := i + 1}, but more compact,
+especially when {\bf i} is some complex expression.
+
+For example, to find the element of an array containing a specific element by
+complete linear search:
+
+\begin{quote}
+\begin{verbatim}
+define function findIndex( a, x ) as
+    var i = 0;
+    var here = 0;
+    repeat while i < a.length and here = 0 do
+        if a[i] = x then here := i endif;
+        i +:= 1
+    endrepeat;
+    here
+enddefine
+\end{verbatim}
+\end{quote}
+The index of the first element equal to {\bf x} is stored into {\bf here} and then
+returned as the procedure result. The equality test {\bf =} compares values
+using type-specific code.
+
+If you're wondering why Spice uses {\bf repeat while}, and not just {\bf while}, the
+reason is that it also has {\bf repeat until} (where the condition is inverted),
+and that you can write code between the {\bf repeat} and the {\bf while}. Also, as
+we'll see below, {\bf while} is also used in {\bf for} loops.\section{for}
+
+
+We can perform the same loop with automatic counting and implicit value
+return, using a {\bf for}-loop with two {\em control clauses}:
+
+\begin{quote}
+\begin{verbatim}
+define function findIndex( a, x ) as
+    for
+        i from 1 to a.length
+        until a[i] = x then i
+        finally 0
+    endfor;
+enddefine
+\end{verbatim}
+\end{quote}
+The variable {\bf i} is automatically declared as a varible that exists only while
+the loop is executing; it takes values from the {\bf from} value (here, {\bf 1}) to
+the {\bf to} value (here, {\bf a.length}) inclusive. The loop terminates "early" when
+an element {\bf a{[}i{]} = x} is found, and it delivers the result {\bf i}. If the loop
+terminates "normally", it returns the value of the "finally" clause, here
+{\bf 0}.
+
+{\bf for} loops can also iterate over collections, using the {\bf in} syntax:
+
+\begin{quote}
+\begin{verbatim}
+define function findIndex( a, x ) as
+    for
+        i from 1; ax in a
+        until ax == x then i
+        finally 0
+    endfor;
+enddefine
+\end{verbatim}
+\end{quote}
+{\bf ax} is automatically declared, and takes on the value of each element in
+turn; we still need to keep track of the index, so we count {\bf i} from 1
+upwards anyway.\chapter{multiple values}
+
+
+So far, we've seen Spice expressions and procedures which deliver {\em single}
+results. Spice expressions can deliver {\em multiple} results, often avoiding the
+need to construct new objects or to use "reference parameters" (which Spice
+hasn't got).
+
+\begin{quote}
+\begin{verbatim}
+define function plusOrMinus( x, y ) =>
+    (x + y, x - y)
+enddefine
+\end{verbatim}
+\end{quote}
+The comma keeps both its left and right operand values (exactly as it does in
+a function argument list); {\bf plusOrMinus} delivers {\em two} values.
+
+\begin{quote}
+\begin{verbatim}
+println( 20 @plusOrMinus 17 );
+\end{verbatim}
+\end{quote}
+will print {\bf 37 3}.
+
+\section{void context}
+
+
+Some expressions, in particular top-level expressions, are evaluated in {\em void
+context}; they are evaluated and their results thrown away. The Spice system
+you are using to test our examples runs them in void context.
+
+Sometimes you need to make it explicit that, whatever else would have
+happened, you want no values to escape. The expression {\bf none E} evaluates E in
+a new multiple-value context and then throws away all the answers, delivering
+none. The expression {\bf none} is a shorthand for {\bf none ()}, representing no
+values. Similarly, the expression {\bf one E} evaluates {\bf E} and turns it into one
+value: if {\bf E} delivered no values, {\bf one} returns {\bf absent}; if {\bf E} delivers one
+value, {\bf one} returns that; and if {\bf E} delivers several values, {\bf one} returns
+the first one.\section{multiple-value loops}
+
+
+The result of a loop is all the results from the executions of its body,
+plus any finally-values.
+
+\begin{quote}
+\begin{verbatim}
+println( for i from 1 to 10 do i*i endfor )
+\end{verbatim}
+\end{quote}
+to print {\bf 1 2 9 16 25 36 49 64 81 100}.\section{explode}
+
+
+One built-in function produces multiple results as a matter of course;
+{\bf explode}. {\bf explode} takes one argument and explodes it into its constituents
+(if any) as a multiple result. Applied to an array, it explodes it into its
+elements; applied to a string, it explodes it into its characters. Applied
+to an atomic object (a number, a character, a boolean, {\bf absent}) it delivers
+{\bf none}.\chapter{procedures as values}
+
+
+Spice procedures are not restricted to being defined and called; there are
+several ways they can be manipulated.
+
+\section{first-class procedures}
+
+
+Spice procedures are {\em first-class values}; they can be passed as parameters,
+returned as results, and stored into variables and data-structures (such as
+arrays; we'll see more later).
+
+This is particularly useful when you need to do something to all the elements
+of a collection, but the details of how the collection are kept is secret
+(eg to allow you to change it later); you write a function that walks over
+the collection and does "something" to each element. Since all we've got
+is arrays, that forms our first example; let's suppose that {\bf them} is
+a secret array variable.
+
+\begin{quote}
+\begin{verbatim}
+define function appCollection( f ) as
+    for x in them: Array do x.f endfor
+enddefine
+\end{verbatim}
+\end{quote}
+Now the expression {\bf appCollection(println)} (which of course can also be
+written {\bf println.appCollection}) will print all the elements of {\bf them}. If the
+elements {\em do} something sensible when passed to some function {\bf mangle}, then
+{\bf mangle.appCollection} will mangle all of them.
+
+Note that {\bf appCollection} returns all the values that {\bf f} returns for the
+caller to do with as they like. Of course, we might want to construct a new
+collection from the old one by mangling each element:
+
+\begin{quote}
+\begin{verbatim}
+define function mapCollection( f ) =>
+    {f.appCollection}
+enddefine
+\end{verbatim}
+\end{quote}
+which gathers up the results from {\bf appCollection} and makes a new collection
+(here, array) out of them.\section{lambda-expressions}
+
+
+Passing functions as arguments, and applying them, is all very well, but it
+can get tedious defining trivial functions to use. For example, if
+we want to make a new collection by incrementing every element of the
+old one, we can write:
+
+\begin{quote}
+\begin{verbatim}
+define function inc( x ) as x + 1 enddefine
+inc.mapCollection.println;
+\end{verbatim}
+\end{quote}
+If {\bf them} is, say, the collection {\bf {[}0 8 41{]}} then this will print {\bf {[}1 9 42{]}}.
+But it's tedious to have to define a function, put it
+somewhere in the code, give it a suitably mnenomic (but short) name, then then
+pass it. Wouldn't it be nice if you could write the function right where you
+were going to pass it?
+
+Of course the answer is "yes", otherwise we wouldn't have posed the question.
+The expression {\bf (A =$>$ E)}, where {\bf A} is an argument list (with the brackets
+omitted) and {\bf E} is a sequence of expressions, is called a {\bf lambda expression}
+(for historical reasons to do with Church's {\em lambda calculus}) or a {\em procedure
+literal}. Lambda-expressions are intended to be used for {\em short} procedures;
+otherwise they can make the code look cluttered.
+
+Instead of defining {\bf inc} above, we can write {\bf (x =$>$ x +
+1).mapCollection.println} for the same effect. To double each element, use
+{\bf (x =$>$ x * 2)}; to square it, use {\bf (x =$>$ x * x)}; to replace it with {\bf 0}
+use {\bf (x =$>$ 0)}.
+
+\subsection{"full lexical scope"}
+
+
+Because we haven't said you can't, the reader may suppose that you can write
+lambda-expressions within procedures, and similarly, that those expressions
+may refer to, even assign to, local variables of those procedures. And you
+can.
+
+\begin{quote}
+\begin{verbatim}
+define function konst( x ) as (ignored as x) enddefine
+\end{verbatim}
+\end{quote}
+{\bf konst} (so-called because {\bf const} is a Spice reserved word) is a function
+that makes constant functions; {\bf konst(E)} is a function that delievrs the
+value of {\bf E} whatever it's applied to, so {\bf konst(0)} is a function {[}of one
+argument{]} that always delivers {\bf 0}. The variable {\bf x} which is the parameter to
+{\bf konst} is available to the lambda-expression even after {\bf konst} has finished
+executing.
+
+This behaviour (that the variables of a function are visible to
+lambda-expressions within that function, and that they live on after the
+function exits)is called {\em full lexical scoping}. It's relatively uncommon
+in programming languages (with the notable exceptions of Common Lisp, Scheme,
+Pop11, and Smalltalk), but it is your friend.\section{hole-expressions}
+
+
+Lots of little lambda-expressions are just an operator (or function call)
+with one (or two) arguments "missing"; like {\bf inc} and its brethren above.
+For these Spice allows you to write a special form of lambda-expression, the
+{\em hole expression}, which is a function call or operator invocation with
+some of its arguments replaced by {\em holes}. The usual hole is written {\bf ?},
+and it stands for "the {[}first{]} argument"; it makes the application or
+invocation into a lambda expression.
+
+So {\bf (? + 1)} (the brackets are unnecessary) is another way of writing {\bf (x =$>$
+x + 1)}, where {\bf x} has been replaced by the hole and the argument declaration
+is unnecessary.
+
+{\bf (? - 1)} is the function that subtracts {\bf 1} from things, {\bf (42 - ?)} is
+the function that subtracts things from {\bf 42}, and {\bf (? * ?)} is the
+function that squares things.
+
+Just in case you ever want to use holes for functions with more than one
+argument, there are as many holes as you like, written ?{\bf 1}, ?{\bf 2}, and so
+on; {\bf ?} is shorthand for {\bf ?1}. A hole-expression has as many implied
+arguments as the biggest hole it uses; the Spice compiler will be curious
+about expressions with missing holes (eg {\bf ?19 + 1}).\section{combining functions}
+
+
+Because it's possible to write functions that take and deliver other
+functions, its possible to write {\em combining functions} who's job is just
+to manipulate other functions; this can result in a style known as {\em higher
+order programming}.
+
+The standard function {\bf Then} {[}note the capital T!{]} takes two functions
+{\bf f} and {\bf g} and returns a new function that takes some arguments {\bf X},
+applies {\bf f} to them, and then applies {\bf g} to the result; it might be written
+as:
+
+\begin{quote}
+\begin{verbatim}
+define function Then( f: Function, g: Function ): Function as
+    (args... as args.explode.f.g)
+enddefine
+\end{verbatim}
+\end{quote}
+Note that {\bf explode} generates arbitrarily many results, all of which become
+arguments to {\bf f}; all of {\bf f}s results become arguments to {\bf g}; and all
+of {\bf g}s results become the results of the lambda-expression. Nothing
+special has to be done by the programmer to keep tabs of how many arguments
+and results are returned.\chapter{more on {\bf absent}}
+
+
+It turns out that code like "the value of X, unless it's absent, in which case
+the value of Y" appears quite often, for example, doing table-lookups. Spice
+allows this to be written compactly using the operator {\bf $\mid$$\mid$}.
+
+{\bf X $\mid$$\mid$ Y} has the value {\bf X}, unless it's {\bf absent}, in which case it has the
+value {\bf Y}; {\bf Y} is not evaluated unless it has to be ({\em ie}, {\bf X} is {\bf absent}).
+It's rather like a pumped-up {\bf or} where any non-absent value counts as {\bf true}.
+
+Similarly, {\bf X \&\& Y} is {\bf absent} if {\bf X} is {\bf absent}, and the value of {\bf Y}
+otherwise; again, {\bf Y} is only evaluated if it has to be ({\em ie}, {\bf X} isn't
+{\bf absent}). It's rather like a pumped-up {\bf and}.\chapter{classes}
+
+
+So far we've only uses (some) of the built-in Spice types: integers, strings,
+arrays, and procedures. Spice also allows you to define your own data-types
+using {\em classes}.
+
+\section{class definition}
+
+
+A class definition allows you to define a new (kind of) {\em object} which you
+can use in your code. The simplest class definition introduces an object
+with named slots:
+
+\begin{quote}
+\begin{verbatim}
+define class Pair
+    slot front: Any = absent
+    slot back: Any = absent
+enddefine
+\end{verbatim}
+\end{quote}
+This defines a new class object, {\bf Pair}, with two slots called {\bf front} and
+{\bf back}. The {\bf slot} declaration is just like a {\bf var} declaration, except that
+it makes variables "inside" objects; you can leave out the initialiser and
+type in the usual way.
+
+The name {\bf Pair} becomes a new type name, and you can use it in the type part
+of a variable declaration or procedure argument.
+
+You can print out the class if you wish; {\bf Pair.println} will print something
+like {\bf $<$Class Pair extends $<$absent$>$$>$}. (We say "something like" because it's
+possible to change the default way objects get printed.)
+
+You can make new {\bf Pair} objects with the expression {\bf new Pair()}. Each such
+object has a {\bf front} and a {\bf back}, which start off as {\bf absent}, and which you
+can change. Every object also responds to the function {\bf typeof} by delivering
+its class object.\section{updaters}
+
+
+Suppose we've declared {\bf var p = new Pair();} so that {\bf p} holds a new {\bf Pair}
+object. We can assign to the {\bf front} and {\bf back} slots of {\bf p}:
+
+\begin{quote}
+\begin{verbatim}
+p.front := 1, p.back := "two";
+    p.front.println, p.back.println;
+\end{verbatim}
+\end{quote}
+prints {\bf 1 two}. In Spice, it's possible to call procedures
+on the left-hand-side of an assignment, in which case what happens is that
+the {\em updater} of that procedure is called. Just as Spice makes procedures
+to access the {\bf slot}-slots of a class value, it gives them updaters
+to change those values.
+
+\begin{quote}{\em technical note}. Unlike some languages (Common Lisp, Dylan), it is the
+procedure {\em value} that has the updater, not the procedure {\em name}. This means
+that you can call the updaters of procedures passed as parameters or stored
+into data structures. We stole/////re-used this behaviour from Pop11.
+\end{quote}You can define your own updaters if you wish:
+
+\begin{quote}
+\begin{verbatim}
+define function x.foo := y as
+    println( "updating", x, "with", y )
+enddefine
+\end{verbatim}
+\end{quote}
+The {\bf := y} says this this is defining the updater of {\bf foo} (and there had
+better be a definition for {\bf foo} elsewhere; you can't define the updater of a
+procedure that doesn't exist) and that {\bf y} is the name of the parameter which
+is the "right-hand-side of the assignment". {\bf y} can be typed, as usual.
+
+While an updater can do whatever it likes, it is very stongly advised that
+updaters are given only to access functions, and that they do the "obvious
+thing"; after an assignment {\bf x.foo = E} then the expression {\bf x.foo} should
+deliver the value {\bf E} that was assigned.
+
+If {\bf foo} is a procedure, then {\bf foo.updater} is the updater of that procedure,
+if it has one, and {\bf absent} otherwise.
+\section{methods}
+
+
+A class can also define {\em methods} which act on objects of the type it
+defines.
+
+\begin{quote}
+\begin{verbatim}
+define class Pair
+#
+    slot front: Any = absent
+#
+    slot back: Any = absent
+#
+    define method wipe() as
+        this.front = absent; this.back = absent; none
+    enddefine
+#
+    define method setPair(x,y) as
+        this.front = x; this.back = y; none
+    enddefine
+#
+enddefine
+\end{verbatim}
+\end{quote}
+This version of {\bf Pair} defines two methods, {\bf wipe} and {\bf setPair}. {\bf wipe} sets
+both slots to {\bf absent}, and {\bf setPair} sets them to the given parameter values.
+The name {\bf this} is bound to an implicit additional parameter, which is the
+instance of {\bf Pair} to be changed.
+
+The expression {\bf none} delivers no values; there doesn't seem to be a sensible
+value to deliver from either of these methods.
+
+Methods are procedures, and you call them in the usual ways; if {\bf p} is an
+instance of this {\bf Pair}, then {\bf p.wipe} will wipe it, and {\bf p.setPair(1,2)} will
+set its {\bf front} to {\bf 1} and its {\bf back} to {\bf 2}. You can tell from this that
+{\bf this} is bound to the {\em first} argument value. In fact, if it takes your
+fancy, you can use a different name than {\bf this}, using the same
+function-definition syntax that we saw earlier:
+
+\begin{quote}
+\begin{verbatim}
+define method self.wipe as
+    self.front = absent; self.back = absent; none
+enddefine
+\end{verbatim}
+\end{quote}
+would be a suitable replacement for {\bf Pair}'s version of {\bf wipe}.
+
+We'll see more about methods when we discuss inheritance, later.\section{initialisers}
+
+
+The {\bf new Pair()} syntax is a bit limited, because you can't easily set new
+values for its slots. If you want to create a new object {\em and} set the
+values of its slots, you cant define an {\em initialiser}. Here, {\bf Pair} gets a
+third outing:
+
+\begin{quote}
+\begin{verbatim}
+define class Pair
+    slot front: Any = absent
+    slot back: Any = absent
+    define init pair(x,y) as
+        this.front := x, this.back := y
+    enddefine
+enddefine
+\end{verbatim}
+\end{quote}
+You can make a new initialised {\bf Pair} by writing {\bf new pair("hello","world")}.
+This works by making a new {\bf Pair} and then handing that on as the {\bf this} for
+{\bf pair}. Any values returned by an initialiser are discarded; the result of a
+{\bf new} expression is the newly constructed object.
+
+You can have as many initialiser definitions as you like for a class. As a
+special favour, you can use {\bf define init} (with no name) inside a definition
+of a class {\bf P} to define overloadings of {\bf new P(X)}.
+
+\begin{quote}{\em Aside}. We've now met almost all the types of procedure you can have in
+Spice; functions, methods, initialises, and the different flavours of
+lambda-expressions. There are {\em predicates} which can tell them apart, although
+you will usually only need these when you're debugging code.\begin{itemize}\item {\bf x.isProcedure} is {\bf true} when {\bf x} is any kind of procedure, and {\bf false}
+otherwise.
+
+\item {\bf x.isMethod} is {\bf true} if {\bf x} is defined by a {\bf method} definition, and {\bf false}
+otherwise;
+
+\item {\bf x.isFunction} if {\bf x} is defined by a {\bf function} definition, and {\bf false}
+otherwise;
+
+\item {\bf x.isInitialiser} is {\bf true} when {\bf x} has been defined with {\bf method new}, and
+{\bf false} otherwise;
+
+\item and {\bf x.isLambda} is {\bf true} when {\bf x} is the result of a lambda-expression or
+hole-expression, and {\bf false} otherwise.
+
+\end{itemize}\end{quote}\section{inheritance}
+
+
+A class can {\em extend} an existing class. Here's one example; we might
+choose to make triples an extension of pairs.
+
+\begin{quote}
+\begin{verbatim}
+define class Triple extends Pair
+    slot side
+    define init triple(x, y, z) extends pair(x, y) as
+        this.side := z
+    enddefine
+endclass
+\end{verbatim}
+\end{quote}
+{\bf Triple} has all the slots that {\bf Pair} does, and one more: {\bf side}. {\bf front} and
+{\bf back} automatically work on {\bf Triple}s. {\bf Triple}s {\em are} {\bf Pair}s, and then
+some. The initialiser {\bf triple} works by first invoking the initialiser {\bf pair}
+in its {\bf extends} clause to do the first two elements, and then assigning the
+third itself.
+
+Not just {\bf front} and {\bf back}, but {\em any} function that works on {\bf Pair}s and
+doesn't explicitly exclude non-{\bf Pair}s will work on {\bf Triple}s.\section{overloading functions}
+
+
+How does this happy state of affairs come about? When the argument type is the
+name of a class (like {\bf Pair}), then it will accept values of any of its
+extensions (like {\bf Triple}).
+
+Sometimes, we want the behaviour of a method to be different in sub-classes
+than in the parent. In this case, the parent must define the method to be
+{\bf generic}, and the different definitions for the sub-classes must be declared
+as {\bf specific}. This works outside as well as inside classes; the only
+difference is that inside a class, the implicit {\bf this} argument is added to
+the method signature.
+
+Here's an example of generic procedures outside a class:
+
+\begin{quote}
+\begin{verbatim}
+define generic size( x: Any ) as 0 enddefine
+define specific size( x: Small ) as x @logToBase 2 enddefine
+define specific size( x: String ) as x.length enddefine
+\end{verbatim}
+\end{quote}
+This defines the {\bf size} of an integer to be its bitswidth (and blows up if {\bf x}
+is {\bf 0}), the {\bf size} of a string to be its length, and the size of anything
+else to be {\bf 0}. The choice of which definition of {\bf size} to use is made when
+{\bf size} is called, by looking at the types of its arguments.\chapter{type-expressions}
+
+
+So far we've said little about the type-expressions that can be written
+following {\bf :}, except that certain built-in names ({\bf Any}, {\bf Small}, {\bf String})
+are allowed, and the names of any classes.
+
+In fact types can be expressed with {\em expressions}, which have the same syntax
+and semantics as value-expressions. There are four important type-expressions
+in Spice: {\em multiple}, {\em lots}, {\em array}, and {\em non-optional} types.
+
+\section{multiple}
+
+
+If {\bf T} and {\bf U} are types, then {\bf T, U} is the {\em multiple type} which is a value
+of type {\bf T} then a value of type {\bf U}.\section{lots}
+
+
+If {\bf T} is a type, {\bf T**} is the {\em lots of T} type, which is some unspecified
+number of {\bf T}s as multiple values. The return type of a procedure defaults to
+being {\bf Any**}.\section{arrays (and based arrays)}
+
+
+If {\bf T} is a type, then {\bf \{T\}} is the type {\em array of T} or {\em T row}. Note
+carefully that the Spice array constructor {\bf \{E\}} {\em always} makes values of
+type {\bf \{Any\}}, because Spice arrays can hold any kind of value; to make eg
+an {\bf \{Small\}} you have to invoke a special constructor {\bf IntArray(E)}.\section{optional types}
+
+
+Unless otherwise specified, {\bf absent} is not permitted where a value of a
+specific (non-{\bf Any}) type is expected; so a variable typed as {\bf Small} cannot
+legally be given {\bf absent} as its value. This can be over-ridden by using the
+{\bf optional} type constructor; if {\bf T} is a type, {\bf T??} is the type which all the
+values of type {\bf T} and also the value {\bf absent}.\chapter{packages}
+
+
+So far we've seen fragments of Spice code out of context for illustrative
+purposes. In real life, Spice code code should be organised into {\em packages}.
+A package is a collection of procedures, variables, and classes (and styles,
+which we'll see later) which work together to provide a coherent service to
+the programmer who uses those packages.
+
+A package starts with a {\em package header}, which identifies the package and the
+version of Spice it was intended for, specifies any other packages it may need,
+and then continues with the {\em package body}, which is a sequence of variable,
+procedure, class, and other declarations, or the kind we've discussed
+elsewhere.
+
+The header starts with the {\em spice specification part}, which consists of
+the reserved word {\bf spice}, a version string, and possibly some {\em preference
+settings}. The version string is a string specifying the version of Spice
+that the package is supposed to work with, and the preference settings control
+the Spice compiler -- see later for details.
+
+Otherwise the header starts with the reserved word {\bf package} and the package
+name, which is a series of simple names deparated by dots. For example,
+
+\begin{quote}
+\begin{verbatim}
+spice "release.2.0";
+package this.is.an.example;
+\end{verbatim}
+\end{quote}
+Spice does not constrain package names to conform to file names on your local
+system, but it's a good idea to put a package whose name ends in {\bf .foo} in a
+file called {\bf foo}.
+
+\begin{quote}{\em technical note I}. An IDE for Spice is {\em required} not to insist that package
+names form a path through a filing system hierarchy, and is {\em required} to
+accept package name components longer that the local filing system component
+names, and with "strange" characters in.{\em technical note II}. The current Spice prototype compiler allows the mappings
+from package names to filestore names to be specified in package mapping
+entries in its initialisation file, as part of a proof-of-concept.
+\end{quote}\section{public and private}
+
+
+A package exists to make a service available to its users, which it does by
+making some of its identifiers visible to those users. By default, {\em none} of
+the identifiers in a package are visible. However, declarations can be marked
+as {\em public} by writing {\em declaration qualifiers} in square brackets after
+the introductory keyword. To make a public variable, for example:
+
+\begin{quote}
+\begin{verbatim}
+public var exposed: String = "hello"
+\end{verbatim}
+\end{quote}
+declares a public string-only variable called {\bf exposed}. You can mark a
+variable {\bf private} instead, but since this is the default, it won't make much
+difference.
+
+You can declare a function {\bf public} in the same way:
+
+\begin{quote}
+\begin{verbatim}
+define public function inc( x ) as x + 1 enddefine
+\end{verbatim}
+\end{quote}
+More importantly, you can declare a {\bf class} public. If you do so, the
+class name is public, {\em and so are all the non-slot methods declared in
+it}. The slot methods (ie the names of {\bf slot}-variables) are still private by
+default; you can declare them public explicitly, and you can declare the other
+methods private explicitly.\section{imports}
+
+
+{\bf public} is one side of the coin; {\bf imports} is the other. A package can
+{\em import} another one in its header.
+
+\begin{quote}
+\begin{verbatim}
+package using.example;
+import this.is.an.example;
+\end{verbatim}
+\end{quote}
+This makes all the public identifiers from {\bf this.is.an.example} visible inside
+{\bf using.example}. If you don't specify where this other package is to be found,
+the Spice compiler will use a set of rules to locate it; but you can force its
+hand:
+
+\begin{quote}
+\begin{verbatim}
+import this.is.an.example from "/home/hedgehog/example.spi";
+import this.is.an.example from
+    "http://cdollin/Spice/Modules/example.spi";
+\end{verbatim}
+\end{quote}
+Following the {\bf from} is an expression (almost always a string literal) with
+the URL for the source of the package.
+
+Spice does not require than imported packages are written in Spice; it is
+expected that implementations will define ways to import packages written in
+commonly-used languages such as C, C++, Java, and Javascript.\section{readonly}
+
+
+It's possible to qualify public variables and slots as {\em read only}, which
+means that they can be read but not changed by importing packages. For ordinary
+variables, all that need be done is to prohibit assignment to them; but
+for slots, which are accessed by procedures, it's not quite so simple.
+
+When a slot is marked read-only
+
+\begin{quote}
+\begin{verbatim}
+public readonly slot magic = 42;
+\end{verbatim}
+\end{quote}
+({\bf readonly} is not a reserved word) then the compiler makes {\em two} versions of
+{\bf magic}; one for local use, and one for export. {\em Only the local version has an
+updater}. This can cause the interesting situation:
+
+\begin{quote}
+\begin{verbatim}
+package defines.magic;
+#
+define class P
+    public readonly slot magic = 72;
+enddefine
+#
+define function isEqual( x ) as
+    println( x == magic )
+enddefine
+#
+endpackage
+package Q
+#
+import defines.magic;
+#
+testEqual( magic );
+#
+endpackage
+\end{verbatim}
+\end{quote}
+which will print {\bf false} as the exported {\bf magic} is a different function to the
+local one.\section{protected access and aliases}
+
+
+It's possible to import a package, but to declare that you need to specify its
+name everywhere you specify its variables:
+
+\begin{quote}
+\begin{verbatim}
+import protected defines.magic;
+\end{verbatim}
+\end{quote}
+To refer to {\bf magic} now you need to prefix it with the last part if its
+package name: {\bf magic::magic}. (Requiring the {\em entire} package name would be
+overkill; package names are supposed to be long and descriptive.)
+
+The main use of {\bf protected} is to allow an imported package to define lots of
+useful names (usually constants) without polluting your own packages
+namespaces.
+
+If you don't like the last part of the package name, or if it would be
+ambiguous, you can change the part you specify:
+
+\begin{quote}
+\begin{verbatim}
+import protected boo = defines.magic;
+\end{verbatim}
+\end{quote}
+Now {\bf boo} is an alias for {\bf defines.magic} and we can write {\bf boo::magic}.\section{pervasive import}
+
+
+A package that imports some identifiers -- say, {\bf brick} and {\bf concrete} -- from
+another package does not by default re-export them; they're not part of its
+{\em public interface}. They can be injected into the public interface by
+qualifying the import with {\bf public}:
+
+\begin{quote}
+\begin{verbatim}
+public import defines.magic;
+\end{verbatim}
+\end{quote}
+Now this package exports {\bf magic::magic}.\chapter{switches}
+
+
+The power of Spice's overloaded functions means that you won't write switches
+so often as you might in a more conventional language. But you still need to
+be able to choose from finite selections of integer and string values, so
+Spice has a general {\bf switch} construct:
+
+\begin{quote}
+\begin{verbatim}
+switch x into
+    case 1: statement1();
+    case 2, 3: statement2();
+    case "hello":
+    case "world": statement3();
+    default: statement4();
+endswitch
+\end{verbatim}
+\end{quote}
+If {\bf x} has the value {\bf 1}, then {\bf statement1()} is executed. If it has the value
+{\bf 2} or {\bf 3}, then {\bf statement2()} is executed. If it has the value {\bf "hello"} or
+{\bf "world"}, {\bf statement3()} is executed. And if it has none of these values,
+{\bf statement4()} is executed.
+
+Note that the values in the switch can be integers or strings (or symbols);
+indeed the {\bf case} values need not be compile-time constants. (However, the
+switch construct is more efficient with compile-time constants, and more
+efficient with integers than with strings and symbols.) If a switch has a
+compile-time case label of {\bf N} then that takes priority over any run-time case
+label evaluating to {\bf N}.
+
+Also note that there's no need for a {\bf break} or similar construct to leave the
+{\bf switch}; the case body starts with its first statement and ends just before
+the next {\bf case} or {\bf default}. (You can, of course, only have one
+{\bf default} per {\bf switch}).
+
+If there's no {\bf default}, it's as though {\bf default: none;} had been written.
+\chapter{numeric literals}
+
+
+So far we've taken numbers pretty much for granted, writing them as digit
+sequences with the occasional {\bf \_} for visual clarity. Spice has a rather
+extensive set of {\em numeric literals}.
+
+All numeric literals start with a digit, and all numeric literals may
+contain underbars (which are ignored; they are there for the reader's visual
+convenience). When numeric literals contain letters, their case is
+irrelevant.
+
+A numeric literal may begin with a {\em base specifier}, which is a series of
+digits ending with the letter "x". The digits, taken as a decimal number,
+specify the base of the numeric literal; the base must be in the range
+{\bf 2..36}. If the base is {\bf 0} it is taken to mean base {\bf 16} for compatability
+with {\bf C} (etc). The extended digits are "a" (for {\bf 10}) up to "z" (for {\bf 35}).
+Using digits too large for the base is an error.
+
+A numeric literal that has a base less than or equal to {\bf 10} may end with
+a series of letters specifying the {\bf units} in which the value is expressed.
+Typical units are {\bf px} (pixels), {\bf in} (inches), {\bf s} (seconds), {\bf em} (ems -- a
+printing unit), and {\bf mm} (millimetres).
+
+\begin{quote}To get values with large bases to have units, you need to use a different
+way of expressing those units, eg using function calls.
+\end{quote}A numeric literal may have a {\em scaling factor}, which is the letter "e",
+optionally followed by a sign ("+" or "-") and a series of digits. The digits
+represent a number in decimal, and the scaling factor is the literal's base
+raised to that power. If the literal's base is greater than {\bf 10} then the sign
+is not optional (otherwise {\bf 0x4e5} would be ambiguous). If present, the
+scaling factor is before the units.
+
+An {\em integral} literal is a series of digits, possibly with a base specifier
+(in which case the digits can include letters), possibly with a scaling factor
+and units. A {\em floating} literal is a series of digits, a decimal point, and a
+second series of digits; again, it may include a scaling factor and units.\chapter{units}
+
+
+To support its use in laying out Web pages (and for other graphic operations),
+Spice values can have {\em units}. Several units are built-in to the language,
+notably {\em inches} ({\bf in}), {\em millimeters} ({\bf mm}), {\em points} ({\bf pt}), and {\em pixels}
+({\bf px}).
+
+Writing a unit literal is easy, as described earlier; {\bf 4in} is four inches,
+{\bf 27mm} is twenty-seven millimetres, {\bf 100px} is one hundred pixels. These
+pre-defined names are also available as postfix operators, so {\bf x in} and
+{\bf (y + 1)px} are legal, and by special dispensation of the dot operator can
+appear as functions using dot, so {\bf x.pt} is also legal.
+
+The arithmetic operators work on values with units in the "natural" way,
+so you can add and subtract values with like units. (You can't just add a
+number to a unit value, though; {\bf 42in + 1} will generate a run-time error.)
+What's more, if the units are different but have the same underlying
+dimension (eg both lengths), then they can still be added and subtracted, by
+converting them to a common scale.
+
+You can multiply values with units by numbers, in the obvious way. You can
+multiply values with units together, too; {\bf 6in * 7in} is {\bf 42 in in}, or
+42 square inches. Division works in the corresponding inverse way.\chapter{enumerations}
+
+
+Sometimes you want a collection of distinct named values, for example as
+the names of options ({\bf small}, {\bf medium}, {\bf large}, {\bf jumbo}). Rather than using
+{\bf const} integer variables (which can be confused with plain integer values) or
+strings/symbols (vulnerable to silent mis-spellings), Spice allows you to
+define {\em enumeration values}:
+
+\begin{quote}
+\begin{verbatim}
+define enum Size = small, medium, large, jumbo enddefine
+\end{verbatim}
+\end{quote}
+{\bf Size} becomes a new type name, and {\bf small}, {\bf medium}, {\bf large}, and {\bf jumbo}
+become new values of that type. {\bf print(medium)} will print {\bf medium}; the
+values retain their names. Each value also has an associated small integer,
+starting at {\bf 1} (for the first) and taking on successive values; you can see
+this number using {\bf magnitude}, so {\bf large.magnitude.println} will print {\bf 3},
+and you can construct enum values from numbers: {\bf new Size(4)} is identical to
+{\bf jumbo}. Using values outside the range will generate an error.
+
+Spice's enumerations are just shorthand. An {\bf enum} type is a class
+extending the built-in {\bf Enum} class, which has slots for the name and
+magnitude of its values. Each {\bf enum} value is an instance of its class
+with the slots set appropriately.
+
+\begin{quote}Spice implementors are encouraged to implement {\bf enum} values as efficiently as
+possible, taking advantage of their specialised nature.
+\end{quote}\chapter{all sorts of unmentionable things}
+
+
+\section{extended relational expressions}
+
+
+In Spice, the relational operators have a special syntactic property;
+you can write expressions like {\bf x $<$= y $<$= z} to mean {\bf (x $<$= y) and (y $<$= z)}.
+The expression {\bf y} will be evaluated at most once. The operators do not have
+to be the same ({\bf x == y $<$= z} is fine) and you can chain them up as long as
+you like ({\bf x == y == z == h == q} is fine, too).\section{op}
+
+
+Sometimes you'd like to get at the functions that implement Spice's infix
+operators, usually so that you can pass them to higher-order procedures
+(eg for zipping two arrays together with a specified procedure such as
+addition). The form {\bf op Operator}, where {\bf Operator} is a Spice operator,
+gets a procedure that has the effect of that operator; so {\bf op +} is a
+procedure of two arguments that adds them together and {\bf op ==} is a
+procedure of two arguments that tests them for structural equality.
+
+Note that {\bf op and} and {\bf op or} deliver ordinary procedures of two arguments
+(the special syntactic property that means that {\bf E$_ 1$ and E$_ 2$} need not
+evaluate {\bf E$_ 2$} is lost) as does {\bf op ==}, {\bf op $<$=}, etc (the chaining property
+is lost).\section{super and extends}
+
+
+Sometimes, in an overloaded procedure definition, you wish to invoke
+the more general version of that procedure; you do the general case, then you
+do your more specific one. The identifier {\bf super} in a procedure is bound to
+the next most general definition of that procedure.
+
+An initialiser (ie a {\bf method new}) {\em must} invoke its more general case,
+and what's more, must do so before it starts its own initialisation. Rather
+than using {\bf super} (which in any case doesn't have quite the right effect),
+that pre-initialisation is described in the {\bf extends} clause of the
+initialiser, which provides calls to the other initialisers. If the extends
+clause is left out, it is as though you'd written {\bf extends Parent()} where
+{\bf Parent} is the parent class of this one.\section{shared slots}
+
+
+A class can have a shared slot, introduced by {\bf shared Name}, typed if desired.
+A shared slot is a single location accessible through any instance but shared
+by them all.
+
+\begin{quote}Note that a shared slot is different from a variable declared in a class;
+it is accessed by method-call syntax, as ordinary slots are, rather than
+simply by its name, as variables are.\end{quote}\section{parallel iteration}
+
+
+Spice allows {\bf for} loops to iterate over several things "in parallel".
+Suppose {\bf Xs} and {\bf Ys} are both arrays, and we wish to "zip them together",
+say by adding corresponding elements; we can write
+
+\begin{quote}
+\begin{verbatim}
+{for x in Xs also y in Ys do all x + y endfor}
+\end{verbatim}
+\end{quote}
+to make the array of sums. The loop will finish when either of {\bf Xs} or {\bf Ys}
+are exhausted. As well as {\bf Name in Expr}, you can use the form {\bf from E$_ low$ to
+E$_ high$}, with the {\bf to} part being optional:
+
+\begin{quote}
+\begin{verbatim}
+for x in E also y from 1 do
+    println( "element", y, "is", x )
+endfor
+\end{verbatim}
+\end{quote}
+Note that this works even if {\bf E} is not an array, and even if it is, is better
+than
+
+\begin{quote}
+\begin{verbatim}
+for y from 1 to E.length do
+    println( "element", y, "is", E[y] )
+endfor
+\end{verbatim}
+\end{quote}
+because in the first case the compiler can generate the most efficient code
+for indexing through the array (and the reader does not have to worry that
+the iteration is properly bounded).
+
+As well as {\bf from} and {\bf in} parts, you can specify termination conditions for
+the loop with {\bf while} and {\bf until} clauses; if a {\bf while} clause goes {\bf false}
+(or an {\bf until} goes {\bf true}) the loop ends "abnormally" (as it does with a
+{\bf break}) and you can specify a final loop value with {\bf then}.
+
+
+
+\part{the Spice reference manual}
+\chapter{introduction}
+
+
+\section{a note on syntax}
+
+
+Syntax is described using an extended BNF. Terminal symbols that are names are
+in {\bf bold}; terminals that are symbols are in bold and quoted, eg, "{\bf ++}".
+Non-terminals are in {\tt this} font.
+
+Grouping is shown by round brackets. Optional elements are enclosed in square
+brackets, eg in {\bf "?" {[}Integer{]}} the {\bf Integer} may be omitted. A suffix
+operator {\bf *} is used to mean "zero or more of", while a postfix operator {\bf +}
+means "one or more of".
+
+The infix operator {\bf E ** X} is used to mean "Zero or more {\bf E}s separated by
+{\bf X}s"; {\bf X} is usually a comma or semicolon. Similarly infix {\bf E ++ X} means
+"{\em one} or {\bf E}'s separated by {\bf X}'s".
+
+All the syntax definitions in the body of the document are collected together
+in an appendix.\chapter{lexis}
+
+
+A Spice program is made up of a series of {\em tokens}. Tokens are
+separated by {\em token gaps}. Token gaps are unimportant except that they
+may serve to separate tokens that would otherwise combine into single
+tokens (eg the two tokens "x" and "then" must be separated by a gap,
+otherwise they would be recognised as a single token "xthen").
+
+A token gap is any sequence of spaces, newlines, horizontal or
+vertical tabs, and form-feeds, possibly containing comments (see below).
+
+A token is a {\em word}, a {\em mark}, or a {\em literal}. A word is a sequence of
+letters and digits; a mark is a sequence of mark characters; and a
+literal is a string, character, numeric, or unit constant. The lexis
+makes no substantive difference between those words (or marks) that
+are reserved and those that may freely be used as identifiers (or
+operators).
+
+\section{words}
+
+
+A word is a series of digits and letters starting with a letter. Words are
+case sensitive and of unlimited length.
+
+Spice conventions are that type names start with upper-case letters
+and that value names do not.\section{marks}
+
+
+A mark is either a {\em simple mark} or a {\em compound mark}. A {\em simple mark}
+is one of the characters "(", ")", "\{", "\}", "{[}", "{]}", ";", ",". A
+{\em compound mark} is a series of mark characters, where a mark character
+is one of "~!@\%$^\wedge$\&*-+=$\mid$:.?/$<$$>$". Note that "\#" is {\em not} a mark
+character.
+
+Note that this means that "$<$$>$", "+++", "$\mid$-$>$" etc are all possible Spice
+marks; they are reserved for future expansion.\section{literals}
+
+
+There are four kinds of literal in Spice: numeric literals, string literals,
+character literals, and regular-expression literals. The
+numeric literals may be decorated with units.
+
+\subsection{numeric and unit literals}
+
+
+A numeric literal represents an integer or floating-point number, possibly
+with units, possibly in a radix other than the default {\bf 10}. Within a numeric
+literal, underbar characters may be present; they are immediately discarded,
+being there only for presentation (eg to make {\bf 7\_476\_294} readable).
+
+\subsubsection{plain integer literals}
+
+
+A plain integer literal is a series of decimal digits. It represents the
+obvious number in radix {\bf 10}. There is no limit to the number of digits
+permitted, and the correct integer value is preserved, using bignums if
+necessary.\subsubsection{radix-specified integer literals}
+
+
+A radix-specified integer literal consists of a radix specifier, which is a
+series of decimal digits followed by the letter {\bf x} (in either case), followed
+by a series of letters and digits. The letters must be consistent with the
+radix, in that if the radix is {\bf k} then no letter past {\bf a + (k - 10)} is
+permitted; if the radix is {\bf 10} or less, any letters terminate the numeric
+part of the literal.\subsubsection{integer literals with units}
+
+
+A plain integer literal, or a radix-specified integer literal with radix {\bf 10}
+or less, may be immediately followed by a unit name, which is a series of
+letters. The integer value represents a value in those units. Thus {\bf 45cm},
+{\bf 19mile}, and {\bf 6seconds} are all legal, assuming that those units have been
+declared.
+
+The value denoted by {\bf nU}, where {\bf n} is the number and {\bf U} the units, is the
+measure value with {\bf n} as its magnitude and the unit named by {\bf U} as its unit.\subsubsection{plain floating literals}
+
+
+A floating literal is a series of decimal digits, a decimal point, and another
+series of decimal digits; it represents the "obvious" floating-point number.
+It may be followed by an exponent specifier, which is the letter {\bf e},
+optionally followed by a sign ({\bf +} or {\bf -}), followed by a plain integer
+literal.\subsubsection{radix-specified floating literals}
+
+
+A radix-specified floating literal is a radix specifier followed by a series
+of letters and digits, a decimal point, a series of letters and digits, and an
+optional exponent specifier.
+
+The radix specifier gives the radix of the floating point number but not the
+exponent. If the radix is {\bf 10} or less, then letters terminate the numeric
+part of the literal. If the radix is more than {\bf 10}, the sign in any exponent
+specifier is not optional.\subsubsection{floating literals with units}
+
+
+A floating literal with radix {\bf 10} or less may be followed by a unit name, as
+for integer literals with units.\subsubsection{general specification of units}
+
+
+If a number in a radix greater than {\bf 10} is supposed to be in some units,
+then one of the general syntaxes for values-in-units must be used.\subsection{string literals}
+
+
+A string literal is a character sequence starting and ending with the
+double-quote character {\bf "}. The characters between the quotes are any
+characters except quotes (any flavour), newlines, control characters, or
+backslashes except as permitted by {\em escape sequences}:
+
+\begin{itemize}\item $\setminus$n -- a newline
+
+\item $\setminus$f -- a form feed
+
+\item $\setminus$v -- a vertical tab
+
+\item $\setminus$r -- a return
+
+\item $\setminus$b -- a backspace
+
+\item $\setminus$t -- a horizontal tab
+
+\item $\setminus$s -- a space
+
+\item $\setminus$$\setminus$ -- a backslash
+
+\item $\setminus$" -- a double quote
+
+\item $\setminus$' -- a single quote
+
+\item $\setminus$` -- a reverse quote
+
+\item $\setminus$"(" numeric literal * "," ")")
+-- the series of characters with those
+Unicode values
+
+\item $\setminus$u Hex Hex Hex Hex -- the Unicode character with value given by the
+specified four hexadeciaml digits.
+
+\end{itemize}Any other backslash sequence {\bf $\setminus$X} means "protected {\bf X}"; protection applies
+within regular expression literals, {\em qv}.\subsection{character literals}
+
+
+A character literal has the same syntax as a string literal, except that the
+delimiters are the single quote {\bf '} instead of the double quote.
+
+A character literal denotes the multiple values formed by all its constituent
+characters. Thus {\bf ''} denotes no values, {\bf 'x'} denotes the single character
+{\bf x}, and {\bf 'spoo'} denotes the characters {\bf s}, {\bf p}, {\bf o}, {\bf o}.\subsection{regular expression literals}
+
+
+Spice has two regular expression syntaxes: a {\em traditional} syntax and a
+{\em native} syntax. The traditional syntax is based on existing
+regular-expression notations with little modification, and the native
+syntax is designed to mesh cleanly with the string syntax. Regular expressions
+are a late addition to Spice, and many details have not been settled, pending
+experimental implementation.
+
+A traditional regular expression literal starts with the sequence {\bf //} and
+then is a sequence of characters terminated by a closing {\bf /}. The sequence
+cannot include any unprotected {\bf /}. The exact permitted syntax of the sequence
+is under discussion, but we expect to conform as far as is possible with the
+syntax used by the Java regex package.
+
+A native regular expression (NRE) starts with the sequence {\bf /"} and then is a
+sequence of characters terminated by a closing {\bf "}; the sequence cannot
+include an unprotected {\bf "}. Within a native regular expression, all the usual
+string escapes apply with the same meaning, and protected characters stand for
+themselves and have no meta-meaning.
+
+Our proposal is that the characters {\bf ?$\mid$*\{\}{[}{]}\%} are special {[}that is, do not
+stand for themselves{]} within NREs. {\bf \%} is the {\em marker character} and the rest
+are meta-characters.
+
+\begin{itemize}\item {\em character classes}, {[}XYZ{]}: the square brackets enclose compact
+character-class expressions.
+
+\item {\em grouping}, \{E\}: braces are grouping brackets which have no effect on
+back-references.
+
+\item {\em repetition}, E*: suffix * is the Kleene star.
+
+\item {\em wildcard}, ?: matches any character.
+
+\item {\em alternation}, E$\mid$F: matches either E or F.
+
+\end{itemize}Other syntactic jobs are performed by sequences introduced by the marker
+character. They are expected to be less frequent and so a larger overhead
+to use them is acceptable.\section{comments}
+
+
+A comment is either the character "\#"
+followed by all characters up to a newline or
+end-of file, or the mark "/*" followed by any series of characters excluding
+"*/" and then by "*/", or the mark ";;;" followed by all characters up to a
+newline or end-of-file.\chapter{top-level syntax}
+
+
+A Spice program is composed of a collection of {\em packages}. A package
+consists of a {\em header}, which identifies the package and what it relies
+on, and its {\em body}, which is a series of {\em definitions} possibly
+interspersed with {\em executions}. Definitions define variables,
+procedures, classes, and units; executions are expressions
+that perform some run-time activity.
+
+\section{programs}
+
+
+\begin{tabular}{l}
+{\bf def75. Program ::= }\\ 
+\hspace*{3mm}{\tt Spice (Package* $\mid$ PackageBody)} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def76. Spice ::= }\\ 
+\hspace*{3mm}{\tt "spice" String ("," (Name ":" Expr))*} \\ 
+\end{tabular}
+
+The {\bf String} identifies the version of Spice that the writer assumed
+when the package was written; it is a dot-separated sequences of
+integers or names (eg "1.0" or "5.beta"). The {\bf Name}-{\bf Expr} pairs
+define settings for compiler preferences; each {\bf Expr} must be
+evaluable at compile-time.
+
+The {\bf spice} preamble is intended for future expansion.\section{aside: modifiers}
+
+
+{\bf Modifiers} are annotations to declarations. They allow a declaration to be
+accompanied by arbitrary information. Modifiers can appear in two different
+positions, {\em open} modifiers and {\em closed} modifiers; open modifiers can
+decorate declarations not introduced by {\bf define} (ie, {\bf var}, {\bf const}, and
+{\bf slot}), and thus need a more restricted syntax.
+
+\begin{tabular}{l}
+{\bf def77. OpenModifier ::= }\\ 
+\hspace*{3mm}{\tt MarkedModifier Modifier*} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def78. Modifier ::= }\\ 
+\hspace*{3mm}{\tt MarkedModifier} \\ 
+\hspace*{3mm}{\tt  $\mid$ Name {[}(ModArgument){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ "{[}" Modifier** "," "{]}"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def79. MarkedModifier ::= }\\ 
+\hspace*{3mm}{\tt "public"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "private"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "protected"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def80. MarkedArgument ::= }\\ 
+\hspace*{3mm}{\tt Literal} \\ 
+\hspace*{3mm}{\tt  $\mid$ "(" Expression ")"} \\ 
+\end{tabular}
+
+Modifiers are
+discussed in the sections that require them, except we shall mention
+here the two marked modifiers:
+
+\begin{itemize}\item {\bf public}: the identifier(s) are put into the public interface of this
+package, ie, they can be used in packages that import this one.
+
+\item {\bf private}: the identifier(s) are {\em not} put into the public interface
+of this package; they cannot be referred to outside it at all.
+{\bf private} is the default, except for identifiers declared in {\bf public}
+packages, as below.
+
+\item {\bf protected}: protected identifiers are public but can only be referred to in
+other packages using the {\bf alias::name} notation; see also {\bf protected import}.
+
+\end{itemize}\section{packages}
+
+
+\begin{tabular}{l}
+{\bf def81. Package ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+MarkedModifier \\ 
+ "package" \\ 
+ PackageName \\ 
+ PackageBody \\ 
+ {[}("endpackage"){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def82. PackageName ::= }\\ 
+\hspace*{3mm}{\tt Word++ "."} \\ 
+\end{tabular}
+
+A package name is a sequence of dot-separated identifiers. The last name
+in the sequence is the {\em leafname} of the package; apart from in
+{\bf package} and {\bf import} constructs, packages are referred to only by
+their leafname or an alias for it.
+
+Top-level identifiers declared in a {\bf public package} are public by default.
+Top-level identifiers declared in a {\bf private package} are private by default.
+
+\begin{tabular}{l}
+{\bf def83. PackageBody ::= }\\ 
+\hspace*{3mm}{\tt Import** SEMI Bundle** SEMI} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def84. Bundle ::= }\\ 
+\hspace*{3mm}{\tt Definition+ Expr*} \\ 
+\end{tabular}
+
+A package body consists of its import declarations followed by its own
+definitions. All the names exported by the packages which have been imported
+are available in all the bundles of the package. Each bundle is a sequence
+of definitions, possibly followed by some expressions; each {\bf Bundle} is as
+long as possible. The names declared by a {\bf Bundle} are {\em visible throughout
+that bundle}; declarations need not lexically preceed their use.
+
+Expressions are evaluated when the package is loaded.
+
+\begin{tabular}{l}
+{\bf def85. Definition ::= }\\ 
+\hspace*{3mm}{\tt ProcedureDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ VarDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ ClassDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ UnitDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ EnumDef} \\ 
+\end{tabular}
+
+A definition is a procedure, class, unit, enumeration, or
+variable definition.\section{imports}
+
+
+\begin{tabular}{l}
+{\bf def86. Import ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+MarkedModifier \\ 
+ "import" \\ 
+ OpenModifier \\ 
+ {[}(Alias "="){]} \\ 
+ PackageName \\ 
+ {[}("facet" (Name** ",")){]} \\ 
+ {[}("from" Expr){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+An {\bf import} definition identifies a package to be imported and possibly
+a location to import it from; that location is given as a
+String-valued expression representing a URL. The name can be given
+directly or by the evaluation of an expression.
+
+If the modifier {\bf public} is given, then all the identifiers in the
+imported package are added to this package's public interface. This
+allows packages to act as "collectors" for definitions from several
+other places.
+
+An imported identifier {\bf x} can be referred to as {\bf leafname::x}, where
+{\bf leafname} is the leafname of the package (if {\bf Alias=} is omitted) or
+the {\em alias} {\bf name} (if {\bf Alias=} is given). Unless the modifier {\bf protected} is
+given, it may also be referred to as {\bf x}.
+
+If two (or more) packages with the same leafname are imported, at least one
+of them must be given an alias. If two (or more) packages export the same
+identifier {\bf x}, then {\bf x} must be referred to using the {\bf alias::x} notation.
+
+If the {\bf facet} modifier is present, only the names in the specified facets
+are imported (see elsewhere for facet definitions).\section{procedure definitions}
+
+
+The full power of a procedure definition is available through {\bf define}
+options, which allow generics, methods, plain functions, and initialisers
+to be declared.
+
+\begin{tabular}{l}
+{\bf def87. ProcedureDef ::= }\\ 
+\hspace*{3mm}{\tt FullProcedureDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ FunctionDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ CompactDef} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def88. FullProcedureDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"define" \\ 
+ Modifier \\ 
+ ("method" $\mid$ "function" $\mid$ "generic" $\mid$ "init" $\mid$ "specific") \\ 
+ Header \\ 
+ {[}("returns" Type){]} \\ 
+ {[}("extends" CommaExpr){]} \\ 
+ {[}("super" Header){]} \\ 
+ ProcedureBody \\ 
+ "enddefine" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def89. FunctionDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+OpenModifier \\ 
+ "function" \\ 
+ Header \\ 
+ {[}("returns" Type){]} \\ 
+ {[}("extends" CommaExpr){]} \\ 
+ {[}("super" Header){]} \\ 
+ ProcedureBody \\ 
+ "endfunction" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def90. CompactDef ::= }\\ 
+\hspace*{3mm}{\tt "def" Header ("=" $\mid$ "as" $\mid$ "=$>$") Expr} \\ 
+\end{tabular}
+
+A procedure declared by {\bf function} or {\bf def} is monomorphic; it has a single
+definition and cannot be redeclared.
+
+A procedure declared by {\bf generic} is a polymorphic procedure; the {\bf generic}
+definition gives its most general argument types and its default body.
+
+A procedure declared by {\bf specific} is a dynamic overloading of the named
+generic procedure (which must exist and be visible).
+
+If a {\bf generic}, {\bf specific}, or {\bf method} definition appears within a class, it
+is given an implicit first argument called {\bf this} whose type is that class,
+unless the {\bf plain} modifier has been supplied. Outside a class, {\bf plain} does
+nothing. {\bf function} and {\bf def} never supply a {\bf this}.
+
+A procedure declared with {\bf init} is an {\em initialiser}: it is used to fill in
+the fields of freshly-constructed objects.
+
+{\bf init} procedures may only be declared within classes. A name used
+for a {\bf init} procedure cannot be used as the name of an ordinary
+procedure; also they can be defined only with one class.
+
+The {\bf Header} defines the procedure argument's names and types, the procedure
+name itself, and the "expected shape" of calls to the procedure. {\bf returns}
+gives the type of the value(s) returned by a procedure; if omitted, a return
+type is inferred from the body of the procedure.
+
+{\bf extends} and {\bf super} are currently under revision.
+
+\begin{tabular}{l}
+{\bf def91. Header ::= }\\ 
+\hspace*{3mm}{\tt CallShape} \\ 
+\hspace*{3mm}{\tt  $\mid$ Name "-$>$" CallShape} \\ 
+\hspace*{3mm}{\tt  $\mid$ CallShape ":=" Arg} \\ 
+\end{tabular}
+
+The allowed {\bf Modifier}s include {\bf public}, {\bf protected}, and {\bf private}. A
+procedure with modifier {\bf frozen} cannot be overloaded outside its package; a
+procedure with modifier {\bf fluid} can be. (By default, {\bf function}s are frozen
+and {\bf method}s are not.) An overloading of a procedure which appears outside
+its owning package must have the modifier {\bf extension}, unless it appears in a
+{\bf class} and extends a method of that {\bf class}.
+
+If the updater argument is given, this definition defines the {\em updater} of the
+named procedure, which must be declared in this package and have a compatible
+{\bf CallShape}.
+
+\begin{tabular}{l}
+{\bf def92. CallShape ::= }\\ 
+\hspace*{3mm}{\tt PrefixShape} \\ 
+\hspace*{3mm}{\tt  $\mid$ DottedShape} \\ 
+\hspace*{3mm}{\tt  $\mid$ InfixShape} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def93. PrefixShape ::= }\\ 
+\hspace*{3mm}{\tt NameA {[}(Arglist){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def94. DottedShape ::= }\\ 
+\hspace*{3mm}{\tt NameB . NameA {[}(Arglist){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def95. InfixShape ::= }\\ 
+\hspace*{3mm}{\tt ArgA @ NameA {[}(ArgB){]}} \\ 
+\end{tabular}
+
+There are three different {\bf CallShape}s; the conventional prefix form
+{\bf f(x)}, the method-oriented form {\bf x.f(a)}, and the infix-oriented form
+{\bf x @f y}. {\bf NameA} is the name of the procedure being defined in all
+cases. The arguments are given by the optional {\bf Arglist} for the
+prefix form, by the {\bf Arglist} and {\bf NameB} for the method form, and by
+{\bf ArgA} and {\bf ArgB} for the infix form; {\bf ArgA} and {\bf ArgB} are both
+{\bf Arg}s, see below.
+
+A {\bf method} is implicitly in method form, with {\bf this.} assumed as the first
+argument unless overridden explicitly. For {\bf init} it is permitted
+to omit the {\bf NameA}; in this case, the initialiser is that called by
+expressions of the form {\bf new C}.
+
+\begin{tabular}{l}
+{\bf def96. Arglist ::= }\\ 
+\hspace*{3mm}{\tt "(" Args ")"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def97. Args ::= }\\ 
+\hspace*{3mm}{\tt Arg** ","} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def98. Arg ::= }\\ 
+\hspace*{3mm}{\tt Name {[}(":" {[}("!"){]} Type $\mid$ "==" Expr){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ {[}(Name){]} "..."} \\ 
+\end{tabular}
+
+An {\bf Arglist} is just a comma-separated list of {\bf Arg}s. An {\bf Arg} is a {\bf Name},
+optionally followed by a {\bf Type} introduced by a {\bf TypeWord}, or optionally
+followed by a value introduced by "=="; or by {\bf ...}, making it an {\em indefinite}
+argument, bound to an array of all the extra arguments to the procedure.
+
+At most one indefinite argument is allowed, but it may appear anywhere in the
+argument list.
+
+\begin{quote}All argument identifiers are immutable, ie, cannot be assigned to, but
+if they are data-structures, their components can be changed.
+\end{quote}The prefixing of the {\bf Type} with the symbol {\bf !} means that the argument
+does not take part in overloaded dispatch; all overloadings of that procedure
+must have that argument, and mark it as non-dispatch.
+
+{\bf == Expr} is equivalent to {\bf : T} where {\bf T} is a type whose only value is the
+value of {\bf Expr}, which is evaluated at compile-time.
+
+\begin{tabular}{l}
+{\bf def99. ProcedureBody ::= }\\ 
+\hspace*{3mm}{\tt StatementSeq} \\ 
+\hspace*{3mm}{\tt  $\mid$ ArgList "=$>$" ProcedureBody} \\ 
+\hspace*{3mm}{\tt  $\mid$ Arg "=$>$" ProcedureBody} \\ 
+\end{tabular}
+
+A procedure body is introduced by {\bf =$>$} or {\bf as} and ends with {\bf enddefine}. If
+the body is empty, the arrow may be omitted. If the body has the form {\bf A=$>$B},
+the procedure is {\em curried}; the body is itself a function expression.
+
+\subsection{multiple definition}
+
+
+A {\bf generic} procedure may have many different definitions, with the rest being
+given as {\bf method}s. The different definitions may have different numbers of
+arguments (up to any indefinite arguments) and no two definitions can have the
+same sequence of types for their arguments.
+
+Furthermore, for any pair of definitions with signatures (ie the
+type-sequence of its arguments) {\bf T$_ 1$} and {\bf T$_ 2$}, there must be a
+definition with type-sequence {\bf T$_ 3$} where the {\bf i}th element of {\bf T$_ 3$}
+is a super-type of the {\bf i}th elements of {\bf T$_ 1$} and {\bf T$_ 2$} (note that
+{\bf T$_ 3$} might be equal to one of {\bf T$_ 1$} or {\bf T$_ 2$}).
+
+A call of such a polymorphic method will execute the most specific instance of
+it, ie, the one whose formal arguments are as specific as possible while
+matching the actual arguments. A procedure with {\bf K} arguments does not match a
+call with {\bf N /== K} arguments, unless it has a final indefinite argument and
+{\bf N$>$K}.
+
+In particular, methods can be redeclared in classes, when
+they over-ride the definitions in their parents.
+
+\begin{quote}If a method has definitions of different arities, all definitions with
+indefinite arguments are, for the purposes of dispatch, extended to the same
+length by adding additional penultimate arguments of type {\bf Any}.\end{quote}\subsection{super and extends}
+
+
+An overloaded procedure may wish to invoke the "next most general" definition
+to complete (or start) its work. The identifier {\bf super} is bound to that
+next most general definition. When there is ambiguity about that, it is
+resolved by the {\bf super} clause of the function, which takes the form of a
+function call where the operands are all type names; {\bf super} is bound to the
+version of the function that takes those types as its argument.
+
+\begin{quote}This use of {\bf super} has not been tested in the fire of the
+    current Spice implementation.
+\end{quote}An initialiser in a class {\bf C} with parent class(es) {\bf A (B...)} is
+required to invoke initialisers of all of those classes. This is done in
+the {\bf extends} clause of the initialiser; this clause is a comma-separated list
+of initialiser calls, where each called procedure must be an initialiser
+of a parent class and each parent class must have at least one initialiser
+called.
+
+\begin{quote}Similarly, this use of {\bf extends} has not been tried in practice.
+\end{quote}\section{variable definitions}
+
+
+A variable declaration introduces one or more identifiers, may give
+their initial value, and may give their type.
+
+\begin{tabular}{l}
+{\bf def100. VarDef ::= }\\ 
+\hspace*{3mm}{\tt MarkedModifier ("const" $\mid$ "var") NameDecl} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def101. NameDecl ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+(OneDecl $\mid$ "(" OneDecl++ "," ")") \\ 
+ {[}(("=" $\mid$ ":=") Expr){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def102. OneDecl ::= }\\ 
+\hspace*{3mm}{\tt Name {[}(":" Type $\mid$ "..."){]}} \\ 
+\end{tabular}
+
+The {\bf Modifier} may include {\bf public}, {\bf protected}, and {\bf private}. A {\bf var} may
+have modifier {\bf readonly}, in which case it cannot be updated outside of its
+defining package; {\bf const}s can never be assigned to. All the names declared in
+a single {\bf const} or {\bf var} declaration share the same {\bf Modifier}.
+
+The {\bf NameDecl} may initialise one or more names to the value(s) of an
+{\bf Expr}; if the {\bf Expr} is omitted, they are initialised to the default value of
+their type; if no type is specified, they are given type {\bf Any}.
+
+A {\bf NameDecl} will usually contain a single {\bf OneDecl}, but it may contain
+several, in which case the {\bf Expr} must be present and they are initialised
+from it as for assignment. The {\bf ...} form is permitted for at most one
+{\bf OneDecl}; it bundles all the (remaining) values from the {\bf Expr}
+into an array which is assigned to the {\bf Name}.
+
+It is forbidden for {\bf OneDecl}s to be typed if the entire {\bf NameDecl} is typed,
+and {\em vice versa}.
+
+When a {\bf var} or {\bf const} appears at top-level, or within a class,
+it defines a permanent variable that comes into existance when the
+package is loaded and goes away only when no references to it remain.
+
+When a {\bf var} or {\bf const} appears within a procedure, it defines a local
+variable; a new location is allocated each time the declaration is executed.
+This location does not share with any other location. It persists as long
+as there are any references to it, which means that if it is not captured
+by any lambda-expression or hole-expression referring to it it may
+be disposed of when its scope is left (if not sooner).\section{class definitions}
+
+
+A Class defines a shape shared by a collection of objects which are its
+instances. Every Class is itself an object, and has a particular instance
+called its {\em prototypical instance}.
+
+\begin{tabular}{l}
+{\bf def103. ClassDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"define" \\ 
+ Modifier \\ 
+ "class" \\ 
+ Name \\ 
+ {[}("extends" CommaExpr){]} \\ 
+ ClassProperty** \\ 
+ SEMI \\ 
+ "enddefine" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+The {\bf Name} is defined to be a constant bound to the class object,
+and is suitable for use as a type name.
+
+A class may be qualified as {\bf public}, {\bf protected} {\bf private},
+{\bf array}, and {\bf abstract}. If
+it is qualified {\bf array}, its instances are array-type objects, and can
+be indexed with integers. A {\bf public} class has its {\bf method}s and
+{\bf function}s (but not its {\bf slot}s) declared {\bf public} by default.
+A class qualified {\bf abstract} cannot have direct instances; trying to {\bf new} it
+will fail.
+
+\begin{quote}The {\bf array} modifier is not implemented by the current Spice compiler.\end{quote}If the {\bf extends} clause is present, its {\bf CommaExpr} must be a comma-separated
+sequence of names of other classes, and this class inherits all of
+their slots. (Slots that are inherited twice along different routes of course
+only count once in the new class.)
+
+\begin{quote}The current Spice compiler only implements single inheritance.\end{quote}\begin{tabular}{l}
+{\bf def104. ClassProperty ::= }\\ 
+\hspace*{3mm}{\tt Procedure} \\ 
+\hspace*{3mm}{\tt  $\mid$ SlotDecl} \\ 
+\hspace*{3mm}{\tt  $\mid$ VarDef} \\ 
+\end{tabular}
+
+The properties of a class are its procedures and slots. A {\bf NameDecl} within a
+class acts exactly like a {\bf NameDecl} outside a class -- they declare top-level
+permanent identifiers. Within a class, method definitions by default give
+their implicit {\bf this} argument that class as their type.
+
+\begin{tabular}{l}
+{\bf def105. SlotDecl ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+("slot" $\mid$ "shared") \\ 
+ Name \\ 
+ {[}(":" Type){]} \\ 
+ {[}("=" Expr){]} \\ 
+ {[}("implements" Name2){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+Slots are declared by {\bf slot} and {\bf shared} declarations. Each {\bf slot}
+declaration arranges that objects of this type have a slot in them, suitable
+for storing values of the given {\bf Type}, and defines a procedure {\bf Name1} of one
+argument which has the class as its type and whose action is to deliver the
+value of its slot; that procedure also has an updater which alters the value
+of that slot.
+
+If {\bf implements Name2} is specified, then {\bf Name2} must be a generic procedure,
+and the slot declaration provides an overloading of that procedure for
+arguments of the current class.
+
+A {\bf shared} declaration does not allocate any slots in the
+object, but makes a procedure which accesses (and updates) a single shared
+location.
+
+If a slot or shared identifier is qualified {\bf readonly}, then the procedure
+that it exports has no updater, although the locally-visible version does.
+
+When an object of this type is constructed, the {\bf Expr}s of its {\bf slot}s are run
+to get the initial values for those slots.
+
+\begin{quote}{\bf shared} and {\bf readonly} are not implemented by the current Spice compiler.
+\end{quote}A class definition for {\bf Spoo} allows the expression {\bf E is Spoo} as a test for
+the value {\bf E} being an instance of {\bf Spoo} (or a subtype).\section{unit definitions}
+
+
+\begin{quote}Unit definitions are not implemented by the current Spice compiler.\end{quote}A {\bf unit} definition informs the compiler about units and their dimensions.
+
+\begin{tabular}{l}
+{\bf def106. UnitDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"define" \\ 
+ ("unit" $\mid$ "units") \\ 
+ UnitDef++ \\ 
+ "," \\ 
+ "enddefine" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def107. UnitDef ::= }\\ 
+\hspace*{3mm}{\tt Word {[}("=" Expr){]}} \\ 
+\end{tabular}
+
+The {\bf Word} of a {\bf UnitDef} is declared to be legitimate unit names.
+If the {\bf Expr} of a {\bf UnitDef} is present, it must be an compile-time expression
+delivering an anonymous {\bf Unit} value, which is named by the {\bf Word}.
+
+\begin{quote}for example, we may have {\bf define unit mile = inch * 12 * 3 * 1760
+enddefine}, which defines {\bf mile} in terms of {\bf inch}, or {\bf define unit length =
+new Unit(1,`length`) enddefine}, which defines a new unit of dimension
+`length`.\end{quote}\section{enumeration definitions}
+
+
+\begin{tabular}{l}
+{\bf def108. EnumDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"define" \\ 
+ "enum" \\ 
+ {[}(Modifier){]} \\ 
+ Name \\ 
+ "=" \\ 
+ Name++ \\ 
+ "," \\ 
+ "enddefine" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+An {\bf enum} declaration for {\bf Foo} is shorthand for declaring a new class called
+{\bf Foo} extending {\bf Enum}, which provides two private slots (for the name and the
+magnitude of enumeration values) and an instance of this class for each of the
+{\bf Name}s. The enumeration values atart at {\bf 1} and the default value for {\bf Foo}
+is an instance with value {\bf 0} and name {\bf nullFoo}.
+
+Implementors are encouraged to find efficient representations for enumeration
+values.\chapter{small syntax}
+
+
+Most of the rest of the syntax of Spice is in terms of {\em expressions}.
+Spice expressions may denote tuples of values; we say thay are
+{\em multiple valued}. Spice expressions may be evaluated in three modes;
+{\em value} mode, when they are evaluated for their value; {\em update} mode,
+when they are evaluated to update some location or data structure; and
+{\em void} mode, which is value mode except that all the values that are
+delivered are then discarded.
+
+Unless otherwise specified, an expression is illegal in update mode.
+All function calls and operator applications are legal there; every
+procedure {\bf P} can have an updater {\bf U}, which is the procedure that is
+called when a call of {\bf P} appears as the target of an assignment.
+
+\section{expressions}
+
+
+A {\bf Statement} is an expression, or sequence of expressions separated
+by commas. The value of a sequence of {\bf Statement}s is the value of the
+{\em last} {\bf Statement}; the values of all the others are discarded.
+
+\begin{tabular}{l}
+{\bf def109. Statement ::= }\\ 
+\hspace*{3mm}{\tt Expr++ "," SEMI} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def110. StatementSeq ::= }\\ 
+\hspace*{3mm}{\tt Statement*} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def111. Expr ::= }\\ 
+\hspace*{3mm}{\tt Name} \\ 
+\hspace*{3mm}{\tt  $\mid$ Hole} \\ 
+\hspace*{3mm}{\tt  $\mid$ Literal} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr "..."} \\ 
+\hspace*{3mm}{\tt  $\mid$ PreOp Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr PostOp} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr InOp Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr AssignOp Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "(" Expr ")"} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr {[}("." DotExpr){]} {[}(OptExpr){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr {[}("@" DotExpr){]} {[}(OptExpr){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr "{[}" Expr "{]}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "{[}" Expr "{]}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ LambdaExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "new" Name {[}("(" Expr ")"){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ "none" OptExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "one" Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "once" Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "throw" Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "{[}" CommaExpr "{]}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "\{" CommaExpr "\}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ QuoteExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ TryCatchExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ IfExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ RepeatExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ SwitchExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ VarDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ ProcedureDef} \\ 
+\end{tabular}
+
+Operator expressions are disambiguated by the "usual" precedence
+rules. Here, {\bf Expr} is an expression that cannot contain top-level
+commas.
+
+\begin{tabular}{l}
+{\bf def112. OptExpr ::= }\\ 
+\hspace*{3mm}{\tt {[}(Expr){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def113. CommaExpr ::= }\\ 
+\hspace*{3mm}{\tt Expr++ ","} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def114. OptCommaExpr ::= }\\ 
+\hspace*{3mm}{\tt {[}(CommaExpr){]}} \\ 
+\end{tabular}
+
+\subsection{name}
+
+
+A {\bf Name} is either a simple identifier, or an imported identifier
+{\bf short::id}, where {\bf short} is the short name of a package and {\bf id} is
+the name of the identifier within it.\subsection{hole}
+
+
+A Hole is a "virtual operand" used when making partial applications.
+Thus the expression {\bf ? + 1} is a function that adds 1 to things. The
+expression {\bf ?2 - ?1} is reverse subtract; the arguments to a partial
+application are numbered {\bf 1..N}, left-to-right.
+
+\begin{tabular}{l}
+{\bf def115. Hole ::= }\\ 
+\hspace*{3mm}{\tt "?" {[}(Integer){]}} \\ 
+\end{tabular}
+
+\subsection{literal}
+
+
+Literals may be symbols, strings, characters, numbers, or reserved
+literals. Symbols, strings, numbers, and reserved literals are
+themselves lexical items.
+
+\begin{tabular}{l}
+{\bf def116. Literal ::= }\\ 
+\hspace*{3mm}{\tt StringLiteral} \\ 
+\hspace*{3mm}{\tt  $\mid$ NumberLiteral} \\ 
+\hspace*{3mm}{\tt  $\mid$ ReservedLiteral} \\ 
+\hspace*{3mm}{\tt  $\mid$ CharacterLiteral} \\ 
+\end{tabular}
+
+\subsection{explosions}
+
+
+The value of the expression {\bf E...} is the {\em explosion} of the value of {\bf E}, ie
+all the components of all the public values of {\bf E}.
+
+In update mode (ie as the target of an assignment) {\bf E} must be an
+updatable expression; it is assigned an array constructed of all the
+values on the source of the expression.\subsection{prefix operators}
+
+
+The value of a prefix expression is found by applying the procedure
+bound to the prefix operator to the value delivered by the operand,
+{\em except} for the special operator {\bf once}, which arranges that its
+operand is evaluated only once, "as soon as possible".
+
+The prefix operator {\bf one} delivers the first of its arguments, and
+{\bf absent} if it called with no arguments.\subsection{postfix operators}
+
+
+The value of a postfix expression is found by applying the procedure
+bound to the postfix operator to the value delivered by the operand.
+
+\begin{tabular}{l}
+{\bf def117. PostOp ::= }\\ 
+\hspace*{3mm}{\tt LexicalPostfixOperator} \\ 
+\hspace*{3mm}{\tt  $\mid$ "@" DotExpr} \\ 
+\end{tabular}
+
+{[}Note that {\bf @} can serve as a infix or postfix call marker.{]}\subsection{infix operators}
+
+
+\begin{tabular}{l}
+{\bf def118. InOp ::= }\\ 
+\hspace*{3mm}{\tt LexicalInfixOperator} \\ 
+\hspace*{3mm}{\tt  $\mid$ "@" DotExpr} \\ 
+\end{tabular}
+
+{\bf Note}. The logical operators {\bf and} and {\bf or}, and the relational operators
+{\bf ==}, {\bf $<$=}, {\bf $>$=}, {\bf $<$}, {\bf $>$}, {\bf !=}, {\bf /==}, {\bf ==}, {\bf /==} are special in that
+they all automatically {\bf one} their arguments.
+
+Further, the relational operators are {\em continued relationals}; if {\bf R} and {\bf S}
+are relational operators, the expression {\bf a R b S c} is shorthand for {\bf a R b
+and b S c}, except that {\bf b} is only evaluated once.\subsection{assignment operators}
+
+
+The assignment operators {\bf X:=} for some operators {\bf X} (ie {\bf +:=}, {\bf -:=},
+{\bf *:=}, {\bf /:=}, {\bf \&:=}, {\bf $\mid$:=}, {\bf $^\wedge$:=}) are shorthand for assignments where
+the target and left operand of {\bf X} are the same, ie, {\bf E$_ 1$ X:= E$_ 2$} is
+equivalent to {\bf E$_ 1$ := E$_ 1$ X E$_ 2$} except that side-effects of {\bf E$_ 1$}
+are only applied once.
+
+The assignment operator {\bf :=} evaluates its left operand (the {\em target}) in
+update mode with its right operand being the {\em source}.
+
+The assignment operator "-$>$" evaluates its {\em right} operand (the target) in
+update mode, with the source being its {\em left} operand; any excess values are
+retained as the value of the assignment expression.
+
+The source delivers some sequence of values; the target is a sequence of
+updateable expressions. At most one target is allowed to be a procedure call
+with an updater which takes an indefinite number of assigned values.
+(Otherwise, in {\bf (f(), g()) = (1,2,3)}, where {\bf f} and {\bf g} both have indefinite
+updaters, there would be no way to tell how the values were to be distributed
+between {\bf f} and {\bf g}.) Assignments are done right-to-left; each
+assignment target takes the appropriate number of values from the right-hand
+end of the value sequence and the rest of the value sequence is handed to the
+remaining targets. If the assignment target is an identifier, one value is
+assigned into it. If it is a procedure call, its updater is invoked, passing
+it the appropriate number of values.\subsection{bracketed expressions}
+
+
+The expression {\bf (E)} has the same value that {\bf E} does.\subsection{call expressions}
+
+
+The expression {\bf x.f} is a call of {\bf f} with argument(s) {\bf x}, as are the
+expressions {\bf f(x)} and {\bf x @f}. The expression {\bf x.f(y)} is a call of
+{\bf f} with arguments {\bf (x,y)}, as is {\bf x @f y}.
+
+When a call appears as the target of an assignment, eg {\bf f(x)=E}, it is
+equivalent to the expression {\bf (f.updater)(x)(E)}; that is, the updater
+function specialises itself on the target arguments {[}allowing it to
+be overloaded on those arguments{]} and delivers a function which consumes
+the assigned values {[}and which may be separately overloaded on those values{]}.
+
+\begin{quote}The current Spice implementation uses an earlier definition that has
+a similar effect in simple cases, but is inadequate to deal with
+overloaded functions: {\bf (f.updater)(x,E)}.\end{quote}\begin{tabular}{l}
+{\bf def119. DotExpr ::= }\\ 
+\hspace*{3mm}{\tt Name} \\ 
+\hspace*{3mm}{\tt  $\mid$ "(" Expr ")"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "return"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "throw"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "new"} \\ 
+\end{tabular}
+
+The expression permitted after a dot or {\bf @} may be a {\bf Name}, an arbitrary
+expression in brackets, or one of the reserved words {\bf throw}, or
+{\bf return} (which allows these forms to be used postfix) or {\bf new} (which
+allows it to be used infix).\subsection{array expressions}
+
+
+The expression {\bf \{E\}} is an {\em array expression}; it creates a new array
+by evaluating its operand and piling all the results into the new
+array.\subsection{index expressions}
+
+
+The value of the expression {\bf a{[}i{]}} is that obtained by calling the
+{\em index function} associated with the type of {\bf a}, supplying it with
+{\bf a} and {\bf i}. If {\bf a} is an array, this attempts to index the array. If
+{\bf a} is a table, it looks {\bf i} up in that table. Otherwise it attempts
+to find the {\bf i}-property of {\bf a}.
+
+When an index expression is used in update mode, the updater of the
+associated index function is called.\subsection{lambda expressions}
+
+
+A lambda-expression is an inline procedure definition; it is the
+procedure taking the specified arguments and computing the desired
+result.
+
+\begin{tabular}{l}
+{\bf def120. LambdaExpr ::= }\\ 
+\hspace*{3mm}{\tt "(" Args "=$>$" StatementSeq ")"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "fun" Args "=$>$" StatementSeq "endfun"} \\ 
+\end{tabular}
+
+\subsection{quotation expressions}
+
+
+A quotation expression allows {\bf Symbol} values, and sequences of {\bf Symbol}
+values, to be denoted by an expression.
+
+\begin{tabular}{l}
+{\bf def121. QuoteExpr ::= }\\ 
+\hspace*{3mm}{\tt "`" QuotedItems "`"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def122. QuotedItems ::= }\\ 
+\hspace*{3mm}{\tt QuotedItem*} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def123. QuotedItem ::= }\\ 
+\hspace*{3mm}{\tt Word} \\ 
+\hspace*{3mm}{\tt  $\mid$ "\{" QuotedItems "\}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "(" Expr ")"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "$^\wedge$" Word} \\ 
+\hspace*{3mm}{\tt  $\mid$ "$^\wedge$$^\wedge$" Word} \\ 
+\hspace*{3mm}{\tt  $\mid$ Literal} \\ 
+\end{tabular}
+
+A {\bf QuotedItem} that is a literal or a word denotes the corresponding value;
+words are represented as Spice {\bf Symbol}s (interned strings with a type of
+their own). An item which is an expression in brackets evaluates to the
+value of that expression; the form {\bf $^\wedge$Word} is equivalent to {\bf (Word)},
+with {\bf Word} stripped of any special syntactic properties, and the form
+{\bf $^\wedge$$^\wedge$Word} is equivalent to {\bf (Word...)}.
+
+The form {\bf \{Q\}} denotes the sequence formed out of the values denoted by {\bf Q}.
+Thus quotations can express nested sequence structures which are mostly
+constant.\subsection{new expressions}
+
+
+The expresssion {\bf new X(A)} is a construction expression; {\bf X} is a constructor
+value, and {\bf A} the arguments to the construction. If the argument {\bf E} is
+omitted, it does {\em not} mean that {\bf X} is invoked on no values; instead
+the constructor {\em function} is delivered, as though one had written
+
+\begin{quote}
+\begin{verbatim}
+(A... => new X(A...))
+\end{verbatim}
+\end{quote}
+If {\bf X} is a class value, then a new default-initialised instance of that class
+is constructed, and handed to the class's anonymous constructor. If {\bf X} is a
+named constructor, that is, defined as {\bf new X} in some class {\bf C}, a new empty
+instance of {\bf C} is constructed and passed to {\bf X} with arguments {\bf A}.\subsection{none expressions}
+
+
+The expression {\bf none} denotes no values. The expression {\bf none E}
+evaluates {\bf E} and discards all the values it computes.\subsection{throw and try expressions}
+
+
+The expression {\bf throw E} raises an exception with value the value of {\bf E}. If
+this exception is not caught within the program, it is caught by the top-level
+Spice environment, which will deal with it in an implementation-specific
+fashion.
+
+The {\bf try} expression allows exceptions to be caught and handled.
+
+\begin{tabular}{l}
+{\bf def124. TryCatchExpr ::= }\\ 
+\hspace*{3mm}{\tt "try" StatementSeq CatchSeq "endtry"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def125. CatchSeq ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+("catch" Arglist {[}("as"){]} StatementSeq)** \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+The {\bf StatementSeq} of the {\bf try} is evaluated and the {\bf try} expression resturns
+its result if no exception is thrown. If an exception {\bf E} is thrown, then
+the {\bf catch} body who's {\bf Arglist} best matches the thrown value is executed
+(just as though the {\bf catch} blocks were alternative definitions for an
+overloaded function) and the reult of the {\bf try} is the result of that
+{\bf catch} block.
+
+If there is no {\bf catch (x: Any)} catch clause, it is as though the clause
+{\bf catch (x:Any) with throw x} had been supplied.
+
+\begin{quote}This is not true; the description needs revising.\end{quote}\begin{quote}Note that this is {\em not} sequential testing. Sequential testing means that you
+have to write the general case last, not first, and makes things more
+order-dependant than they need be. Making the {\bf catch} clauses share the
+semantics of procedure call makes the language more coherent and offers
+alternative implementation tactics.\end{quote}\subsection{if}
+
+
+An {\bf if} expression expresses a choice. Both verbose and compact if-endif forms
+are supported; in the short form, {\bf if} - {\bf endif} is replaced by {\bf (} - {\bf )},
+"$\mid$" is used in place of {\bf then} and {\bf else}, and "$\mid$:" in place of {\bf elseif}.
+
+An {\bf if} must have a matching {\bf endif}, and an {\bf unless} must have a matching
+{\bf endunless}. {\bf then} and {\bf do} are equivalent in {\bf if} and {\bf unless} expressions.
+The {\bf unless} form inverts the initial test.
+
+\begin{tabular}{l}
+{\bf def126. IfExpr ::= }\\ 
+\hspace*{3mm}{\tt LongIfExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ ShortIfExpr} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def127. ShortIfExpr ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"(" \\ 
+ Expr \\ 
+ "$\mid$" \\ 
+ CommaExpr \\ 
+ ("$\mid$:" Expr "$\mid$" CommaExpr)* \\ 
+ {[}("$\mid$" CommaExpr){]} \\ 
+ ")" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def128. LongIfExpr ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+("if" $\mid$ "unless") \\ 
+ Expr \\ 
+ Then \\ 
+ StatementSeq \\ 
+ ("elseif" Expr Then StatementSeq)* \\ 
+ {[}("else" StatementSeq){]} \\ 
+ ("endif" $\mid$ "endunless") \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def129. Then ::= }\\ 
+\hspace*{3mm}{\tt "then"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "do"} \\ 
+\end{tabular}
+
+\subsection{repeat}
+
+
+A {\bf repeat} loop repeats statements while (or until) a condition is true.
+On each iteratation, {\bf Seq1} is executed, and then {\bf Expr1} is tested.
+If it is satisfied ({\bf true} for {\bf while}, {\bf false}for {\bf until}) then {\bf Seq2} is
+executed and the loop repeats. Otherwise, the loop terminates and delivers all
+the values computed by the loop body.
+
+\begin{tabular}{l}
+{\bf def130. RepeatExpr ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"repeat" \\ 
+ StatementSeq1 \\ 
+ {[}(RepeatTest {[}("do" StatementSeq2){]}){]} \\ 
+ "endrepeat" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def131. RepeatTest ::= }\\ 
+\hspace*{3mm}{\tt ("while" $\mid$ "until") Expr1 {[}("then" Expr2){]}} \\ 
+\end{tabular}
+
+\subsection{for}
+
+
+A {\bf for} loop causes a body of code to be repeatedly executed while various
+conditions are {\bf true} (or {\bf false}), and variables are stepped "in parallel"
+along a sequence of values. When the loop terminates "naturally" (that is,
+by exhaustion of one of the sequences) then a termination clause is executed.
+
+\begin{tabular}{l}
+{\bf def132. ForExpr ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"for" \\ 
+ ForControls \\ 
+ {[}("do" StatementSeq){]} \\ 
+ {[}("finally" StatementSeq){]} \\ 
+ "endfor" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+The controls are separated by {\bf also}, although that's optional if the next
+control is a {\bf while} or an {\bf until}.
+
+\begin{tabular}{l}
+{\bf def133. ForControls ::= }\\ 
+\hspace*{3mm}{\tt ForControl} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForControls "also" ForControl} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForControls ForCondition} \\ 
+\end{tabular}
+
+A {\bf Control} is a binding of a variable to values, or an early-exit condition.
+
+\begin{tabular}{l}
+{\bf def134. ForControl ::= }\\ 
+\hspace*{3mm}{\tt ForBinding} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForCondition} \\ 
+\end{tabular}
+
+If the early-exit condition is satisfied ({\bf while false} or {\bf until true}),
+the loop terminates. If the {\bf then} (for {\bf until}) or {\bf else} (for {\bf while})
+is present, its code is executed before the loop exits; otherwise the loop's
+{\bf finally} code is executed.
+
+\begin{tabular}{l}
+{\bf def135. ForCondition ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+("while" $\mid$ "until") \\ 
+ Expr \\ 
+ {[}(("then" $\mid$ "else") CommaExpr){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+A {\bf ForBinding} binds names to sequences of values.
+
+\begin{tabular}{l}
+{\bf def136. ForBinding ::= }\\ 
+\hspace*{3mm}{\tt ForName "in" Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ \begin{tabular}{l}
+ForName \\ 
+ "from" \\ 
+ Expr \\ 
+ {[}(("to" $\mid$ "downto") Expr){]} \\ 
+\end{tabular}
+} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForName "to" Expr} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def137. ForName ::= }\\ 
+\hspace*{3mm}{\tt Name {[}(TypeWord Type){]}} \\ 
+\end{tabular}
+
+For-loop identifiers are declared there, are immutable, and are local
+to the loop. What is more, a {\em new} identifier is bound each time round
+the loop (this is noticable only if the loop body forms closures using
+lambda-expressions or holes which involve the identifiers).
+
+The meaning of a {\bf ForBindings} is that each {\bf Name} introduced is given
+successive values from its {\bf Expr}, in parallel (ie on the {\bf N}th iteration each
+{\bf Name} has its {\bf N}th value), until at least one of the {\bf Expr}s is exhausted.
+The notion of "successive values" is defined by the run-time type of the
+expression's value. It is not defined what happens if that value is modified
+during the execution of the loop body.
+
+The form {\bf from E$_ 1$ to E$_ 2$} is equivalent to {\bf in {[}E$_ 1$..E$_ 2${]}}. If {\bf to E} is
+omitted, then the loop is unbounded (it will terminate only via {\bf break} or if
+a parallel iteration terminates). If {\bf from E} is omitted, the loop starts at
+{\bf 1}. If {\bf downto} is used instead of {\bf to}, the loop counts down rather than up.\subsection{switch}
+
+
+\begin{tabular}{l}
+{\bf def138. SwitchExpr ::= }\\ 
+\hspace*{3mm}{\tt "switch" Expr Case+ "endswitch"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def139. Case ::= }\\ 
+\hspace*{3mm}{\tt ("case" Expr)+ "then" StatementSeq} \\ 
+\hspace*{3mm}{\tt  $\mid$ "else" StatementSeq} \\ 
+\end{tabular}
+
+Each {\bf case} clause starts with some number of {\bf case} expressions (or
+{\bf else}) and is followed by the expressions to evaluate when the switch
+expression takes the value of one of those labels.
+
+A Spice switch may switch on {\em any} values; it is not restricted to integer
+constants (although it may be much more efficient on them). In particular, a
+Spice switch may switch on strings and symbols.
+
+A {\bf switch} can have at most one {\bf else} clause.
+
+The result from a {\bf switch} is the result from the selected {\bf case} statement or
+statement sequence. Thus a {\bf switch} may deliver multiple values.\subsection{var and procedure expressions}
+
+
+A {\bf VarDef} and a {\bf ProcedureDef} counts as expressions, but they deliver
+no values.
+
+Note that this means that procedure definitions may be nested. A
+procedure may access and update the local variables of the procedure that it
+appears in; Spice has full lexical scope.\section{type expressions}
+
+
+A {\bf type expression} is an expression. Its semantics is the same as that of
+ordinary expressions, but they must deliver values of type {\bf Type}.
+
+\begin{tabular}{l}
+{\bf def140. Type ::= }\\ 
+\hspace*{3mm}{\tt Expr} \\ 
+\end{tabular}
+
+The language of type expressions is intended to allow the programmer
+to give the compiler useful information about the program.
+
+The basic type expression is the {\em name}. A name used as a type
+expression should be the name of one of the built-in types or a
+class. {\bf Any} is the name of the universal type, {\bf Object} is the
+name of all object types.
+
+\begin{quote}Only names are legal type-expressions in this edition of the Spice
+compiler.\end{quote}If {\bf T} is a type-expression, then {\bf T??} represents the {\em optional type}
+of {\bf T}; it is the type of values which may be {\bf T} or may be the value
+{\bf absent}. {\bf absent} is also spelt {\bf null}.
+
+If {\bf T} and {\bf U} are type-expressions, so is {\bf T,U}, which represents the
+type of multiple values with first component(s) or type {\bf T} and second
+component(s) of type {\bf U}.
+
+If {\bf T} is a type expression then so is {\bf T**}, the type of lots of
+multiple values all of type {\bf T}.
+
+If {\bf T} is a type-expression, {\bf \{T\}} ("array of T", "row of T") is the
+type of arrays who's elements are required to be of type {\bf T}.\chapter{scope rules}
+
+
+The scope rules for Spice define where identifiers are visible. They are
+intended to be natural and in most cases are straightforward.
+
+A sequence of forms (eg, a package body, or a non-package)
+consists of sequences of consecutive declarations, {\em bunches}, interspersed
+with non-definition expressions. All the {\bf Definition}s in a bunch are mutually
+in scope. In consequence, there is rarely any need for "forward" declarations.
+Non-definitions terminate this mutual scope to allow the rules for interactive
+execution to be the same as those for batch compilation.
+
+{\bf class}es do not introduce new scopes; the declarations within a class put
+names into the top-level namespace. The same name cannot legally declared more
+than once. (A {\bf method} definition does not re-declare a name; it attaches
+additional definitions to an existing generic procedure.) Class slots must be
+uniquely named in a scope.
+
+A procedure definition introduces a new scope; the arguments and the body
+share that scope. (Thus is it illegal to have two arguments with the same
+name, or an argument to have the same name as a top-level local of the
+procedure.) The body of the procedure is bunched in the same way as a package.
+
+A {\bf LambdaExpr} introduces a new scope. All the names from the surrounding
+scope are visible inside the lambda, with the same rights; in particular,
+it is permitted to assign to locals of the surrounding context, and for this
+to "work": Spice has full lexical scoping.
+
+A {\bf try} expression introduces a new scope which extends to the first {\bf catch}
+clause (or to the {\bf endtry} if there are no explicit {\bf catch} clauses). A
+{\bf catch} clause introduces a new scope which ends at the next {[}non-nested!{]}
+{\bf catch} or {\bf endtry}.
+
+Each of the arms of an {\bf if} or {\bf unless} expression have their own scopes. The
+body of a {\bf repeat} loop is a scope. (What's more, variables declared
+in the body of a loop are re-declared {\em each time round the loop}.)
+
+Each {\bf SpiceCase} introduces a new scope which ends at the end of its
+{\bf StatementSeq}.
+
+A {\bf for-do} statement introduces a new scope. The identifiers declared in
+a {\bf ForBinding} are in scope in any succeeding {\bf while} or {\bf until} clause, and
+in the loop body, but {\em not} in the {\bf Expr} parts of other {\bf ForBinding}s of this
+loop. As for {\bf while} and {\bf until} loops, these identifiers are re-declared
+each time round the loop.
+
+The right operand of an {\bf and} or {\bf or} operator has its own scope. (This odd
+rule is because {\bf x and ((var y = 42), z)} is a legal expression, but then
+questions would arise about {\bf y}'s existence or value if {\bf x} were {\bf false}.)\chapter{the standard library}
+
+
+Spice has a large library of standard values and procedures. Many of these
+have not been implemented yet.
+
+\section{generic procedures}
+
+
+\begin{itemize}\item {\bf x.typeof}: the type of {\bf x}.
+
+\item {\bf x.printOn( s )}:
+    send a human-readable representation of x down the stream s.
+    Characters are sent as-is, integers are printed as their signed
+    decimal representation {[}note: there ought to be a way of defining
+    a negative numeric literal{]}, strings are printed as their
+    sequence of characters, arrays are printed as {[}elem1 elem2 ...{]},
+    and objects are printed as defined by their overloading of
+    printOn (and Class.printOn( s ) does something sensible).
+
+\item {\bf x.print}
+    shorthand for x.printOn( standardOutput )
+
+\item {\bf x.report}:
+    shorthand for x.printOn( standardReport )
+
+\item {\bf println( x... )}: {\bf print} all the arguments in turn, prefixing all
+but the first with a space, and printing a newline after printing
+all the arguments.
+
+\item {\bf x.copy}:
+    make a copy of x. If x is atomic (Small, Symbol, Char, Procedure)
+    just delivers x. If x is composite object, defaults to making
+    a shallow copy of x. Overloadable for new types.
+
+\item {\bf x.toString}:
+    convert {\bf x} to a string in the same way that {\bf print} does.
+
+\item {\bf equals( x, y )}
+    the procedure implementing =. Overloadable on new types, but
+    the programmer has to ensure that the new definition respects
+    the usual rules for equality (reflexive, transitive, symmetric).
+
+\item If x and y are both Small, Symbol, Char, or Procedure, equals
+    delivers x == y (ie identity). If x == y, equals delivers
+    true.
+
+\item If x and y are both objects, by default equals does a slot-by-
+    slot = test on all the init-slots that x and y have in common.
+    If any of these fail, equals delivers false; otherwise it
+    delivers true.
+
+\item If x and y are both String, equals does the obvious string
+    equality test. If they are both arrays, equals does the obvious
+    sequence-equality test.
+
+\item {\bf x.hashCode}:
+    a type-specific hashcode for the value {\bf x}.
+
+\item {\bf apply( f, x... )}:
+    called when evaluating f(X) and f is not a function. Overloadable.
+    On arrays and strings is equivalent to indexing. On tables is
+    table lookup. Has the obvious updater. Allows objects to represent
+    functions compactly. Is not implemented.
+
+\item {\bf x.length}:
+    overloadable. Should deliver the "length" of the object. On
+    strings and arrays has the obvious meaning. On objects delivers
+    the number of "obvious" slots (see explode). On atomic objects
+    delivers 0.
+
+\item {\bf x @asType t}:
+    {\bf t} must be a type. The value {\bf x} is converted to that type in a
+    type-specific way ({\bf asType} is overloadable), or an exception is thrown.
+    {\bf x @asType String} is equivalent to {\bf toString}.
+
+\end{itemize}\section{absent}
+
+
+The special value {\bf absent} corresponds roughly to the value {\bf null} in
+other programming languages: it denotes a "missing" value.
+
+There are two special operators for use with {\bf absent}, corresponding to the
+boolean operators {\bf and} and {\bf or}.
+
+The expression {\bf X $\mid$$\mid$ Y} is the value of {\bf X}, unless it is {\bf absent}, in which
+case it is the value of {\bf Y}. Only if {\bf X} is absent is {\bf Y} evaluated. {\bf X} and
+{\bf Y} should both be expressions of arity 1. {\bf $\mid$$\mid$} can usefully be thought of
+as "if absent".
+
+The expression {\bf X \&\& Y} is {\bf absent} if {\bf X} is {\bf absent}; otherwise it is the
+value of {\bf Y}. {\bf Y} is not evaluated if {\bf X} is {\bf absent}. {\bf \&\&} can usefully be
+thought of as "if present".\section{numbers}
+
+
+Spice has several kinds of number: small integers ({\bf Small}), big integers
+({\bf BigInt}), short and long floating point values ({\bf Float}, {\bf Double}),
+ratios (ie fractions) ({\bf Ratio}), and complex numbers ({\bf Complex}).
+
+\begin{quote}Only {\bf Small} and {\bf Double} are implemented.\end{quote}The operators {\bf +}, {\bf -}, {\bf *}, {\bf /}, {\bf div}, {\bf rem}, {\bf \%} work more-or-less as
+you'd expect on plain numbers (they work on some other values, too, for which
+see the section on {\bf units}). {\bf div} is integer division; the operands must be
+integers and the result is truncated toward {\bf 0}. {\bf rem} is integer remainder;
+the operands must be integers and the result is the appropriate remainder. {\bf /}
+will produce a floating-point value if the result is not an exact integer.
+
+The operator {\bf /:} is {\em exact division}; its result uses ratios to express
+non-floating non-integer components. This is the primary way (the only way, at
+root) that ratio values are generated.
+
+The operator {\bf ..} ("upto") delivers multiple results: all the integers
+from the left operand (inclusive) to the right operand (also
+inclusive).
+
+There are no bitwise operators; instead Spice provides them as predefined
+functions (to allow the operator symbols to be used for other purposes).
+The functions provided are {\bf bitAnd}, {\bf bitXor}, {\bf bitOr}, {\bf bitNot}, {\bf bitBic},
+{\bf bitShl}, {\bf bitShr}, and {\bf bitAsr}, operating on integer arguments only.
+
+The relational operators {\bf $<$=}, {\bf $<$}, {\bf $>$=}, {\bf $>$}, {\bf ==}, {\bf /==} work as you'd
+expect. Note that it's unwise to use {\bf ==} and {\bf /==} on floating-point values.
+
+There are also a number of standard functions.
+
+\begin{itemize}\item {\bf x.abs} and its synonym {\bf x.magnitude} is the absolute value of {\bf x}; if {\bf x} is
+not complex, its sign is made positive; if {\bf x} is complex, it is its
+magnitude.
+
+\item {\bf x.neg} and its equivalent {\bf x.negative} invert the sign of the value
+of {\bf x}. {\bf x.positive} returns {\bf x} if it is a (non-complex) number.
+
+\item {\bf x @min y}, {\bf x @max y} deliver the minimum (maximum) of their argument
+values {\bf x} and {\bf y}.
+
+\item {\bf x @logToBase y} delivers the logarithm of {\bf x} to the (positive
+integer) base {\bf y}.
+
+\item {\bf x @toPower y} delivers {\bf x} raised to the power {\bf y}.
+
+\item {\bf x.sqrt} is the square root of {\bf x}. An exception is thrown if the result
+must be {\bf Complex} but this implemention does not support it.
+
+\item {\bf x.round}, {\bf x.floor}, {\bf x.ceiling} convert the value {\bf x} to an integer
+(details to be added).
+
+\item {\bf x.cos}, {\bf x.sin}, {\bf x.tan} are the usual trigonometric functions. The
+argument is in radians.
+
+\item {\bf x.inRadians} takes an angle in degrees {\bf x} and converts it to
+radians. {\bf x.inDegrees} takes an angle in radians and converts it to
+degrees.
+
+\item {\bf x.acos}, {\bf x.asin}, {\bf x.atan} are the usual inverse trigonometric
+functions. Note that {\bf atan} is only suitable for simple programs.
+
+\end{itemize}{[}various complex functions etc to be done{]}\section{enumerations}
+
+
+Enumeration values can be queried for their numeric value and name, and can be
+created from numeric values or names. Note that the number of enumeration
+values is fixed by the declaration; the constructor delivers existing values,
+not fresh ones.
+
+\begin{itemize}\item {\bf e.index}: if {\bf e} is an enumeration value, its index is its position
+in the list in which it was declared.
+
+\item {\bf new E(n)}: if {\bf E} is an enumeration type, the {\bf n}th enumeration value that it
+was declared with, or an error is thrown if {\bf n} is out of range.
+
+\item {\bf e.enumName}: if {\bf e} is an enumeration value, the symbol which names it.
+
+\item {\bf new E(s)}: if {\bf E} is an enumeration type, and {\bf s} is a string or symbol,
+the enumeration value of {\bf E} named by that string or symbol, or an error
+is thrown.
+
+\end{itemize}\section{values with units}
+
+
+Spice has values with {\bf units}. Values with units represent lengths, or
+times, or other inter-related quantities. All the unit procedures are
+imported qualified from {\bf Spice.language.units}.
+
+A {\bf unit} expresses an amount along a given dimension. A {\bf basic dimension} is
+represented by a symbol naming that dimension. A {\bf compound dimension} is the
+result of a product or quotient of dimensions.
+
+\begin{itemize}\item {\bf Unit}: the type of units.
+
+\item {\bf Unit( scale, unitName, dimension )}: make a new unit object. {\bf dimension} must
+be a symbol or string; it specifies the dimension of the unit. (Typical values
+are {\bf length}, {\bf time}, {\bf colour}.) {\bf unitName} must be a symbol or string; it
+names the unit itself. {[}It is an error if a unit with that name already
+exists.{]} The {\bf scale} expresses the scale of this unit in terms of the
+"canonical unit" for this kind; a scale of {\bf 1} defines the canonical unit.
+
+\item {\bf U @unitProduct V}: {\bf U} and {\bf V} must be unit objects. The result is the
+product of those units.
+
+\item {\bf U @unitQuotient V}: {\bf U} and {\bf V} must be unit objects. The result is the
+quotient of those units.
+
+\item {\bf U.scale}: {\bf U} must be a {\bf Unit} object; the result is its scale.
+
+\item {\bf U.name}: {\bf U} must be a {\bf Unit}object; the result it its unit name.
+
+\item {\bf U.dimension}: {\bf U} must be a {\bf Unit} object; the result is its dimension.
+
+\item {\bf x @inUnits y}: {\bf x} must be a numeric value, and {\bf y} must be a unit name
+(symbol or string) or a {\bf Unit} object (eg from {\bf unitNamed}). The result is a
+unit value with {\bf x} as its number and the unit (named by) {\bf y} as its unit.
+
+\item {\bf n.unitNamed}: the {\bf Unit} value named by {\bf n}, which must be a string or a
+symbol.
+
+\item {\bf u.number}: the number of the value {\bf u}, which must be a value with
+units.
+
+\item {\bf u.unit}: the unit of the value {\bf u}, which must be a value with units.
+
+\item {\bf u.explode}: {\bf u} must be a value with units; exploding it gets the number
+and unit, in that order.
+
+\end{itemize}The arithmetic operators also work on values with units. There is a minor
+complication in that different units of the same kind may be inter-converted.
+Multiplication and division also work on {\bf Unit} objects themselves to produce
+new {\bf Unit} objects; this is intended for use in {\bf define unit} definitions.
+
+\begin{itemize}\item {\bf u + v, u - v}: {\bf u} and {\bf v} must be values with the same dimension. The number
+with the larger unit is scaled to the size of the smaller, and the result is
+the sum (difference) of the numbers, with the smaller unit as its unit. {[}{\em ie},
+adding inches to miles gets a result in inches.{]}
+
+\item {\bf u * v}: if {\bf u} or {\bf v} has units, the result has number {\bf u.number *
+v.number} and units {\bf u.unit @unitProduct v.unit}.
+
+\item {\bf U * V}: if {\bf U} and {\bf V} are units or numbers, the result is a new unit which
+has dimensions the product of the dimensions of {\bf U} and {\bf V}, and number the
+product of the numbers of {\bf U} and {\bf V}.
+
+\item {\bf u / v}: if {\bf u} or {\bf v} has units, the result has number {\bf u.number / v.number}
+and units {\bf u.unit @unitQuotient v.unit}.
+
+\item {\bf U / V}: if {\bf U} and {\bf V} are units or numbers, the result is a new unit with
+dimensions the quotient of the dimensions of {\bf U} and {\bf V}, and number the
+quotient of the numbers of {\bf U} and {\bf V}.
+
+\item {\bf u $<$ v}: equivalent to {\bf number(v - u) $<$ 0}, and similarly for the other
+relational operators.
+
+\end{itemize}\section{strings}
+
+
+Strings are sequences of Unicode characters in canonical form. Strings created
+as literal tokens are immutable. Strings, like arrays, can be indexed using
+the {\bf s{[}i{]}} notation. The infix operator {\bf ++} concatenates strings (and
+arrays).
+
+There are many built-in functions on strings.
+
+\begin{itemize}\item {\bf s.length} is the length in characters of {\bf s}.
+
+\item {\bf s @indexOf x} delivers the index in {\bf s} of the first occurance of
+{\bf x}, which can be a character or a string. If {\bf s} does not contain any
+occurence of {\bf x}, {\bf indexOf} delivers {\bf absent}. The result has the same
+base as the string does.
+
+\item {\bf s @lastIndexOf x} is the same as {\bf indexOf}, except that it searches
+for the last occurence of {\bf x}, not the first.
+
+\item {\bf s @chopAt x}, where {\bf x} is a string or character, delivers {\em two}
+results {\bf (before, after)} such that {\bf s == (before $<$$>$ x $<$$>$ after)} and
+{\bf x} does not occur earlier in {\bf s}.
+
+\item {\bf s @chopAt x}, where {\bf x} is an integer, delivers {\bf (after, before)}
+such that {\bf s = before $<$$>$ after} and {\bf after.length == x} -
+s.stringBase.
+
+\item {\bf s @split x} delivers an array of strings obtained by repeatedly
+chopping {\bf s} with {\bf x}.
+
+\item {\bf s.toLower} is a copy of {\bf s} with all upper-case characters replaced
+by their lower-case counterparts; {\bf s.toUpper} is a copy of {\bf s} with
+all lower-case characters replaced by their upper-case counterparts.
+
+\item {\bf x @catStringly y}: equivalent to {\bf x $<$$>$ y.toString}.
+
+\end{itemize}\section{symbols}
+
+
+\begin{quote}Symbols are not implemented.\end{quote}The {\em symbol literal} {\bf `foo`} represents a {\em symbol} (a value
+of type {\bf Symbol}) whose {\em spelling} is the string {\bf foo}. The important
+difference between symbols and strings is that there is only one
+symbol with a given spelling. (You can tell the difference using the
+Spice {\em identity operator} {\bf ==}.)
+
+You can index symbols using {\bf s{[}i{]}}, but if you do so, you are probably
+using symbols for something other than their intended use; supplying
+the programmer with an infinite set of mnenomic values.
+
+\begin{itemize}\item {\bf s.intern}, where {\bf s} is a string, delivers the symbol whose spelling
+is {\bf s}, making it if necessary.
+
+\item {\bf s.spelling}, where {\bf s} is a symbol, delivers an immutable string which
+is the spelling of {\bf s}.
+
+\item {\bf s.explode}, where {\bf s} is a symbol, delivers all the characters of {\bf s},
+rightmost last.
+
+\end{itemize}\section{booleans}
+
+
+The built-in operators {\bf not}, {\bf and}, {\bf or} on booleans operate as you
+might expect; {\bf not} negates its operand, {\bf and} is boolean {\bf and} and
+{\bf or} is boolean {\bf or}, neither of which evaluate their second operand
+unless it's necessary.\section{arrays}
+
+
+Array elements can be accessed and updated using the {\bf a{[}i{]}} notation.
+
+\begin{itemize}\item {\bf a.length}: delivers the length of the array {\bf a}.
+
+\item {\bf a @reduceBy (x, p)}: {\bf a} must be an array, {\bf x} some value, and {\bf p} a dyadic
+procedure. The result is obtained by starting with {\bf x} and repeatedly
+replacing it by the result of {\bf p(result,ai)} for {\bf ai} being bound to all the
+elements of {\bf a} in turn.
+
+\item {\bf a @join s, a.join}: equivalent to {\bf a @reduceBy (s, catStringly)}; with one
+argument, {\bf s} is taken to be the null string {\bf ""}.
+
+\item {\bf a @sortInPlaceWith f}: sorts the array {\bf a} according to the comparison
+function {\bf f}. {\bf f} should accept two arguments {\bf (x, y)} and deliver
+{\bf true} if {\bf x} should go before {\bf y} in the ordering and {\bf false}
+otherwise. {\bf sortInPlaceWith} is guaranteed to be stable if {\bf f} is
+sane.
+
+\item {\bf a @sortWith f}: makes a copy of {\bf a} and sorts that in place with {\bf f},
+so far as anyone can tell. (The implementor is at liberty to make a
+more efficient version.)
+
+\item {\bf a.reverse}: a copy of {\bf a} with the elements reversed.
+
+\item {\bf a.reverseInPlace}: reverses the order of the elements of {\bf a}.
+
+\end{itemize}\section{bits}
+
+
+Spice does not have standard operators for bit operations on integer values;
+instead, it has standard functions which you call in infix form. This reflects
+the designer's belief that bit operations are simply not used enough to
+warrent using up useful symbols for them.
+
+\begin{itemize}\item {\bf x@bitNot}: the bitwise complement of {\bf x} and {\bf y}.
+
+\item {\bf x @bitAnd y}: the bitwise {\bf and} of {\bf x} and {\bf y}.
+
+\item {\bf x @bitOr y}: the bitwise {\bf or} of {\bf x} and {\bf y}.
+
+\item {\bf x @bitXor y}: the bitwise {\bf exclusive or} of {\bf x} and {\bf y}.
+
+\item {\bf x @bitClear y}: {\bf x @bitAnd y.bitNot}.
+
+\item {\bf x @bitShl y}: {\bf x} shifted left {\bf y} places.
+
+\item {\bf x @bitShr y}: {\bf x} shifted right {\bf y} places. Note: the sign of {\bf x} is {\em always
+preserved} for plain ({\bf Small} or {\bf Big}) integer values.
+
+\end{itemize}\section{procedures}
+
+
+There are several standard functions on procedures.
+
+\begin{itemize}\item {\bf p.updater}: if {\bf p} is a procedure, then delivers its updater (or {\bf absent} if
+if hasn't got one).
+
+\item {\bf p @apply }x: {\bf p} must be a procedure, and {\bf x} a collection of values; applies
+{\bf p} to all the values in {\bf x}, ie, is {\bf x.explode.p} except that {\bf x} must be a
+compound type.
+
+\end{itemize}The different kinds of procedures can be recognised by predicates.
+
+\begin{itemize}\item {\bf x.isProcedure} is {\bf true} when {\bf x} is any kind of procedure, and {\bf false}
+otherwise.
+
+\item {\bf x.isMethod} is {\bf true} if {\bf x} is defined by a {\bf method} definition, and {\bf false}
+otherwise;
+
+\item {\bf x.isFunction} if {\bf x} is defined by a {\bf function} definition, and {\bf false}
+otherwise;
+
+\item {\bf x.isConstructor} is {\bf true} when {\bf x} has been defined with {\bf method new}, and
+{\bf false} otherwise;
+
+\item {\bf x.isLambda} is {\bf true} when {\bf x} is the result of a lambda-expression or
+hole-expression, and {\bf false} otherwise.
+
+\end{itemize}\section{dictionaries and tables}
+
+
+The type {\bf Lookup} is the parent type of a variety of mapping data types; the
+{\em simple} mapping types map single values to single values, while the {\em compond}
+mapping types map tuples of values to tuples of values. There are no direct
+instances of {\bf Lookup}. The type {\bf Maplet} is the type of pairs of (simple)
+values. The type {\bf Dictionary} is an extension of {\bf Lookup} that maps {\bf Symbol}s
+to values.
+
+\begin{itemize}\item {\bf l.length}: the number of key-value associations stored in the lookup {\bf l}.
+
+\item {\bf l.explode}: the key-value pairs stored in the lookup {\bf l}. Each pair is
+represented by an instance of the type {\bf Maplet}.
+
+\item {\bf p @mapOver l}: apply the procedure {\bf p} to each of the key-value pairs in {\bf l}
+in turn. {\bf p} will be called with two arguments, being the key and the value.
+{\em All the results of {\bf p} will be returned.}
+
+\item {\bf l @hasKey k}: if {\bf l} is an instance of an extension of {\bf Lookup}, {\bf hasKey}
+returns {\bf true} if {\bf k} is a key for a non-default value in {\bf l} and {\bf false}
+otherwise.
+
+\item {\bf l @fetch k}: if {\bf l} is an instance of an extension of {\bf Lookup}, {\bf fetch} gets
+the value bound to the key {\bf k}. If no value is bound, some type-specific
+computation is performed. {\bf fetch} has an updater which alters the bound value,
+or creates a binding if none already exists.
+
+\item {\bf l @apply k}: if {\bf l} is an instance of an extension of {\bf Lookup}, applying it
+runs {\bf fetch}.
+
+\item {\bf m.key}: the key part of {\bf m}, ie, the value which would be looked up.
+
+\item {\bf m.value}: the value part of {\bf m}, ie, the value that would be returned when
+looking up the {\bf key} part.
+
+\item {\bf Dictionary()}: constructs an empty {\bf Dictionary} object with default value
+{\bf absent}. A {\bf Dictionary} is an extension of {\bf Lookup}.
+
+\item {\bf Dictionary(d)}: constructs an empty {\bf Dictionary} with default value {\bf d}.
+
+\item {\bf Dictionary(d, k$_ 1$, v$_ 1$, ..., k$_ n$, v$_ n$)}: constructs a {\bf Dictionary} with
+default value {\bf d} and bindings which bind k$_ i$ to v$_ i$. If several k$_ i$ are
+equal, the last one wins. All the k$_ i$ must be {\bf Symbol}s.
+
+\item {\bf Table}: an extension of {\bf Lookup} with constructors in the same style as
+{\bf Dictionary}. A {\bf Table} can have key arguments of any type; they are compared
+using {\bf ==} (and hashed using {\bf hashCode}, qv).
+
+\item {\bf FatTable}: an compound mapping extension of {\bf Lookup}. {\bf FatTable} has similar
+constructors to {\bf Dictionary}, except that the keys and values must all be
+arrays; all the keys must have the same length, and all the values must have
+the same length. A {\bf FatTable} maps tuples of values to tuples of values.
+
+\item {\bf f @fetch (k$_ 1$, ..., k$_ n$)}: if {\bf f} is a {\bf FatTable}, look up the value(s)
+specified by the sequence of keys {\bf k$_ i$}, which must be the same length as the
+key arrays used in the constructor of {\bf f}. Deliver the associated multiple
+values. The updater of {\bf fetch} will store multiple values into {\bf f}.
+
+\end{itemize}\section{io}
+
+
+Spice includes some simple I/O operations in its core; the type {\bf Pathname},
+the type {\bf File}, and the type {\bf Stream}.
+
+\begin{itemize}\item {\bf s.parsePath}: {\bf s} must be a string or symbol. It is parsed into a {\bf Pathname},
+or an exception thrown if it is illegal in some way. (See below for the syntax
+of pathnames).
+
+\item {\bf p.pathScheme}, {\bf p.pathRoot}, {\bf p.pathDirs}, {\bf p.pathName}, {\bf p.pathSuffix}, and
+{\bf p.pathType}: the corresponding components of the pathname. If the component
+was omitted in the originating string, the result is {\bf absent}.
+
+\item {\bf p @openIn}: {\bf p} must be a pathname (or string or symbol, which is immediatley
+parsed into a pathname). The external entity named by the path is opened for
+input. {\bf openIn} delivers a {\bf File} object.
+
+\item {\bf p @openOut}: {\bf p} must be a pathname (or string or symbol, which is immediatley
+parsed into a pathname). The external entity named by the path is opened for
+output. {\bf openOut} delivers a {\bf File} object.
+
+\item {\bf f.openedOn}: if {\bf f} is a file, then the pathname it was opened on.
+
+\item {\bf f.close}: {\bf f} must be a file; if it is not closed, it is hereby closed,
+committing all writes (if open for output).
+
+\item {\bf f @readInto (b, w, l)}: {\bf f} must be a file open for input. {\bf readInto} reads
+the next {\bf l} bytes (or fewer) into the buffer {\bf b}, which must be a byte array,
+starting at position {\bf w}. An exception is thrown if {\bf w} or {\bf w+l} would be
+outside the bounds of {\bf b}. The number of bytes actually read is returned as
+the result.
+
+\item {\bf f @writeFrom (b, w, l)}: {\bf f} must be a file open for output. {\bf l} bytes from
+the byte array {\bf b} are written, starting at offset {\bf w}. An exception is thrown
+if {\bf w} or {\bf w+l} would be outside the bounds of {\bf b}.
+
+\item {\bf f.inFrom}: {\bf f} is a file open for input, or a pathname (which is immediately
+{\bf openIn}'ed). The result is an byte {\bf InStream} on the file.
+
+\item {\bf f.outTo}: {\bf f} is a file open for output, or a pathname (which is immediately
+{\bf openOut}'ed). The result is an byte {\bf OutStream} on the file.
+
+\item {\bf s.next}: {\bf s} must be an {\bf InStream}; the result is the next object from {\bf s},
+or {\bf absent} if the file has been exhausted. {\bf next} has an updater which puts
+objects back onto the stream. Arbitrarily many objects can be put back, and
+they need not correspond to objects originally present in the stream.
+
+\item {\bf s @out x}: {\bf s} must be an {\bf OutStream} and {\bf x} an object; that object is
+appended to the stream.
+
+\item {\bf s.streamFile}: if {\bf s} is a stream based on a file, delivers that file;
+otherwise an exception is thrown.
+
+\end{itemize}\subsection{pathname syntax and accessors}
+
+
+A pathname has several components. The basic elements are {\bf Word}s which,
+within this section, are sequences of characters not otherwise reserved
+to the pathname syntax.
+
+In this section, the identifier {\bf p} is presumed to contain a {\bf Pathname} value.
+
+\begin{tabular}{l}
+{\bf def141. Pathname ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+{[}(Scheme){]} \\ 
+ {[}(Root){]} \\ 
+ {[}(Directories){]} \\ 
+ {[}(Name){]} \\ 
+ {[}(Suffix){]} \\ 
+ {[}(Type){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def142. Scheme ::= }\\ 
+\hspace*{3mm}{\tt Word ":"} \\ 
+\end{tabular}
+
+The {\bf Scheme} of a pathname directs how the components are to be interpreted.
+The standard schemes are {\bf file}, {\bf http}, and {\bf socket}.
+
+{\bf p.pathScheme} is a {\bf Symbol}.
+
+\begin{tabular}{l}
+{\bf def143. Root ::= }\\ 
+\hspace*{3mm}{\tt "//" Dotted} \\ 
+\end{tabular}
+
+The {\bf Root} identifies where the pathname is anchored. For an {\bf http} or {\bf net}
+pathname, the {\bf Root} is the IP address where the named entity is located. For
+a {\bf file} scheme, the {\bf Unit} identifies some root in the filing system in
+an implementation-specific way.
+
+{\bf p.pathRoot} is an array of {\bf Symbol} values, one for each word-part of the
+{\bf Dotted}.
+
+\begin{tabular}{l}
+{\bf def144. Directories ::= }\\ 
+\hspace*{3mm}{\tt {[}("/"){]} (Dotted "/")++} \\ 
+\end{tabular}
+
+The {\bf Directories} identify some place within the {\bf Root} where an entity is
+found, by giving a sequence of {\bf Dotted}s. For a {\bf file} scheme, thet are the
+names of filing-system directories. For an {\bf http} scheme, they are successive
+components of the directory part of the URL. For a {\bf socket} scheme, they
+identify the port number to be used for the socket; typically there is but one
+{\bf Dotted} and it names an IP service.
+
+{\bf p.pathDirectories} is an array of {\bf Symbol}s, each symbol being the spelling
+of a {\bf Dotted}.
+
+\begin{tabular}{l}
+{\bf def145. Name ::= }\\ 
+\hspace*{3mm}{\tt Word} \\ 
+\end{tabular}
+
+The {\bf Name} is the leafname of the entity being described.
+
+{\bf p.pathName} is a Symbol.
+
+\begin{tabular}{l}
+{\bf def146. Suffix ::= }\\ 
+\hspace*{3mm}{\tt "." Word} \\ 
+\end{tabular}
+
+The {\bf Suffix} is the suffix part of the entity name.
+
+{\bf p.pathSuffix} is a {\bf Symbol}.
+
+\begin{tabular}{l}
+{\bf def147. Type ::= }\\ 
+\hspace*{3mm}{\tt ";" Word} \\ 
+\end{tabular}
+
+The {\bf Type} is the type of the entity. When a pathname is being used to create
+an object, is specifies the type of object to create. When it is being used
+to access an existing object, the object should be of a compatible type.
+
+{\bf p.pathType} is a {\bf Symbol}.
+
+\begin{tabular}{l}
+{\bf def148. Dotted ::= }\\ 
+\hspace*{3mm}{\tt Word++ "."} \\ 
+\end{tabular}
+
+\section{other undefined library support}
+
+
+Spice is expected to support useful library functions for locales, dates, and
+regular expressions, but these have not yet been specified.\section{types}
+
+
+The standard types are
+
+\begin{itemize}\item {\bf Lookup}, the parent type of data dictionaries.
+
+\item {\bf Maplet}, a helper type for data dictionaries.
+
+\item {\bf Table}, the type of tables.
+
+\item {\bf FatTable}, the type of compound tables.
+
+\item {\bf Small}, the type of small integers.
+
+\item {\bf Number}, the type of all numbers -- integers, floats, rationals (when
+implemented), complexes (ditto).
+
+\item {\bf Complex}, the type of complex values.
+
+\item {\bf Ratio}, the type of ratios.
+
+\item {\bf BigInt}, the type of big integers.
+
+\item {\bf Float}, the type of all floating-point numbers.
+
+\item {\bf String}, the type of strings.
+
+\item {\bf Procedure}, the type of all procedures.
+
+\item {\bf Bool}, the type of booleans.
+
+\item {\bf Char}, the type of characters.
+
+\item {\bf Any}, the type of anything whatsoever.
+
+\item {\bf Object}, the type of all objects (ie things defined by classes).
+
+\item {\bf Date}, the type of dates.
+
+\item {\bf Unit}, the type of units.
+
+\item {\bf Pathname}, the type of pathname objects used to represent URLs (and local
+file names, etc).
+
+\end{itemize}\chapter{spice standard packages}
+
+
+Spice compes with a collection of standard packages. Most of them are
+automaticlly imported by the compiler (except in limited implementations), but
+it is permitted to export them explicitly.
+
+\begin{tabular}{|llllllllllllllllllllllllllllllllllllllllllll|}
+{\bf package name}          &  &{\bf description} \\ 
+Spice.core.complex      &  &handling complex arithmetic \\ 
+Spice.core.ratios       &  &handling rational numbers \\ 
+Spice.core.bignums      &  &handling big integers \\ 
+Spice.core.styles       &  &style operations \\ 
+Spice.core.units        &  &{\bf define unit} definitions and operations \\ 
+Spice.core.properties   &  &{\bf property} declarations and operations \\ 
+Spice.core.multimethods  &  &support for multimethods \\ 
+Spice.core.multivalues  &  &support for multiple values \\ 
+Spice.core.monomethods  &  &support for monomethods (single-argument
+polymorphism) \\ 
+Spice.core.multiheritance  &  &support for multiple inheritance \\ 
+Spice.core.dates        &  &the {\bf Date} type and its operations \\ 
+Spice.core.io           &
+ &basic input/output support, including pathnames \\ 
+Spice.core.files        &  &file input/output support \\ 
+Spice.core.net          &  &network input/output support \\ 
+Spice.core.tables       &  &lookup table support \\ 
+\end{tabular}
+\chapter{glossary}
+
+
+\begin{itemize}\item {\bf absent}. The "missing" value. Also spelt {\bf null}.
+
+\item {\bf all}. reserved word used following {\bf do} in loops to specify that the value of
+the loop includes all the values from iterating through its body.
+
+\item {\bf Any}. The universal type; all values are compatible with {\bf Any}.
+
+\item {\bf class}. A value representing a template for a collection of other values
+called its {\bf instances}.
+
+\item {\bf explode}. (a) the name of a procedure which explodes its single argument. (b)
+to take a value and deliver all of its consituent values.
+
+\item {\bf enum}. An abbreviated {\bf class} definition which describes a new class and all
+of its values.
+
+\item {\bf hole}. The marker {\bf ?} in an expression, representing a parameter position
+for an implicit lambda-expression wrapped round the smallest enclosing
+application.
+
+\item {\bf initialiser}. A procedure declared with {\bf define init} which initialises
+its first argument (usually called {\bf this}) according to the values of its
+remaining instances.
+
+\item {\bf lambda expression}. An expression describing a procedure by giving its
+arguments and body.
+
+\item {\bf method}. A {\bf procedure} expected to be called using dot-notation and defined
+within a {\bf class}. Methods have a usually-implicit first argument usually
+called {\bf this}.
+
+\item {\bf measure}. A value consisting of a number and a unit, meaning that many of
+that unit.
+
+\item {\bf multiple values}. A Spice expression can evaluate to zero or more values,
+and how many values is determined at run-time, not compile-time. Thus a
+function call, or a loop, may deliver several results, which may be assigned
+or embedded into a larger expression.
+
+\item {\bf new}. Syntactic form for building instances of a class.
+
+\item {\bf null}. Another name for {\bf absent}.
+
+\item {\bf package}. A named collection of definitions and executable expressions; the
+unit of encapsulation.
+
+\item {\bf predicate}. A {\bf procedure} of one argument that returns a single {\bf Bool} value.
+
+\item {\bf procedure}. A piece of code invoked from elsewhere to perform some specified
+task. A procedure takes some number of arguments, performs some action,
+and delivers some number of results.
+
+\item {\bf property}. (a) part of a {\bf style} that gives a value to some aspect of
+rendering. (b) the name of such a part. (c) A procedure which maps objects to
+values in a way that respects their class inheritance structure. (d) The name
+of such a procedure.
+
+\item {\bf slot}. (a) A named location within (instances of) a class. (b) the procedure
+which gives access to such a location.
+
+\item {\bf super}. Used in method calls to invoke the "next more general" method.
+
+\item {\bf unit}. The value used in a {\bf measure} to specify the units of that measure,
+eg inches, seconds, x's, and so on.
+
+\item {\bf updater}. The part of a {\bf procedure} that implements its behaviour when it is
+called as the target of an assignment.
+
+\end{itemize}\chapter{syntactic summary}
+
+
+This section gathers together all the syntax from the rest of the document.
+
+\begin{tabular}{l}
+{\bf def1. Program ::= }\\ 
+\hspace*{3mm}{\tt Spice (Package* $\mid$ PackageBody)} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def2. Spice ::= }\\ 
+\hspace*{3mm}{\tt "spice" String ("," (Name ":" Expr))*} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def3. OpenModifier ::= }\\ 
+\hspace*{3mm}{\tt MarkedModifier Modifier*} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def4. Modifier ::= }\\ 
+\hspace*{3mm}{\tt MarkedModifier} \\ 
+\hspace*{3mm}{\tt  $\mid$ Name {[}(ModArgument){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ "{[}" Modifier** "," "{]}"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def5. MarkedModifier ::= }\\ 
+\hspace*{3mm}{\tt "public"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "private"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "protected"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def6. MarkedArgument ::= }\\ 
+\hspace*{3mm}{\tt Literal} \\ 
+\hspace*{3mm}{\tt  $\mid$ "(" Expression ")"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def7. Package ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+MarkedModifier \\ 
+ "package" \\ 
+ PackageName \\ 
+ PackageBody \\ 
+ {[}("endpackage"){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def8. PackageName ::= }\\ 
+\hspace*{3mm}{\tt Word++ "."} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def9. PackageBody ::= }\\ 
+\hspace*{3mm}{\tt Import** SEMI Bundle** SEMI} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def10. Bundle ::= }\\ 
+\hspace*{3mm}{\tt Definition+ Expr*} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def11. Definition ::= }\\ 
+\hspace*{3mm}{\tt ProcedureDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ VarDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ ClassDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ UnitDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ EnumDef} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def12. Import ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+MarkedModifier \\ 
+ "import" \\ 
+ OpenModifier \\ 
+ {[}(Alias "="){]} \\ 
+ PackageName \\ 
+ {[}("facet" (Name** ",")){]} \\ 
+ {[}("from" Expr){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def13. ProcedureDef ::= }\\ 
+\hspace*{3mm}{\tt FullProcedureDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ FunctionDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ CompactDef} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def14. FullProcedureDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"define" \\ 
+ Modifier \\ 
+ ("method" $\mid$ "function" $\mid$ "generic" $\mid$ "init" $\mid$ "specific") \\ 
+ Header \\ 
+ {[}("returns" Type){]} \\ 
+ {[}("extends" CommaExpr){]} \\ 
+ {[}("super" Header){]} \\ 
+ ProcedureBody \\ 
+ "enddefine" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def15. FunctionDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+OpenModifier \\ 
+ "function" \\ 
+ Header \\ 
+ {[}("returns" Type){]} \\ 
+ {[}("extends" CommaExpr){]} \\ 
+ {[}("super" Header){]} \\ 
+ ProcedureBody \\ 
+ "endfunction" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def16. CompactDef ::= }\\ 
+\hspace*{3mm}{\tt "def" Header ("=" $\mid$ "as" $\mid$ "=$>$") Expr} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def17. Header ::= }\\ 
+\hspace*{3mm}{\tt CallShape} \\ 
+\hspace*{3mm}{\tt  $\mid$ Name "-$>$" CallShape} \\ 
+\hspace*{3mm}{\tt  $\mid$ CallShape ":=" Arg} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def18. CallShape ::= }\\ 
+\hspace*{3mm}{\tt PrefixShape} \\ 
+\hspace*{3mm}{\tt  $\mid$ DottedShape} \\ 
+\hspace*{3mm}{\tt  $\mid$ InfixShape} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def19. PrefixShape ::= }\\ 
+\hspace*{3mm}{\tt NameA {[}(Arglist){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def20. DottedShape ::= }\\ 
+\hspace*{3mm}{\tt NameB . NameA {[}(Arglist){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def21. InfixShape ::= }\\ 
+\hspace*{3mm}{\tt ArgA @ NameA {[}(ArgB){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def22. Arglist ::= }\\ 
+\hspace*{3mm}{\tt "(" Args ")"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def23. Args ::= }\\ 
+\hspace*{3mm}{\tt Arg** ","} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def24. Arg ::= }\\ 
+\hspace*{3mm}{\tt Name {[}(":" {[}("!"){]} Type $\mid$ "==" Expr){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ {[}(Name){]} "..."} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def25. ProcedureBody ::= }\\ 
+\hspace*{3mm}{\tt StatementSeq} \\ 
+\hspace*{3mm}{\tt  $\mid$ ArgList "=$>$" ProcedureBody} \\ 
+\hspace*{3mm}{\tt  $\mid$ Arg "=$>$" ProcedureBody} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def26. VarDef ::= }\\ 
+\hspace*{3mm}{\tt MarkedModifier ("const" $\mid$ "var") NameDecl} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def27. NameDecl ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+(OneDecl $\mid$ "(" OneDecl++ "," ")") \\ 
+ {[}(("=" $\mid$ ":=") Expr){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def28. OneDecl ::= }\\ 
+\hspace*{3mm}{\tt Name {[}(":" Type $\mid$ "..."){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def29. ClassDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"define" \\ 
+ Modifier \\ 
+ "class" \\ 
+ Name \\ 
+ {[}("extends" CommaExpr){]} \\ 
+ ClassProperty** \\ 
+ SEMI \\ 
+ "enddefine" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def30. ClassProperty ::= }\\ 
+\hspace*{3mm}{\tt Procedure} \\ 
+\hspace*{3mm}{\tt  $\mid$ SlotDecl} \\ 
+\hspace*{3mm}{\tt  $\mid$ VarDef} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def31. SlotDecl ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+("slot" $\mid$ "shared") \\ 
+ Name \\ 
+ {[}(":" Type){]} \\ 
+ {[}("=" Expr){]} \\ 
+ {[}("implements" Name2){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def32. UnitDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"define" \\ 
+ ("unit" $\mid$ "units") \\ 
+ UnitDef++ \\ 
+ "," \\ 
+ "enddefine" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def33. UnitDef ::= }\\ 
+\hspace*{3mm}{\tt Word {[}("=" Expr){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def34. EnumDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"define" \\ 
+ "enum" \\ 
+ {[}(Modifier){]} \\ 
+ Name \\ 
+ "=" \\ 
+ Name++ \\ 
+ "," \\ 
+ "enddefine" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def35. Statement ::= }\\ 
+\hspace*{3mm}{\tt Expr++ "," SEMI} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def36. StatementSeq ::= }\\ 
+\hspace*{3mm}{\tt Statement*} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def37. Expr ::= }\\ 
+\hspace*{3mm}{\tt Name} \\ 
+\hspace*{3mm}{\tt  $\mid$ Hole} \\ 
+\hspace*{3mm}{\tt  $\mid$ Literal} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr "..."} \\ 
+\hspace*{3mm}{\tt  $\mid$ PreOp Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr PostOp} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr InOp Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr AssignOp Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "(" Expr ")"} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr {[}("." DotExpr){]} {[}(OptExpr){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr {[}("@" DotExpr){]} {[}(OptExpr){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr "{[}" Expr "{]}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "{[}" Expr "{]}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ LambdaExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "new" Name {[}("(" Expr ")"){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ "none" OptExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "one" Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "once" Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "throw" Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "{[}" CommaExpr "{]}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "\{" CommaExpr "\}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ QuoteExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ TryCatchExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ IfExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ RepeatExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ SwitchExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ VarDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ ProcedureDef} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def38. OptExpr ::= }\\ 
+\hspace*{3mm}{\tt {[}(Expr){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def39. CommaExpr ::= }\\ 
+\hspace*{3mm}{\tt Expr++ ","} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def40. OptCommaExpr ::= }\\ 
+\hspace*{3mm}{\tt {[}(CommaExpr){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def41. Hole ::= }\\ 
+\hspace*{3mm}{\tt "?" {[}(Integer){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def42. Literal ::= }\\ 
+\hspace*{3mm}{\tt StringLiteral} \\ 
+\hspace*{3mm}{\tt  $\mid$ NumberLiteral} \\ 
+\hspace*{3mm}{\tt  $\mid$ ReservedLiteral} \\ 
+\hspace*{3mm}{\tt  $\mid$ CharacterLiteral} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def43. PostOp ::= }\\ 
+\hspace*{3mm}{\tt LexicalPostfixOperator} \\ 
+\hspace*{3mm}{\tt  $\mid$ "@" DotExpr} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def44. InOp ::= }\\ 
+\hspace*{3mm}{\tt LexicalInfixOperator} \\ 
+\hspace*{3mm}{\tt  $\mid$ "@" DotExpr} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def45. DotExpr ::= }\\ 
+\hspace*{3mm}{\tt Name} \\ 
+\hspace*{3mm}{\tt  $\mid$ "(" Expr ")"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "return"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "throw"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "new"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def46. LambdaExpr ::= }\\ 
+\hspace*{3mm}{\tt "(" Args "=$>$" StatementSeq ")"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "fun" Args "=$>$" StatementSeq "endfun"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def47. QuoteExpr ::= }\\ 
+\hspace*{3mm}{\tt "`" QuotedItems "`"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def48. QuotedItems ::= }\\ 
+\hspace*{3mm}{\tt QuotedItem*} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def49. QuotedItem ::= }\\ 
+\hspace*{3mm}{\tt Word} \\ 
+\hspace*{3mm}{\tt  $\mid$ "\{" QuotedItems "\}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "(" Expr ")"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "$^\wedge$" Word} \\ 
+\hspace*{3mm}{\tt  $\mid$ "$^\wedge$$^\wedge$" Word} \\ 
+\hspace*{3mm}{\tt  $\mid$ Literal} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def50. TryCatchExpr ::= }\\ 
+\hspace*{3mm}{\tt "try" StatementSeq CatchSeq "endtry"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def51. CatchSeq ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+("catch" Arglist {[}("as"){]} StatementSeq)** \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def52. IfExpr ::= }\\ 
+\hspace*{3mm}{\tt LongIfExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ ShortIfExpr} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def53. ShortIfExpr ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"(" \\ 
+ Expr \\ 
+ "$\mid$" \\ 
+ CommaExpr \\ 
+ ("$\mid$:" Expr "$\mid$" CommaExpr)* \\ 
+ {[}("$\mid$" CommaExpr){]} \\ 
+ ")" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def54. LongIfExpr ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+("if" $\mid$ "unless") \\ 
+ Expr \\ 
+ Then \\ 
+ StatementSeq \\ 
+ ("elseif" Expr Then StatementSeq)* \\ 
+ {[}("else" StatementSeq){]} \\ 
+ ("endif" $\mid$ "endunless") \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def55. Then ::= }\\ 
+\hspace*{3mm}{\tt "then"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "do"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def56. RepeatExpr ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"repeat" \\ 
+ StatementSeq1 \\ 
+ {[}(RepeatTest {[}("do" StatementSeq2){]}){]} \\ 
+ "endrepeat" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def57. RepeatTest ::= }\\ 
+\hspace*{3mm}{\tt ("while" $\mid$ "until") Expr1 {[}("then" Expr2){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def58. ForExpr ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"for" \\ 
+ ForControls \\ 
+ {[}("do" StatementSeq){]} \\ 
+ {[}("finally" StatementSeq){]} \\ 
+ "endfor" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def59. ForControls ::= }\\ 
+\hspace*{3mm}{\tt ForControl} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForControls "also" ForControl} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForControls ForCondition} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def60. ForControl ::= }\\ 
+\hspace*{3mm}{\tt ForBinding} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForCondition} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def61. ForCondition ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+("while" $\mid$ "until") \\ 
+ Expr \\ 
+ {[}(("then" $\mid$ "else") CommaExpr){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def62. ForBinding ::= }\\ 
+\hspace*{3mm}{\tt ForName "in" Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ \begin{tabular}{l}
+ForName \\ 
+ "from" \\ 
+ Expr \\ 
+ {[}(("to" $\mid$ "downto") Expr){]} \\ 
+\end{tabular}
+} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForName "to" Expr} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def63. ForName ::= }\\ 
+\hspace*{3mm}{\tt Name {[}(TypeWord Type){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def64. SwitchExpr ::= }\\ 
+\hspace*{3mm}{\tt "switch" Expr Case+ "endswitch"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def65. Case ::= }\\ 
+\hspace*{3mm}{\tt ("case" Expr)+ "then" StatementSeq} \\ 
+\hspace*{3mm}{\tt  $\mid$ "else" StatementSeq} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def66. Type ::= }\\ 
+\hspace*{3mm}{\tt Expr} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def67. Pathname ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+{[}(Scheme){]} \\ 
+ {[}(Root){]} \\ 
+ {[}(Directories){]} \\ 
+ {[}(Name){]} \\ 
+ {[}(Suffix){]} \\ 
+ {[}(Type){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def68. Scheme ::= }\\ 
+\hspace*{3mm}{\tt Word ":"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def69. Root ::= }\\ 
+\hspace*{3mm}{\tt "//" Dotted} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def70. Directories ::= }\\ 
+\hspace*{3mm}{\tt {[}("/"){]} (Dotted "/")++} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def71. Name ::= }\\ 
+\hspace*{3mm}{\tt Word} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def72. Suffix ::= }\\ 
+\hspace*{3mm}{\tt "." Word} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def73. Type ::= }\\ 
+\hspace*{3mm}{\tt ";" Word} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def74. Dotted ::= }\\ 
+\hspace*{3mm}{\tt Word++ "."} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def75. Program ::= }\\ 
+\hspace*{3mm}{\tt Spice (Package* $\mid$ PackageBody)} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def76. Spice ::= }\\ 
+\hspace*{3mm}{\tt "spice" String ("," (Name ":" Expr))*} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def77. OpenModifier ::= }\\ 
+\hspace*{3mm}{\tt MarkedModifier Modifier*} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def78. Modifier ::= }\\ 
+\hspace*{3mm}{\tt MarkedModifier} \\ 
+\hspace*{3mm}{\tt  $\mid$ Name {[}(ModArgument){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ "{[}" Modifier** "," "{]}"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def79. MarkedModifier ::= }\\ 
+\hspace*{3mm}{\tt "public"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "private"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "protected"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def80. MarkedArgument ::= }\\ 
+\hspace*{3mm}{\tt Literal} \\ 
+\hspace*{3mm}{\tt  $\mid$ "(" Expression ")"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def81. Package ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+MarkedModifier \\ 
+ "package" \\ 
+ PackageName \\ 
+ PackageBody \\ 
+ {[}("endpackage"){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def82. PackageName ::= }\\ 
+\hspace*{3mm}{\tt Word++ "."} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def83. PackageBody ::= }\\ 
+\hspace*{3mm}{\tt Import** SEMI Bundle** SEMI} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def84. Bundle ::= }\\ 
+\hspace*{3mm}{\tt Definition+ Expr*} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def85. Definition ::= }\\ 
+\hspace*{3mm}{\tt ProcedureDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ VarDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ ClassDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ UnitDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ EnumDef} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def86. Import ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+MarkedModifier \\ 
+ "import" \\ 
+ OpenModifier \\ 
+ {[}(Alias "="){]} \\ 
+ PackageName \\ 
+ {[}("facet" (Name** ",")){]} \\ 
+ {[}("from" Expr){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def87. ProcedureDef ::= }\\ 
+\hspace*{3mm}{\tt FullProcedureDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ FunctionDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ CompactDef} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def88. FullProcedureDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"define" \\ 
+ Modifier \\ 
+ ("method" $\mid$ "function" $\mid$ "generic" $\mid$ "init" $\mid$ "specific") \\ 
+ Header \\ 
+ {[}("returns" Type){]} \\ 
+ {[}("extends" CommaExpr){]} \\ 
+ {[}("super" Header){]} \\ 
+ ProcedureBody \\ 
+ "enddefine" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def89. FunctionDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+OpenModifier \\ 
+ "function" \\ 
+ Header \\ 
+ {[}("returns" Type){]} \\ 
+ {[}("extends" CommaExpr){]} \\ 
+ {[}("super" Header){]} \\ 
+ ProcedureBody \\ 
+ "endfunction" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def90. CompactDef ::= }\\ 
+\hspace*{3mm}{\tt "def" Header ("=" $\mid$ "as" $\mid$ "=$>$") Expr} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def91. Header ::= }\\ 
+\hspace*{3mm}{\tt CallShape} \\ 
+\hspace*{3mm}{\tt  $\mid$ Name "-$>$" CallShape} \\ 
+\hspace*{3mm}{\tt  $\mid$ CallShape ":=" Arg} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def92. CallShape ::= }\\ 
+\hspace*{3mm}{\tt PrefixShape} \\ 
+\hspace*{3mm}{\tt  $\mid$ DottedShape} \\ 
+\hspace*{3mm}{\tt  $\mid$ InfixShape} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def93. PrefixShape ::= }\\ 
+\hspace*{3mm}{\tt NameA {[}(Arglist){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def94. DottedShape ::= }\\ 
+\hspace*{3mm}{\tt NameB . NameA {[}(Arglist){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def95. InfixShape ::= }\\ 
+\hspace*{3mm}{\tt ArgA @ NameA {[}(ArgB){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def96. Arglist ::= }\\ 
+\hspace*{3mm}{\tt "(" Args ")"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def97. Args ::= }\\ 
+\hspace*{3mm}{\tt Arg** ","} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def98. Arg ::= }\\ 
+\hspace*{3mm}{\tt Name {[}(":" {[}("!"){]} Type $\mid$ "==" Expr){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ {[}(Name){]} "..."} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def99. ProcedureBody ::= }\\ 
+\hspace*{3mm}{\tt StatementSeq} \\ 
+\hspace*{3mm}{\tt  $\mid$ ArgList "=$>$" ProcedureBody} \\ 
+\hspace*{3mm}{\tt  $\mid$ Arg "=$>$" ProcedureBody} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def100. VarDef ::= }\\ 
+\hspace*{3mm}{\tt MarkedModifier ("const" $\mid$ "var") NameDecl} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def101. NameDecl ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+(OneDecl $\mid$ "(" OneDecl++ "," ")") \\ 
+ {[}(("=" $\mid$ ":=") Expr){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def102. OneDecl ::= }\\ 
+\hspace*{3mm}{\tt Name {[}(":" Type $\mid$ "..."){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def103. ClassDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"define" \\ 
+ Modifier \\ 
+ "class" \\ 
+ Name \\ 
+ {[}("extends" CommaExpr){]} \\ 
+ ClassProperty** \\ 
+ SEMI \\ 
+ "enddefine" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def104. ClassProperty ::= }\\ 
+\hspace*{3mm}{\tt Procedure} \\ 
+\hspace*{3mm}{\tt  $\mid$ SlotDecl} \\ 
+\hspace*{3mm}{\tt  $\mid$ VarDef} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def105. SlotDecl ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+("slot" $\mid$ "shared") \\ 
+ Name \\ 
+ {[}(":" Type){]} \\ 
+ {[}("=" Expr){]} \\ 
+ {[}("implements" Name2){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def106. UnitDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"define" \\ 
+ ("unit" $\mid$ "units") \\ 
+ UnitDef++ \\ 
+ "," \\ 
+ "enddefine" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def107. UnitDef ::= }\\ 
+\hspace*{3mm}{\tt Word {[}("=" Expr){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def108. EnumDef ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"define" \\ 
+ "enum" \\ 
+ {[}(Modifier){]} \\ 
+ Name \\ 
+ "=" \\ 
+ Name++ \\ 
+ "," \\ 
+ "enddefine" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def109. Statement ::= }\\ 
+\hspace*{3mm}{\tt Expr++ "," SEMI} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def110. StatementSeq ::= }\\ 
+\hspace*{3mm}{\tt Statement*} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def111. Expr ::= }\\ 
+\hspace*{3mm}{\tt Name} \\ 
+\hspace*{3mm}{\tt  $\mid$ Hole} \\ 
+\hspace*{3mm}{\tt  $\mid$ Literal} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr "..."} \\ 
+\hspace*{3mm}{\tt  $\mid$ PreOp Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr PostOp} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr InOp Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr AssignOp Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "(" Expr ")"} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr {[}("." DotExpr){]} {[}(OptExpr){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr {[}("@" DotExpr){]} {[}(OptExpr){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ Expr "{[}" Expr "{]}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "{[}" Expr "{]}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ LambdaExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "new" Name {[}("(" Expr ")"){]}} \\ 
+\hspace*{3mm}{\tt  $\mid$ "none" OptExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "one" Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "once" Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "throw" Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ "{[}" CommaExpr "{]}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "\{" CommaExpr "\}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ QuoteExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ TryCatchExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ IfExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ RepeatExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ SwitchExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ VarDef} \\ 
+\hspace*{3mm}{\tt  $\mid$ ProcedureDef} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def112. OptExpr ::= }\\ 
+\hspace*{3mm}{\tt {[}(Expr){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def113. CommaExpr ::= }\\ 
+\hspace*{3mm}{\tt Expr++ ","} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def114. OptCommaExpr ::= }\\ 
+\hspace*{3mm}{\tt {[}(CommaExpr){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def115. Hole ::= }\\ 
+\hspace*{3mm}{\tt "?" {[}(Integer){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def116. Literal ::= }\\ 
+\hspace*{3mm}{\tt StringLiteral} \\ 
+\hspace*{3mm}{\tt  $\mid$ NumberLiteral} \\ 
+\hspace*{3mm}{\tt  $\mid$ ReservedLiteral} \\ 
+\hspace*{3mm}{\tt  $\mid$ CharacterLiteral} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def117. PostOp ::= }\\ 
+\hspace*{3mm}{\tt LexicalPostfixOperator} \\ 
+\hspace*{3mm}{\tt  $\mid$ "@" DotExpr} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def118. InOp ::= }\\ 
+\hspace*{3mm}{\tt LexicalInfixOperator} \\ 
+\hspace*{3mm}{\tt  $\mid$ "@" DotExpr} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def119. DotExpr ::= }\\ 
+\hspace*{3mm}{\tt Name} \\ 
+\hspace*{3mm}{\tt  $\mid$ "(" Expr ")"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "return"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "throw"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "new"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def120. LambdaExpr ::= }\\ 
+\hspace*{3mm}{\tt "(" Args "=$>$" StatementSeq ")"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "fun" Args "=$>$" StatementSeq "endfun"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def121. QuoteExpr ::= }\\ 
+\hspace*{3mm}{\tt "`" QuotedItems "`"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def122. QuotedItems ::= }\\ 
+\hspace*{3mm}{\tt QuotedItem*} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def123. QuotedItem ::= }\\ 
+\hspace*{3mm}{\tt Word} \\ 
+\hspace*{3mm}{\tt  $\mid$ "\{" QuotedItems "\}"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "(" Expr ")"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "$^\wedge$" Word} \\ 
+\hspace*{3mm}{\tt  $\mid$ "$^\wedge$$^\wedge$" Word} \\ 
+\hspace*{3mm}{\tt  $\mid$ Literal} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def124. TryCatchExpr ::= }\\ 
+\hspace*{3mm}{\tt "try" StatementSeq CatchSeq "endtry"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def125. CatchSeq ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+("catch" Arglist {[}("as"){]} StatementSeq)** \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def126. IfExpr ::= }\\ 
+\hspace*{3mm}{\tt LongIfExpr} \\ 
+\hspace*{3mm}{\tt  $\mid$ ShortIfExpr} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def127. ShortIfExpr ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"(" \\ 
+ Expr \\ 
+ "$\mid$" \\ 
+ CommaExpr \\ 
+ ("$\mid$:" Expr "$\mid$" CommaExpr)* \\ 
+ {[}("$\mid$" CommaExpr){]} \\ 
+ ")" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def128. LongIfExpr ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+("if" $\mid$ "unless") \\ 
+ Expr \\ 
+ Then \\ 
+ StatementSeq \\ 
+ ("elseif" Expr Then StatementSeq)* \\ 
+ {[}("else" StatementSeq){]} \\ 
+ ("endif" $\mid$ "endunless") \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def129. Then ::= }\\ 
+\hspace*{3mm}{\tt "then"} \\ 
+\hspace*{3mm}{\tt  $\mid$ "do"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def130. RepeatExpr ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"repeat" \\ 
+ StatementSeq1 \\ 
+ {[}(RepeatTest {[}("do" StatementSeq2){]}){]} \\ 
+ "endrepeat" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def131. RepeatTest ::= }\\ 
+\hspace*{3mm}{\tt ("while" $\mid$ "until") Expr1 {[}("then" Expr2){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def132. ForExpr ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+"for" \\ 
+ ForControls \\ 
+ {[}("do" StatementSeq){]} \\ 
+ {[}("finally" StatementSeq){]} \\ 
+ "endfor" \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def133. ForControls ::= }\\ 
+\hspace*{3mm}{\tt ForControl} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForControls "also" ForControl} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForControls ForCondition} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def134. ForControl ::= }\\ 
+\hspace*{3mm}{\tt ForBinding} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForCondition} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def135. ForCondition ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+("while" $\mid$ "until") \\ 
+ Expr \\ 
+ {[}(("then" $\mid$ "else") CommaExpr){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def136. ForBinding ::= }\\ 
+\hspace*{3mm}{\tt ForName "in" Expr} \\ 
+\hspace*{3mm}{\tt  $\mid$ \begin{tabular}{l}
+ForName \\ 
+ "from" \\ 
+ Expr \\ 
+ {[}(("to" $\mid$ "downto") Expr){]} \\ 
+\end{tabular}
+} \\ 
+\hspace*{3mm}{\tt  $\mid$ ForName "to" Expr} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def137. ForName ::= }\\ 
+\hspace*{3mm}{\tt Name {[}(TypeWord Type){]}} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def138. SwitchExpr ::= }\\ 
+\hspace*{3mm}{\tt "switch" Expr Case+ "endswitch"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def139. Case ::= }\\ 
+\hspace*{3mm}{\tt ("case" Expr)+ "then" StatementSeq} \\ 
+\hspace*{3mm}{\tt  $\mid$ "else" StatementSeq} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def140. Type ::= }\\ 
+\hspace*{3mm}{\tt Expr} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def141. Pathname ::= }\\ 
+\hspace*{3mm}{\tt \begin{tabular}{l}
+{[}(Scheme){]} \\ 
+ {[}(Root){]} \\ 
+ {[}(Directories){]} \\ 
+ {[}(Name){]} \\ 
+ {[}(Suffix){]} \\ 
+ {[}(Type){]} \\ 
+\end{tabular}
+} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def142. Scheme ::= }\\ 
+\hspace*{3mm}{\tt Word ":"} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def143. Root ::= }\\ 
+\hspace*{3mm}{\tt "//" Dotted} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def144. Directories ::= }\\ 
+\hspace*{3mm}{\tt {[}("/"){]} (Dotted "/")++} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def145. Name ::= }\\ 
+\hspace*{3mm}{\tt Word} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def146. Suffix ::= }\\ 
+\hspace*{3mm}{\tt "." Word} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def147. Type ::= }\\ 
+\hspace*{3mm}{\tt ";" Word} \\ 
+\end{tabular}
+
+\begin{tabular}{l}
+{\bf def148. Dotted ::= }\\ 
+\hspace*{3mm}{\tt Word++ "."} \\ 
+\end{tabular}
+
+
+
+\end{document}

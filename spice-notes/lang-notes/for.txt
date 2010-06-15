@@ -1,0 +1,22 @@
+Re: For Loops
+
+---------------------------------------------------------------------
+Delivered-To: steve@outstation.bel-epa.com
+Delivered-To: steve-steve@watchfield.com
+Status:  U
+From: Chris Dollin <kers@hplb.hpl.hp.com>
+Organization: Hewlett-Packard Laboratories, Bristol
+To: steve@watchfield.com
+Subject: minor Spice update
+Date: Mon, 2 Jul 2001 12:08:51 +0100
+
+
+While writing an address-based property package for Spice, I decided to
+add the syntax
+
+    for ... x to E ... 
+
+which is just a from-to cosntruct with a default starting-point of 1,
+"for symmetry" with the missing-from-forever option.
+
+---------------------------------------------------------------------

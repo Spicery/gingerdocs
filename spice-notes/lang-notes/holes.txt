@@ -1,0 +1,35 @@
+Re: Holes
+Date: 10/Jul/03
+Modified: 30/Jan/04
+
+JSpice now has a reasonable implementation of holes.  Holes are a way
+of writing partial applications - compactly and generally.  
+
+Suppose you have a function -f- which takes three parameters and you 
+want a specialization of -f- that uses zero for the middle parameters.
+In Spice you can write:
+	f( ?, 0, ? )
+The two question marks are 'holes' that will be 'filled-in' later.
+
+Behind the scenes, holes are simply equivalent to writing a lambda
+expression.  In the example above, it is the same as writing
+	fun ( tmp1, tmp2 ) => f( tmp1, 0, tmp2 ) endfun
+
+This is very similar to Pop11's partapply mechanism.  However, there
+are some small differences.  Pop11's partapply can only freeze arguments 
+in from the right hand side which is a big limitation.  On the other
+hand, it allows you to quite elegantly specialize _all_ the arguments
+and still up with a closure:
+	f(% -1, 0, 1 %)
+Which is occasionally useful.  If you want the same effect in Spice you 
+can either write out the lambda by hand (which is sort of OK) or you
+can use a variadic hole.
+
+And, of course, here's an example of holes (just a small one) running 
+in the interpreter:
+
+	[Glory:~] steve% jspice
+	Welcome to JSpice
+	:-) ( ? + 1 )( 99 );
+	100
+	:-) 

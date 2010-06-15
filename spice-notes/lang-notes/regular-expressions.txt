@@ -1,0 +1,495 @@
+Re:	Regular Expressions
+
+---------------------------------------------------------------------
+Date: Fri, 28 Sep 2001 12:54:36 +0100
+To: steve@watchfield.com, Chris Dollin:;
+From: Stephen Leach <steve@watchfield.com>
+Subject: Spice Memo: Regular Expressions
+Cc: Luc Beaudoin <lucb@telus.net>, Graham Higgins <gjh@bel-epa.com>
+
+
+Hi Chris,
+
+As usual SFKL = me, CJD = you.
+
+1.  Prompted by the addition of regular expressions to Spice/Palantir, SFKL
+and CJD noted several incompatibilities between Spice strings and the
+conventional regular expression syntax, exemplified by Perl 4.  In
+particular, \s means a space inside a Spice string but a 1-character regexp
+that matches any whitespace character inside Perl.  Also \( starts a
+Spice string insertion but means a 1-character regexp matching an open
+parenthesis in Perl.
+
+2.  We perceive two distinct kinds of compatibility - compatibility with
+Perl regexps and compatibility with Spice strings.  We decided to
+resolve this contradiction by having two syntaxes for regular
+expressions "traditional" and "native".  The traditional syntax would
+maximize compatibility with Perl / JavaScript / Java.  The native
+syntax woudl vary the convention to suit the Spice programmer.
+
+3.  The traditional regular expression would be introduced with // and
+terminate with /.  This allows cut and paste of regular expressions.
+
+4.  The native syntax will use /" and terminate with ".  This emphasizes
+the connection to Spice strings.
+
+-- 
+Steve
+
+
+
+---------------------------------------------------------------------
+Date: Mon, 1 Oct 2001 10:27:36 +0100
+To: kers@hplb.hpl.hp.com, eh@electric-hedgehog.net,
+ Steve Leach <steve@watchfield.com>, Luc Beaudoin <lucb@telus.net>
+From: Stephen Leach <steve@watchfield.com>
+Subject: Native/Modern Regexps, 2nd draft
+Cc: gjh@bel-epa.com
+
+Hi Chris and Luc,
+
+Here's a revision of the modern regexp syntax in the light of Luc's
+comments.
+
+1. We should adopt a marker character which flags the next character
+as special.  However, seven other characters are special.
+    ?   matches any character
+    |   alternation, R|R'
+    *   repetition, R*
+    {}  brackets without binding backrefs, {R}
+    []  compact 1-character regexps e.g. [2468]
+For the purposes of discussion I have used '%'.  My only strong
+opinion is that we should try to use a character that does not have
+another strong purpose.
+
+n.b. To allow for future expansion, all marker sequences that are
+not specifically allowed are disallowed.
+
+2. I have picked these seven metacharacters because they do not
+occur in typical filenames.  In addition, experience shows that
+making parentheses metacharacters is an error because they are
+frequently escaped in real-world examples.
+
+3. This hybrid approach of marker + metacharacters avoids the two
+extremes of Pop11 and Perl.  Pop11's approach leads to regular
+expressions that are unreadable because of the overuse of the marker
+character.  Perl's approach has so many metacharacters it is far too
+easy to make a mistake.  Hopefully this steers a middle path.
+
+4. In this hybrid approach, we do not want to mark both open and close
+brackets.  We want to write
+    %{???}
+and not
+    %{???%}
+However, this means we need a way of escaping the closing bracket.
+Backslash does this job.  e.g. %{\}} is a valid regexp that binds
+"}" to a backref variable.
+
+5. We should separate backrefs from bracketing.  Again experience shows
+that Perl's approach is the wrong way round.
+
+6. We should allow native regular expressions to be run over several
+lines.  All we probably need is "++" to mean sequencing of regular
+expressions.  i.e. \"foo" ++ \"bar" == \"foobar".  This just starts the
+general discussion of regexp arithmetic.
+
+7. We must permit character classes inside compact 1-character REs.
+The marker character allows us to do this without ambiguity.  In
+other words we want to be able to write a 1-character RE that matches
+any alphabetic character _or_ ":" then we write [%a:].
+
+8. I have suggested that the notation %[N] stands for the Nth hole
+in a regular expression.  I see this as a clean alternative to
+interpolation, since parameterization completely eliminates all the
+quoting issues.  The type of a literal RE with holes in is a
+function, though.  Perhaps this is wrong.  I imagine that the
+parameters can be characters, strings, regexps or functions - the
+latter being the most general form.
+
+
+Here's the scheme so far :-
+
+General
+    {R}         brackets - no backref implied
+    R|R'        alternation
+    RR'         sequence
+    R*          repeat
+
+    R**R'       R{R'R}*
+    R%+         RR*     one or more
+    R%?         {R|}    optional
+    R%(m)       m times R
+    R%(m:)      at least m times R
+    R%(:n)      upto n times R
+    R%(m:n)     m times R followed by upto m-n times R
+
+    %!R         assertion - R will not match at this point
+    %=R         assertion - R will match at this point
+
+
+Interpolation
+    %[N]        the nth RegExp hole, may be applied to
+                    char/string/regexp/function
+
+Compact REs
+    ?           one character
+    [abc]       one of abc
+    [^abc]      not one of abc
+
+Backrefs
+    %{R}        bind R to a backref
+    %N          Nth backref
+
+Character classes (%)
+    %a          alphabetic              {%l|%u} or [%l%u]
+    %b          word boundary
+    %c          word character          {%a|%d|_} or [%a%d_]
+    %d          digit
+    %f          formfeed
+    %l          lowercase alphabetic    [a-z]
+    %n          newline
+    %r          return
+    %s          space
+    %t          tab
+    %u          uppercase alphabetic    [A-Z]
+    %w          whitespace              [%s%t%n%r%f]
+
+Negated character classes
+    %^a         [^%a]
+    etc
+
+Token classes
+    %D          digits                  %d%+
+    %I          integer                 [+-]%D
+    %N          number                  %I{.%D{e%I}%?}%?
+    %W          word                    %a%c%+
+
+
+Backslash - usual meanings
+    \\          backslash       this is how to refer to backslash
+    \%          percent         this is how to quote the marker
+    \{          open bracket    this is how to quote a metacharacter
+    etc etc                     this is how to quote a character!!
+
+
+---------------------------------------------------------------------
+Date:	01/Oct/01
+In-Reply-To:	Luc
+
+
+Given that Spice is so tasty, one thing that comes to mind is designing the
+regular expression syntax so that it can express programmatic Spice pattern
+matching "effects" (matching and substitution).
+
+So one would like to be able to have a pattern expressed not just for syntactic
+matching but arbitrary or semantic matching. E..g, you can write a procedure
+that determines whether there is an instance of the pattern, and which returns
+either a boolean indicating whether there is a match, or a boolean plus a
+replacement for it. The procedure can then be used in the pattern matching.
+
+This can also be used to make pattern matching more concise. So you can write a
+method for "oneof" and then in your pattern matching create a closure using
+oneof that has a list of names (e.g., Bob, Mary, Jane) frozen in it. The closure
+could then be used as a pattern.
+
+Firstly, my RFC on Spice's modern regexps have "holes" instead of interpolation.  Interpolating patterns causes grief in Perl, because the substitution of a string with metacharacters can cause bizarre unintended effects.  This means that the "advanced" Perl programmer must employ quotemeta (see \Q) to interpolate a plain
+string.  The problem is that interpolation is unstructured.  e.g.
+
+#!/usr/bin/perl -w
+my $arg=$ARGV[0];
+my $lhs="(abc";
+my $rhs="def)";
+print $arg =~ m/$lhs$rhs/, "\n";
+
+The above Perl program is completely legal - and horribly illustrates the use of unstructured interpolation.
+
+By contrast, Spice regexp holes are a structured mechanism.  The above
+Perl program has no equivalent (thank goodness).  Let's suppose you
+wanted to write abc<R>def where <R> is a regexp you will supply later.
+Then you would write
+
+/"abc%[1]def"
+
+which would be equivalent to
+
+fun R => /"abc" ++ R ++ /"def" endfun
+
+where "++" is, for the purposes of this discussion only, understood to be the regexp concatenation operator.  The advantage of this approach is that the semantics are compositional.  Phew!
+
+[Aside: I would have liked to use %?N for the Nth hole, echoing the ?N syntax for holes in the main language.  However, I found it hard to satisfactorily replace R%? as the postfix "optional" operator.  I experimented with %[R] meaning {|R} but found it was significantly less readable.  Suggestions welcome.]
+
+What other operators do we need?  Here is a possible set of operators that I shall use for this discussion.
+
+sequence	regexp::seq		RR'
+alternation	regexp::alt		R|R'
+repetition	regexp::many		R*
+		regexp::opt		R%?
+		regexp::oneOrMore	R%+
+		regexp::exactly		R%(m)
+		regexp::atLeast		R%(m:)
+		regexp::upto		R%(:n)
+		regexp::between		R%(m,n)
+separation	regexp::sep		R**R'
+binding		regexp::bind		%{R}
+		regexp::matchVar
+conversion	regexp::toRE
+
+The last function regexp::toRE is the most interesting from the viewpoint of the following discussion since it mediates between the functional view and the object-oriented view; regexps should be seen as functions encapsulated by object wrappers.  (How this is actually implemented is a different question entirely, as always.)
+
+I suggest that the general functional view of a RE is fairly complex.  Its inputs should be at least a base string and a pair of limits to match within; limits are required for power users concerned with efficiency.  It may well also require a binding environment.  The output should consist of a success/fail flag and, on success, an indication of the extent of the match and a replacement action.  For efficiency reasons, the replacement action will not typically be a result but a way to obtain a result.  Such a complex interface will need a variety of convenience functions that simplify the interface for common situations.
+
+The replacement action is proposed for substitution situations.  There are two cases.  The first is where we are employing a regexp as a substitution tool.  This is reminiscent of the rmatches matcher that I discuss further.  The second is where there is an explicit substitution string which includes "backrefs" or "match variables".  In the event of a successful match, the backref/matchvar is by default bound to the substring corresponding to the extent of the match (i.e. the replacement action is, by default, the substring operator!)  However, an explicit replacement action will alter the bindings of the backrefs/matchvars to an arbitrary value.
+
+But, Luc asks, what is a match variable?
+Also, I find binding to enumerated patterns (\1) to not be as friendly as being
+able to bind to identifiers. I.e., if you change one of the patterns, then you
+need to adjust all subsequent backreference pattern numbers.
+
+Well, this is an open question.  Chris and I are rather vague on the relationship between "var", "ident" and match variables at the moment.  For the purposes of this reply, I shall adopt the following debatable viewpoint :-
+
+Declarations such as "var" and "val" introduce new variables and, in a match context, can be considered to return a run-time representation of their "ident record" (to borrow Pop11's jargon) or "ref" (if you're an Algol fan).  The "=" syntax should be considered to be a unification that is not permitted to fail (like --> except two-way.)  You can therefore alias variables x & y by writing
+
+val x = val y;
+
+Regular expressions may employ these "ident records" as match variables.  So it is perfectly OK, if rather peculiar, to write
+
+/"%[1]"( var x )
+
+to get a regular expression that binds the variable x.
+
+So, with the above in mind, we have the power to write potent match expressions.  Let us suppose that "switch/match" is a match, unlike "=" is permitted to fail.  We can now write the equivalent of Pop11's
+
+vars x, y, z;
+if foo matches [ 'a' ?x 'b' ??y 'c' ?z 'd' ] then
+    <blah blah>
+endif
+
+as
+
+switch foo
+match { "a", var x, "b", regexp::many( var y ), "c", var z, "d" } then
+    # Note how much more controlled the access to x, y, and z is.
+    # Pop11, eat your heart out.
+    <blah blah>
+endswitch
+
+
+Do you recall writing lmatches and rmatches for Pop-11 in 1992? here's an e-mail
+snippet of you responding to my message:
+
+1992>> There's a modification of matching that recently occurred to me. It
+1992>> would involve doing something like matching a list against a pattern,
+1992>> except that the result would not be a boolean, (and there need not be
+1992>> side effects on identifiers, local or otherwise, though there could be)
+1992>> but the structure elements 'merged' into the pattern.
+1992>
+1992>Yes -- this seems like a nice variant on the pattern matching theme.  By a
+1992>strange coincidence, -lmatches- can be easily modified to have pretty much
+1992>the effect you want.
+1992>
+1992>What I am thinking of is adding the idea of a transforming procedure to a
+1992>pattern variable.  In other words a pattern variable now looks like this
+1992>    ? x : restriction # converter
+1992>with the obvious optional bits. i.e.
+1992>    ? x
+1992>    ? x : r
+1992>    ? x # c
+1992>    ? x : r # c
+1992>and the same for ?? variables.  The point of the converter procedure would
+be
+1992>to arrange for the pattern variables to be converted to different results
+if
+1992>the pattern match was successful.  Hmmmm not expressing myself well on
+this.
+1992>
+1992>Here's an example of what I'm thinking about.
+1992>
+1992>    instantiate( [1 2 3 4], [% ?? x # length, ?? y # length %] ) =>
+1992>    ** [0 4]
+1992>
+1992>Anyway, I think I'll experiment & let you know what I come up with.
+
+And:
+
+1992>The new stuff is "rmatches".  "rmatches" uses the conversion procedures
+1992>associated with pattern variables.  For example:
+1992>
+1992>    vars x, y, z;
+1992>    [a b c d] rmatches [% ??x:2#rev, ??y#rev %] =>
+1992>    ** [[b a] [d c]]
+1992>
+1992>The basic idea is that the conversion procedure (after the #) is used to
+map
+1992>over the pattern and fill in the results.
+1992>
+1992>    [a b {foo bar} e f] rmatches [% ??=, {% ?x#length, ?y#dup %}, ??= %] =>
+1992>    ** [[a b] {3 bar bar} [e f]]
+
+I see that, sadly, I got rmatches wrong.  The substitution of a segment variable should be a splice and not an insert.  In other words :-
+
+[a b {foo bar} e f] rmatches [% ??=, {% ?x#length, ?y#dup %}, ??= %] =>
+** [ a b {3 bar bar} e f]
+
+Well, an easy mistake to make, I see.
+
+Of course, we could allow Spice to possess a similar kind of mechanism to rmatches (only getting it right this time.)  This is the pattern doing double duty as replacement I alluded to above.  In this case, we simply have to define the replacement actions correctly and then define a rule for composing replacement actions.  For example, the replacement action for regexp::seq( R, R' ) should capture the replacement actions for R and R' and, on success, run them both.
+
+Making this efficient is not simple but, with a little thought, I guess it can be done.
+
+
+
+
+---------------------------------------------------------------------
+Delivered-To: steve@outstation.bel-epa.com
+Delivered-To: steve-steve@watchfield.com
+Status:  U
+From: Chris Dollin <kers@hplb.hpl.hp.com>
+Organization: Hewlett-Packard Laboratories, Bristol
+To: Stephen Leach <steve@watchfield.com>, <lucb@telus.net>
+Subject: Re: Native Regexps
+Date: Tue, 2 Oct 2001 13:59:48 +0100
+Cc: eh@electric-hedgehog.net, Graham Higgins <gjh@bel-epa.com>
+X-ECS-MailScanner: Found to be clean
+
+On Monday 01 October 2001 12:49, Stephen Leach wrote:
+ 
+> By contrast, Spice regexp holes are a structured mechanism.  The above
+> Perl program has no equivalent (thank goodness).  Let's suppose you
+> wanted to write abc<R>def where <R> is a regexp you will supply later.
+> Then you would write
+> 
+> /"abc%[1]def"
+> 
+> which would be equivalent to
+> 
+> fun R => /"abc" ++ R ++ /"def" endfun
+> 
+> where "++" is, for the purposes of this discussion only, understood 
+> to be the regexp concatenation operator.  The advantage of this 
+> approach is that the semantics are compositional.  Phew!
+
+I approve of this approach, except that it makes RE literals with
+holes in them have different types to those without. I'm not sure
+if this is desirable or not.
+
+> I suggest that the general functional view of a RE is fairly complex. 
+
+We could use the denotational semantics of Snobol patterns as a
+basis for discussion. I have the paper somewhere, and in any case
+can remember the principles well enough to reconstruct them ...
+
+The essence is that a pattern match is a function application
+
+    matchFun consequent alternate stringyThingy
+
+The matchFun matches its thing in the StringyThingy (a string,
+or a string with limits, or whatever: it makes no real difference to
+what I'm going to say). If it manages, it calls the consequent,
+passing it the same alternate, and the revised StringyThingy.
+If it fails, it applies the alternate to the unchanged StringyThingy.
+
+    a | b  =  fun (con, alt) => a con (b con alt) endfun
+
+to do an OR: run the left operand a, giving it the same consequent,
+(to do if a succeeds) but with an alternate that tries to run b.
+
+    a ; b  =  fun (con, alt) => a (b con) alt endfun
+
+to do a THEN: run the left operand, with a consequent which runs
+the right operand if successful, otherwise do the alternate.
+
+    null  = fun (con, alt) => con endfun
+
+To match the null string, just use the consequent
+
+    a*    = null | (a ; a*)
+
+To do repetition, pay careful attention to optimisation.
+
+> Well, this is an open question.  Chris and I are rather vague on the 
+> relationship between "var", "ident" and match variables at the 
+> moment.  
+
+For example, "ident" isn't officially in the language, although I have
+no deep religious reasons preventing this.
+
+> Declarations such as "var" and "val" introduce new variables and, in 
+> a match context, can be considered to return a run-time 
+> representation of their "ident record" (to borrow Pop11's jargon) or 
+> "ref" (if you're an Algol fan).  The "=" syntax should be considered 
+> to be a unification that is not permitted to fail (like --> except 
+> two-way.)  
+
+I don't think I agree with this (although this may merely be phrasing).
+The idea of a "match context", ie a syntactic context where variables
+mean something different to what they normally do, needs stronger
+justification.
+
+> You can therefore alias variables x & y by writing
+> 
+> val x = val y;
+
+Er, not as the syntax goes at the moment, you can't. This is longhand
+for "generate a runtime error" (the expression "val y" generates no values,
+while the initialisation for "x" requires exactly one).
+
+In fact I think I'm generally against implicit variable aliasing in general; if
+there's one thing I learned from Algol 68 (and C++ reinforced my prejudices
+here, a task for which it's well-suited), is that dereferencing and devaring
+are *different* and that dereferencing should not be implicit.
+
+I can see the idea -- that "var x" invents a variable and delivers its
+ident record, "var x = E" [or "E -> var x"] binds but doesn't show
+the ident record [and it may not exist] -- but I wonder if that's too
+likely to cause errors in our target audience.
+
+> Regular expressions may employ these "ident records" as match 
+> variables.  So it is perfectly OK, if rather peculiar, to write
+> 
+> /"%[1]"( var x )
+> 
+> to get a regular expression that binds the variable x.
+
+I'd not use the "var" spelling here. I'd use "ident" or, if pushed, something
+symbolic. In fact, as I've mentioned to Steve from time to time, I'd prefer
+a notation that didn't bind any named variables *at all*, preferring
+instead to have a match result be queried for its bindings.
+
+-- 
+Chris "electric hedgehog" Dollin
+C FAQs at: http://www.faqs.org/faqs/by-newsgroup/comp/comp.lang.c.html
+
+
+---------------------------------------------------------------------
+Date:	22/Oct/01
+From:	Chris Dollin
+
+
+> 3. The marker sequence "%," acts as a separator.  It is useful for
+> forcing the end of a marker sequence which would otherwise be ambiguous.
+> The only such case at present is %N which represents a back reference -
+> which is not self-terminating.
+
+Good idea.
+
+> 4. Modern RE literals are written as /"..." and the escaping convention is
+> identical as for strings.  In addition, escaping is understood to inhibit
+> any meta-interpretation.  Hence the proper way to escape the marker
+> character is /"\%".
+
+I'm not sure about this one, but I see the point. I'd also suggest %% to
+mean "literal %".
+
+> 6. Regular expressions with holes _can_ be glued together.  The ordinary
+> concatenation operator will not change the hole-number, however.
+
+We should perhaps have an extra-ordinary one as well, although we
+might hack it with lambda-expressions.
+
+> e.g. /"abc%[1]def" ++ /"pqr%[1]stu"   =^=  /"abc%[1]defpqr%[1]stu"
+>
+> 7. Regular expressions with holes expect further parameters when used
+> to perform a match.  Valid arguments for holes are characters, strings,
+> atoms, regular expressions (including ones with holes), 
+
+With the same arguments?

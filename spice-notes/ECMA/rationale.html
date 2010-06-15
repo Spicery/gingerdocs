@@ -1,0 +1,915 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Evolving ECMAScript into Spice -- a rationale</title>
+</head>
+<body>
+<h1>Evolving ECMAScript into Spice -- a rationale</h1>
+
+<h1><a name="here1"></a> 1 introduction</h1>
+
+<p>This document presents some of the ways in which the current
+definition of Spice differs from ECMAScript 262 and justifies them
+in terms of the goals that Spice was designed to satisfy. Further
+changes are likely as work proceeds on merging ECMAScript and
+Spice.</p>
+
+<p>We attempt to show how these changes can be viewed as
+evolutionary, rather than revolutionary, steps.</p>
+
+<p>In reading this be prepared for syntax like:</p>
+
+<pre>
+  for ... do ... endfor
+
+  while ... do ... endwhile
+
+  switch ... case ... endswitch
+</pre>
+
+<p>rather than the more familiar "C" style syntax:</p>
+
+<pre>
+  for (...)
+   { ... }
+
+  while ( ... )
+   { ... }
+
+  switch ( ... )
+   { ... }
+</pre>
+
+<p>The new syntax makes it easier for programmers to ensure that
+control constructs are correctly nested. However, Spice also
+supports the "C" style syntax for people who don't want to
+change.</p>
+
+<blockquote>
+<p><i>aside</i>. While this document refers throughout to "the
+[Spice] compiler", this is not meant to preclude an interpreted
+implementation. The reader should regard compilation as simply the
+steps required to prepare Spice source for execution, including a
+variety of checks for legality.</p>
+</blockquote>
+
+<p>Existing ECMAScript programs cannot be blindly treated as Spice
+code; they will need conversion. While mechanical translation is
+possible (and we advise that tools to do this be created and made
+available) the full benefits of Spice can only be obtained by
+rewriting code to exploit its new features.</p>
+
+<p><strong>table of contents</strong></p>
+
+<p><br>
+<a href="#here1">1 introduction</a><br>
+<a href="#here2">2 Spice goals</a><br>
+<a href="#here3">3 style sheets</a><br>
+ &nbsp; <a href="#here4">3.1 units</a><br>
+<a href="#here6">4 scaling</a><br>
+ &nbsp; <a href="#here7">4.1 modules</a><br>
+ &nbsp; <a href="#here8">4.2 avoiding gotchas: declarations</a><br>
+ &nbsp; <a href="#here11">4.3 closing-keyword syntax</a><br>
+<a href="#here12">5 expressive power</a><br>
+ &nbsp; <a href="#here13">5.1 array expressions</a><br>
+ &nbsp; <a href="#here14">5.2 procedure expressions</a><br>
+ &nbsp; <a href="#here15">5.3 multiple values</a><br>
+ &nbsp; <a href="#here17">5.4 loops and switches are
+expressions</a><br>
+ &nbsp; <a href="#here18">5.5 loops</a><br>
+ &nbsp; <a href="#here19">5.6 switches</a><br>
+ &nbsp; <a href="#here20">5.7 enumerations</a><br>
+<a href="#here21">6 taming properties: classes, methods, slots, and
+overloading</a><br>
+ &nbsp; <a href="#here22">6.1 property declarations</a><br>
+ &nbsp; <a href="#here23">6.2 class declarations</a><br>
+ &nbsp; <a href="#here26">6.3 uniform reference</a></p>
+
+<h1><a name="here2"></a> 2 Spice goals</h1>
+
+<p>Spice has several more-or-less consistent goals:</p>
+
+<ul>
+<li>declarative support for style-sheets, including support for
+units; style-sheets attach properties (name-value mappings) to XML
+tree nodes specified by patterns.</li>
+
+<li>compilable to native code with speed "comparable" to other
+languages with similar power, say no more than 8 times slower than
+C on code directly expressible in C, and preferably much faster, at
+least as fast as compiled Lisp; when declarations are present,
+access to elements of data-structures should reduce to a few
+machine instructions (preferably one).</li>
+
+<li>space performance comparable to C++ or Lisp, ie simple objects
+occupy only a few words; adding a new slot to a structure should
+increase its size by little more than the space needed for that
+slot.</li>
+
+<li>scalable to large (but not enormous) scripts, hence adding
+support for modularisation, encapsulation, and abstraction, and
+making it easy to do after-the-fact modifications (eg allowing the
+moral equivalent of "adding new methods to an existing
+class").</li>
+
+<li>avoiding "gotchas" such as silent creation of variables on
+assignments (even if those variables are referred to nowhere else,
+because they're actually mis-spellings).</li>
+
+<li>access to code written in other languages should not be
+difficult (although this issue is not addressed in this
+document).</li>
+</ul>
+
+<h1><a name="here3"></a> 3 style sheets</h1>
+
+<p>Style sheets are the original reason for Spice existing. They
+provide a declarative mechanism for attaching rendering properties
+to markup and are used to control how XML tags are mapped to flow
+objects. Such objects are things like paragraphs that know how to
+flow their text within given margins, images, form fields and
+tables etc. Objects can also be interfaces to instruments, or
+databases etc. You can import flow objects from libraries and you
+can write a few lines of script to extend imported flow
+objects. This makes Spice very attractive for building Web-based
+applications using XML.</p>
+
+<p>A style declaration specifies the <i>style properties</i> to be
+attached to a node in an XML tree that satisfies a <i>node
+selector</i>. A node in an XML tree has a <i>tag</i> (in HTML
+terms, the part that says <strong>h1</strong> or <strong>p</strong>
+or <strong>table</strong>) and some <i>attributes</i>. A style
+declaration looks like</p>
+
+<pre><b>
+  style <em>selector</em>
+  {
+     <em>name</em>: <em>value</em> ;
+     <em>name</em>: <em>value</em> ;
+     ...
+     <em>name</em>: <em>value</em> ;
+  }
+</b></pre>
+
+<p>The selector defines a pattern that can be used to check whether
+the style rule matches a given node in the markup tree. The syntax
+and semantics is that defined by W3C's CSS2 specification. See: <a
+href=
+"http://www.w3.org/TR/REC-CSS2">http://www.w3.org/TR/REC-CSS2</a></p>
+
+<p>Selectors match tag names and can place constraints on
+attribute values, ancestor elements, and immediately preceding
+peer elements. This allows style rules to be applied progressively
+as the markup is received over the network, without the need to
+wait until the full markup tree has been parsed. There is no need
+to keep the complete markup tree in memory.</p>
+
+<p>The body of the style rule contains one or more named
+property values. These values are used by flow objects to control
+formatting and to handle events such as rendering requests. This
+places a premium on efficient access to style values. You don't
+want to waste time in a paint method!</p>
+
+<p>To allow flow objects to interpret style property values
+efficiently, we would like to represent them as symbolic
+expressions rather than as character strings. These expressions
+are evaluated at run-time using an environment that provides
+the appropriate context, for instance, defining "100% " as
+the current font height or as the distance between the current
+left and right margins.</p>
+
+<p>Spice doesn't limit style rules to the properties defined by
+CSS. You can use additional properties as appropriate to the
+flow objects you wish to use in your application.</p>
+
+<p>The mechanism for applying the rules to markup trees starts
+with the root node of the markup tree. The <em>display</em>
+property is used to identify the name of a flow object class. An
+instance of this class is created and its format method called to
+format the markup tree. In many cases, the markup tree and the
+flow object hierarchy are isomorphic, i.e. each node in the markup
+tree corresponds to a different flow object. However, you are
+not restricted to this.</p>
+
+<h2><a name="here4"></a> 3.1 units</h2>
+
+<p>Spice allows values to have units attached. This is most obvious
+in the syntax of numeric literals, where the units can be directly
+attached: <strong>44cm</strong> and <strong>10px</strong> are both
+legal Spice values.</p>
+
+<p>A unit has an associated <strong>dimension</strong> (eg <strong>
+mass</strong>, <strong>length</strong>, <strong>time</strong>) and
+<strong>scale</strong> (either <strong>absent</strong> or a number
+and another unit). Values with units can be added and subtracted if
+they have the same dimensions (otherwise an exception is thrown).
+Values with units can be multiplied and divided.</p>
+
+<p>If the scale of a unit is <strong>absent</strong>, then adding
+it to a dimensionally-compatible value will generate a symbolic
+expression, rather than a simple unit value.</p>
+
+<blockquote>
+<p><i>aside</i>. This is required so that stylesheets can contain
+property bindings such as <strong>width: 1cm + 2px</strong>, where
+<strong>px</strong> and <strong>cm</strong> are both lengths but
+the scaling is not known until the rendering object has access to
+the size of pixels.</p>
+</blockquote>
+
+<p>Spice also has <strong>percentage</strong> values, generated by
+the postfix operator <strong>%</strong>; these also generate
+symbolic expressions when added to values with units.</p>
+
+<blockquote>
+<p><i>aside</i>. There is an issue with the use of <strong>
+%</strong> as both the legacy remainder operator and as the
+percentage operator. Abolishing <strong>%</strong> as remainder
+(replacing it with <strong>rem</strong> or <strong>mod</strong>) is
+the cleanest solution, but may fail on legacy issues. A possible
+hack is to recognise the special cases of <strong>%</strong>
+followed by an expression starter (treat it as <strong>
+rem</strong>) or not (treat it as <strong>percent</strong>), but
+this fails with the current stylesheet grammar.</p>
+</blockquote>
+
+<p>The procedure <strong>resolve(u, c)</strong>, where <strong>
+u</strong> is a value with units and <strong>c</strong> is a
+context giving scaling factors for the unscaled units of <strong>
+u</strong>, delivers a single value with units calculated using the
+scaling factors and taking account of any percentages.</p>
+
+<h3><a name="here5"></a> 3.1.1 historical note</h3>
+
+<p>There have been several attempts in the past to define
+programming languages with support for units, yet current popular
+languages don't have it. Why is this?</p>
+
+<p>We suspect it is a combination of several factors. First, such
+languages tried to do all the unit resolution at compile-time,
+representing the values internally as plain numbers. This makes it
+hard to write generic procedures operating on values with units (as
+similarly happened to Pascal's arrays before the various extensions
+for formal array parameters became common).</p>
+
+<p>Second, the same obsession with reducing unit arithmetic to
+machine arithmetic meant that representations which involved store
+allocation (as ours can do) were not considered.</p>
+
+<p>Third, while it is "nice" to be able to operate with units in
+scientific and engineering programs, careful commenting and
+explicit scaling will often serve; there simply wasn't the user
+pressure. However, stylesheet arithmetic needs to be able to
+manipulate values (such as <strong>4px + 20%</strong>) which <i>
+cannot</i> be represented as plain numbers; once the machinery is
+in place to support those, the rest of the unit implementation
+comes cheaply.</p>
+
+<p>If implementations of Spice pay careful attention to the
+efficient implementation of "small" values in a well-chosen set of
+units, much of the space (and some of the time) overhead can be
+saved.</p>
+
+<h1><a name="here6"></a> 4 scaling</h1>
+
+<p>As scripts get larger, it becomes increasingly important to
+avoid trivial mistakes (eg those due to misspellings) and to
+introduce ways in whioch a script can be broken cleanly into
+(reusable) components.</p>
+
+<h2><a name="here7"></a> 4.1 modules</h2>
+
+<p>Spice introduces a simple module system. This allows a script to
+be made up of multiple separate (reusable) components and provides
+the primary encapsulation mechanism. The Spice module system should
+present no problems (apart from new reserved words) to ECMAScript
+programmers.</p>
+
+<p>All declarations can be marked <strong>public</strong> or
+<strong>private</strong>, with <strong>private</strong> being the
+default. A <strong>private</strong> name is simply not accessible
+outside its defining module.</p>
+
+<p>Modules are named with a dot-separated sequence of identifiers.
+Spice does not require there to be any close relationship between
+the name of a module, the name of a file that may contain it, and
+the names of any directories that that file may be in; in
+particular, it is explicitly expected that modules with widely
+differing names be accessible from within a single directory.</p>
+
+<p>Full module names only appear in <strong>module</strong> and
+<strong>import</strong> declarations. Normally a module will import
+other modules "in full": their <strong>public</strong> names are
+visible to the importing module without qualification. However, a
+module may be imported <i>qualified</i>, in which case an
+identifier <strong>x</strong> within an imported module eg <strong>
+alpha.beta.gamma</strong> is referred to as <strong>
+gamma::x</strong>; only the last component (the <i>leafname</i>) of
+the module name is used to qualify identifiers. Where there is
+ambiguity of leafnames, a module may be imported qualified with a
+new leafname.</p>
+
+<p>This means that module names do not appear scattered through a
+module's body, that where they do appear they are not ridiculously
+long, and that name conflicts can be easily resolved.</p>
+
+<h2><a name="here8"></a> 4.2 avoiding gotchas: declarations</h2>
+
+<p>Implicit declarations (such as are found in many scripting
+languages) render them susceptible to spelling mistakes. Spice
+requires declarations.</p>
+
+<h3><a name="here9"></a> 4.2.1 variable declarations</h3>
+
+<p>Spice requires that all variables be declared; this avoids
+misspelling gotchas. The cost to the script-writer is insignificant
+(at worst the insertion of a <strong>var Name</strong> definition
+earlier in the procedure or top-level code).</p>
+
+<p>As a recovery action, the Spice compiler can automatically
+declare undeclared identifiers as top-level variables. Whether or
+not a warning message is generated in browsers could be a matter
+for user preference settings.</p>
+
+<h3><a name="here10"></a> 4.2.2 typed identifiers and results</h3>
+
+<p>To make code easier to understand for the human reader, and to
+give the compiler more opportunity to check and optimise code,
+Spice allows variables, arguments, and procedure results to be
+typed.</p>
+
+<p>For example, the declarations <strong>var x = 3 is Int</strong>
+and <strong>var y: String = "z"</strong> type their new
+identifiers. Only values of the specified types can be assigned to
+those variables. An untyped variable is implicitly typed <strong>
+Any</strong>, and can hold any [single] value whatsoever.</p>
+
+<p>Arguments can be typed, as in <strong>function f( x: Int )
+...</strong>, where <strong>x</strong> is required to be an
+<strong>Int</strong> value. (This permits overloading; see later.)
+The result of a function can be typed, as in <strong>function f()
+returns Int ...</strong></p>
+
+<h2><a name="here11"></a> 4.3 closing-keyword syntax</h2>
+
+<p>As a general rule, Spice allows most C-style control constructs
+to appear in an alternative <i>closing-keyword</i> form, and does
+the same with its new constructs. For example, the C-style</p>
+
+<blockquote>
+<p><strong>if</strong> (E) yes(); <strong>else</strong> no();</p>
+</blockquote>
+
+<p>can be written instead as</p>
+
+<blockquote>
+<p><strong>if</strong> E <strong>then</strong> yes() <strong>
+else</strong> no() <strong>endif</strong></p>
+</blockquote>
+
+<p>The advantages of this are that compiler error reporting is
+better, and that adding (or removing) statements from the then or
+else arms does not involve adding (or removing) braces.</p>
+
+<blockquote>
+<p><i>aside</i>. Additionally it reduces the religious wars about
+where such braces should be written.</p>
+</blockquote>
+
+<p>Also it is easier to see the end of a construct, because it is
+automatically tagged in a way that matches the beginning (making it
+reduntant to attach explanatory comments to closing braces, as is
+sometimes seen in C code).</p>
+
+<h1><a name="here12"></a> 5 expressive power</h1>
+
+<p>"Expressive power" means, roughly, that its easy for the
+programmer to write code that does common things, and that there
+are ways of re-using code that lets you "think big thoughts".</p>
+
+<h2><a name="here13"></a> 5.1 array expressions</h2>
+
+<p>Spice has an explicit <i>array expression</i>; <strong>
+[E<sub>1</sub>, E<sub>2</sub>, ..., E<sub>n</sub>]</strong>
+evaluates to an array whose first component is the value of
+<strong>E<sub>1</sub></strong> and so on.</p>
+
+<blockquote>
+<p><i>aside</i>. The description above takes no account of multiple
+values.</p>
+</blockquote>
+
+<h2><a name="here14"></a> 5.2 procedure expressions</h2>
+
+<p>It is very useful to be able to write a procedure-valued
+expression without having to define a named function, usually
+remote from the place where it is used. Spice borrows from other
+languages the notion of a <i>lambda expression</i>; the form
+<strong>(args =&gt; expression)</strong>, where <strong>
+args</strong> is a sequence of arguments as seen in a procedure
+declaration, represents an anonymous procedure with arguments
+<strong>args</strong> and body <strong>expression</strong>.</p>
+
+<p>Spice lambda expressions can refer to, and update, variables in
+scope where the lambda expression was written; Spice has full
+lexical scope.</p>
+
+<p>Spice has a further shorthand for lambda expressions where the
+body is a procedure call or operator expression where the operands
+are the arguments to the lambda; those operands may be replaced by
+<i>holes</i>, written <strong>_</strong> possibly followed by an
+integer, and the lambda-arguments (and arrow) dropped.</p>
+
+<p>Thus <strong>_ + 1</strong> is shorthand for <strong>(x =&gt; x
++ 1)</strong> [where <strong>x</strong> can be any fresh
+identifier].</p>
+
+<h2><a name="here15"></a> 5.3 multiple values</h2>
+
+<p>Spice introduces expressions with <i>multiple values</i>. The
+principal reason for this is to allow procedure calls to deliver
+multiple results (thus avoiding the need for reference parameters
+and equivalent hacks).</p>
+
+<p>Multiple values are generated by the comma operator; <strong>
+x<sub>1</sub>, x<sub>2</sub></strong> represents the collection of
+values consisting of all the values from <strong>
+x<sub>1</sub></strong> followed by all the values from <strong>
+x<sub>2</sub></strong>. This is how the arguments to a procedure
+call are collected; as a multiple value formed from the argument
+expressions.</p>
+
+<p>A procedure call (or the execution of an operator) consumes <i>
+all</i> the multiple argument values; "extra" ones do not escape.
+The procedure (or operator) checks that the right number of
+arguments have been supplied, and raises an exception if not.</p>
+
+<p>An assignment may involve multiple values, in which case the
+target(s) of the assignment must consume exactly as many values as
+are provided by the source expression. Thus <strong>
+(x,y)=(1,2)</strong> assigns <strong>1</strong> to <strong>
+x</strong> and <strong>2</strong> to <strong>y</strong>, and all of
+<strong>(x,y)=1</strong> and <strong>x=(1,2)</strong> and <strong>
+(x,y)=(1,2,3)</strong> are illegal.</p>
+
+<p>The source expression is evaluated first, and then the
+assignments are done right-to-left. Thus <strong>
+(x,y)=(y,x)</strong> will exchange the values of <strong>x</strong>
+and <strong>y</strong>.</p>
+
+<p>A declaration may also accept multiple values: eg <strong>var
+(x, y) = (1, 2)</strong> declares <strong>x</strong> and <strong>
+y</strong>, and assigns <strong>1</strong> to <strong>x</strong>
+and <strong>2</strong> to <strong>y</strong>.</p>
+
+<blockquote>
+<p><i>implementation aside</i>. We intend that Spice multiple
+values can be implemented using a single value stack, plus local
+copies of the top-of-stack pointer or stack depth counter.</p>
+</blockquote>
+
+<p>Loops (see section 5.5) may deliver multiple values from their
+<strong> break</strong> and <strong>with result</strong> clauses.
+In addition, if the <strong>do</strong> is followed by the
+reserved word <strong>all</strong>, all the results from the loop
+body contribute to the result of the loop. Thus</p>
+
+<blockquote>
+<p><strong>for</strong> i <strong>from</strong> 1 <strong>
+to</strong> 10 <strong>do all</strong> i <strong>
+endfor</strong></p>
+</blockquote>
+
+<p>delivers ten values, the integers from <strong>1</strong> to
+<strong>10</strong>. This is particularly useful for array
+construction, where the entire array value may be built all in one
+go, rather than allocating an array so big and then initialising
+its elements one-by-one.</p>
+
+<h3><a name="here16"></a> 5.3.1 controlling multiple values</h3>
+
+<p>The expression <strong>one E</strong> evaluates <strong>
+E</strong> and picks the first of its values, throwing away the
+rest; if <strong>E</strong> delivers no values, <strong>
+one</strong> delivers the special value <strong>
+absent</strong>.</p>
+
+<p>The expression <strong>none</strong> delivers no values, and the
+expression <strong>none E</strong> evaluates <strong>E</strong> but
+discards all its values.</p>
+
+<h2><a name="here17"></a> 5.4 loops and switches are
+expressions</h2>
+
+<p>In Spice loops (and <strong>switch</strong>es, and <strong>
+if</strong>s) are expressions which return values. The result from
+a <strong>switch</strong> or <strong>if</strong> is the result from
+the arm that is executed. The result from a loop is given by a
+value attached to the <strong>break</strong> that it executes, if
+any, and otherwise by the expression in a <strong>with
+result</strong> clause. This is convenient for searches.</p>
+
+<p>In a statement sequence <strong>S<sub>1</sub>;
+S<sub>2</sub></strong> any results from <strong>
+S<sub>1</sub></strong> are discarded.</p>
+
+<h2><a name="here18"></a> 5.5 loops</h2>
+
+<p>Spice has additional loop structures to those in ECMA 262.</p>
+
+<p>The easy addition is the <strong>until</strong> loop, which is
+just a <strong>while</strong> loop with the test inverted; it is
+available simply to help loops read better.</p>
+
+<p>The more complex addition is a general (and powerful) <strong>
+for</strong> loop syntax which allows several different collections
+of values to be iterated over at the same time, and without the
+programmer having to write explicit stepping code.</p>
+
+<p>The <strong>for</strong> loop introduces a set of <strong>
+bindings</strong> which specify that a variable (thereby declared,
+local to the loop, and immutable) take on the values from some
+collection in turn until one of the collections is exhausted or
+until a <strong>break</strong> is executed or a <strong>
+while</strong> or <strong>until</strong> terminates the loop. For
+example</p>
+
+<blockquote>
+<p><strong>for</strong> ch <strong>in</strong> "alphabetical":
+String <strong>do</strong> ... ch ... <strong>endfor</strong></p>
+</blockquote>
+
+<p>will bind <strong>ch</strong> to successive elements of <strong>
+"alphabetical"</strong> in turn. The <strong>:String</strong>
+informs the compiler (and the human reader) that this is a <strong>
+String</strong> iteration (which is obvious when it's a string
+literal) and allows the compiler to generate efficient string
+access code. (In particular, it does not need to do bounds-checking
+on each access to an element of the string.)</p>
+
+<blockquote>
+<p><strong>for</strong> i <strong>from</strong> 1, ch <strong>
+in</strong> s: String <strong>with result</strong> absent <strong>
+do</strong></p>
+
+<blockquote>
+<p><strong>if</strong> ch == lookFor <strong>then break</strong> i
+<strong>endif</strong></p>
+</blockquote>
+
+<p><strong>endfor</strong></p>
+</blockquote>
+
+<p>This binds <strong>i</strong> to the integers from <strong>
+1</strong> upwards, and <strong>ch</strong> to successive elements
+of the string <strong>s</strong>. If one of those elements is equal
+to <strong>lookFor</strong> then the loop terminates delivering the
+appropriate value of <strong>i</strong>; otherwise it terminates
+delivering <strong>absent</strong>.</p>
+
+<p>Note again that the compiler can use unchecked access to the
+elements of <strong>s</strong> and lightly-checked arithmetic to
+increment <strong>i</strong>, because both identifiers are under
+its control and the type of the iteration is tightly
+constrained.</p>
+
+<p>This multiple-iteration approach, combined with loops as
+expressions and multiple values, makes many searches
+straightforward.</p>
+
+<blockquote>
+<p><i>aside</i>. The iteration techniques for a given type may be
+known by the compiler as special cases, or may be part of the
+specification for the types that may appear after the colon; this
+protocol is not yet fixed.</p>
+</blockquote>
+
+<h2><a name="here19"></a> 5.6 switches</h2>
+
+<p>Spice allows <strong>switch</strong> expressions. The value
+switched on may be any Spice value; it is not restricted to small
+integers. In particular, switching on <strong>String</strong>
+values allows simple table lookups to be done conveniently in-line
+(for example, decoding a small command set from an input
+string).</p>
+
+<p>The case clauses in a Spice switch body are not as free and easy
+as those of C (to reduce gotchas). Each clause consists of a
+non-zero number of <strong>case E:</strong> prefixes, followed by a
+statement sequence. The statement sequence is terminated by the
+next clause, or by a <strong>default:</strong>. The expression
+<strong>E</strong> is not required to be a compile-time constant,
+and may deliver multiple values.</p>
+
+<p>When the <strong>switch</strong> expression is executed, the
+switched value is evaluated and reduced to a single value as for
+<strong>one E</strong>. If there is a compile-time constant case
+label equal (as tested by <strong>==</strong>, which is structural
+equivalence) to this value, the corresponding statement sequence is
+executed. Otherwise, the run-time case labels are tested for
+equality with the switched value, and the first matching one gets
+its statement sequence executed. If no labels match, the <strong>
+default</strong> is executed; if there isn't one, it is as though
+<strong>default: none</strong> had been supplied.</p>
+
+<p>This allows the traditional <strong>switch</strong> on integer
+values, and a less traditional switch on <strong>String</strong>
+values. Spice compilers are expected to do better for <strong>
+String</strong> case labels than a simple linear search (for
+example, by hashing the constant labels and doing a preliminary
+hash-test on the switched value).</p>
+
+<h2><a name="here20"></a> 5.7 enumerations</h2>
+
+<p>Many programs call for a small set of named values,
+distinguished from all other values, to be used as handy labels for
+states -- eg the labels on nodes of a parse tree, or of display
+types. Languages without these <i>enumeration values</i> typically
+have to imitate them with constant named integers, which loses all
+type-safety.</p>
+
+<p>Spice has a shorthand enumeration declaration</p>
+
+<blockquote>
+<p><strong>define enum</strong> EName <strong>=</strong>
+Name<sub>1</sub>, ..., Name<sub>n</sub> <strong>
+enddefine</strong></p>
+</blockquote>
+
+<p>to define enumeration values. <strong>EName</strong> is made the
+name of a new class type (see elsewhere), with the <strong>
+Name<sub>i</sub></strong> being constants bound to instances of
+that type. Each instance has an associated <i>index</i>, which is
+<strong>i</strong> for <strong>Name<sub>i</sub></strong>, and a <i>
+name</i>, with is the obvious name.</p>
+
+<p>Because enumerations are simply shorthand for classes, no new
+linguistic machinery is needed to handle them.</p>
+
+<blockquote>
+<p><i>aside</i>. However, implementors are encouraged to use a
+concise immediate representation for enumeration values.</p>
+</blockquote>
+
+<h1><a name="here21"></a> 6 taming properties: classes, methods,
+slots, and overloading</h1>
+
+<p>The property mechanism of ECMAScript is a neat general-purpose
+mechanism which allows values to be associated with arbitrarily
+many named slots of objects. Unfortunately it suffers from serious
+scalability defects.</p>
+
+<ul>
+<li><strong>speed</strong>: in general, the expression <strong>
+x.f</strong> (equally, <strong>x["f"]</strong>) must be executed
+via a table lookup. This is enormously inefficient for things like
+access to instance variables or methods.</li>
+
+<li><strong>space</strong>: the space overhead for general lookup
+tables is large; against the 1-word plus static overhead for a slot
+in a language such as C++ or Java, the lookup table has more of the
+order of 4 words (key, value, next-in-chain, tag on data type),
+plus the per-instance overhead of having a table at all.</li>
+
+<li><strong>gotchas</strong>: misspellings of properties silently
+update new slots, or silently access default values; neither the
+compiler nor the run-time support can offer much assistance.</li>
+</ul>
+
+<p>While speed and space concerns might be addressed by clever
+implementations, we feel that it is better to have explicit
+language constructs that the compiler can optimise freely.</p>
+
+<h2><a name="here22"></a> 6.1 property declarations</h2>
+
+<p>To address gotchas, Spice requires that properties be declared
+explicitly, using the syntax <strong>property <i>Name</i> = <i>
+Value</i></strong>. For "standard" properties, either that are
+implicitly declared by the language, or they are imported using the
+module system (see elsewhere).</p>
+
+<p>However, Spice replaces many of the uses of properties by method
+and slot declarations in classes.</p>
+
+<h2><a name="here23"></a> 6.2 class declarations</h2>
+
+<p>The notion of <strong>prototypes</strong> in ECMAScript, where
+they appear only as dynamic values with no compile-time syntax, is
+replaced in Spice by <strong>classes</strong> and <strong>class
+definitions</strong>.</p>
+
+<p>The present ECMAScript approach to methods-on-objects relies on
+(a) the inheritance of properties from prototypes and (b) the
+assignment of functions into (typically prototype) properties;
+Spice replaces these with <i>method</i> and <i>slot</i> [instance
+variable, data member] declarations.</p>
+
+<p>A class definition defines a new class object with a specified
+name, and says what slots objects of that class have. Each class
+has an associated <i>prototypical object</i>. All objects have a
+(fixed) associated class, which is returned by <strong>
+typeof</strong>, and the names of classes are legal type names for
+variable and argument declaration.</p>
+
+<h3><a name="here24"></a> 6.2.1 method definitions</h3>
+
+<p>The typical ECMAScript code for setting up methods is replaced
+by Spice definitions and actions as show in the table.</p>
+
+<table border="1">
+<tr>
+<td><strong>ECMAScript</strong></td>
+<td><strong>Spice</strong></td>
+</tr>
+
+<tr>
+<td>Create a prototype object <strong>P</strong></td>
+<td>Declare a class <strong>P</strong></td>
+</tr>
+
+<tr>
+<td>Define a free-standing function <strong>f</strong> to be the
+method</td>
+<td>Define a method <strong>f</strong> in the class <strong>
+P</strong></td>
+</tr>
+
+<tr>
+<td>Assign <strong>f</strong> to <strong>P.f</strong></td>
+<td>(no additional action required)</td>
+</tr>
+
+<tr>
+<td>Fetch the method out referring to <strong>x.f</strong></td>
+<td>Refer simply to <strong>f</strong></td>
+</tr>
+
+<tr>
+<td>Invoke by <strong>x.f(A)</strong></td>
+<td>Invoke by <strong>x.f(A)</strong></td>
+</tr>
+</table>
+
+<p>The principal differences are that the definition of the method
+replaces a function definition and an assignment, and that the
+method is accessed simply by name rather than as a property; the
+calling syntax remains the same.</p>
+
+<blockquote>
+<strong>define class</strong> Example<br>
+
+<blockquote>
+<strong>define method</strong> show() { print( this ) }<br>
+</blockquote>
+
+<strong>enddefine</strong>
+</blockquote>
+
+<p>On in the traditional style of syntax:</p>
+
+<blockquote>
+<strong>class</strong> Example<br>
+{<br>
+
+<blockquote>
+<strong>method</strong> show()<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print( this );<br>
+}<br>
+</blockquote>
+
+}
+</blockquote>
+
+<p><strong>method</strong> seems preferable to
+<strong>function</strong> here, to make it clear that this is a
+method definition rather than a function.</p>
+
+<h3><a name="here25"></a> 6.2.2 slot definitions</h3>
+
+<p>Just as <strong>method</strong> definitions both define what
+happens when a method is called and attach that definition to the
+class, <strong>slot</strong> definitions define slots of a class
+and provide access to those slots.</p>
+
+<blockquote>
+<p><strong>define class</strong> Example2</p>
+
+<blockquote>
+<p><strong>slot</strong> x</p>
+
+<p><strong>slot</strong> y: Int</p>
+</blockquote>
+
+<p><strong>enddefine</strong></p>
+</blockquote>
+
+<p>Instances of <strong>Example2</strong> have two slots, <strong>
+x</strong> and <strong>y</strong>; <strong>y</strong> is required
+to be of type <strong>Int</strong>.</p>
+
+<p>If <strong>E</strong> is an instance of <strong>
+Example2</strong>, then <strong>E.x</strong> gets the value of
+<strong>E</strong>'s x-slot and <strong>E.y</strong> gets the value
+of <strong>E</strong>'s y-slot.</p>
+
+<blockquote>aside: the use of <strong>slot</strong> rather than
+<strong>var</strong> is intended to make it more obvious that
+the declaration is that of a object property. If you want to
+share the value of a slot with all instances of a class, you
+can mark it as <strong>shared</strong>.</blockquote>
+
+<h2><a name="here26"></a> 6.3 uniform reference</h2>
+
+<p>Many programming languages [eg Java, C++] that espouse
+object-orientation, because it supports isolating the details of
+representation from the use of a type, still distinguish between
+access to the value of a slot of a data-structure and calling a
+function bound to that data-structure.</p>
+
+<p>Spice does not do this. The syntax <strong>x.f</strong> is a
+call to the procedure <strong>f</strong> with argument <strong>
+x</strong>. The syntax <strong>x.f(A)</strong> is a call to the
+procedure <strong>f</strong> with arguments <strong>(x,A)</strong>.
+[And thus <strong>x.f</strong> and <strong>x.f()</strong> are
+equivalent.] Slot declarations cause procedures to be generated for
+each slot; in <strong>Example2</strong>, <strong>x</strong> and
+<strong>y</strong> are both defined as methods which extract the
+appropriate slots from instances of <strong>Example2</strong>.</p>
+
+<p>This uniform approach to methods/functions/slots means that a
+developer is free to change how an attribute of an object is
+implemented; it may be extracted with a monadic method or it may be
+a slot -- the calling syntax is the same. Further, methods are
+"just" functions with an implicit <strong>this</strong>
+argument.</p>
+
+<p>Further, it is not just functions that are callable -- other
+object classes are callable, too, in particular properties; hence
+<strong>x.p</strong>, where <strong>p</strong> is a property, will
+"call" <strong>p</strong> (which in turn will do a property lookup
+for <strong>x</strong>).</p>
+
+<h3><a name="here27"></a> 6.3.1 updaters</h3>
+
+<p>Spice's uniform reference would be worthless if it prohibited
+slots to be updated; how do we preserve the notation <strong>x.p =
+E</strong> to assign the value of <strong>E</strong> to <strong>
+x</strong>'s <strong>p</strong>-slot or property?</p>
+
+<p>Every procedure may have an <i>updater</i>. When a procedure
+call appears as the target of an assignment, it is its updater that
+is invoked. Every <strong>slot</strong> procedure has an updater
+that does the obvious thing. User-defined procedures may also be
+given updaters (by declaring them with special syntax).</p>
+
+<h3><a name="here28"></a> 6.3.2 overloading</h3>
+
+<p>If two classes both define slots called <strong>thing</strong>,
+what happens?</p>
+
+<p>Clearly it's not good enough to declare one of the classes the
+"winner" and forget the other definition for <strong>
+thing</strong>; we'd like to allow <strong>x.thing</strong> to
+extract the appropriate value from <strong>x</strong>, whichever
+class it is.</p>
+
+<p>Spice permits procedures to be <i>overloaded</i>, that is, to
+have multiple definitions with different argument types. If an
+overloaded procedure is called, the "most closely matching"
+definition is invoked.</p>
+
+<p>Slot and method definitions are overloaded on their first
+(implicit) argument. Thus different classes may have slots and
+methods with the same name without interference.</p>
+
+<p>Procedures may be overloaded on <i>any</i> of their arguments,
+not just or only the first. This means that script writers do not
+have to write multiple-dispatch code "by hand" when required (ie,
+implement the so-called "visitor pattern"); Spice overloading
+subsumes this.</p>
+
+<p>Spice does not limit overloading to methods defined in classes;
+any function definition can be overloaded. Thus there is no
+artificial line between "methods in a class" and "functions outside
+a class".</p>
+
+<blockquote>
+<p><i>aside</i>. Spice overloading is dynamic, not static, although
+if the compiler can optimise away the method dispatch it may. Thus
+an overloaded method can be passed as a parameter and used on
+objects of different type within the called procedure -- unlike,
+say, C++ and Java.</p>
+</blockquote>
+
+<h3><a name="here29"></a> 6.3.3 dynamic method definition</h3>
+
+<p>Spice does not presently have a mechanism for dynamic method
+definition (whereas present ECMAScript has <i>only</i> that).</p>
+
+<p>If the syntactic approach that Spice uses is inadequate in
+practice for scripting, then additional procedure-call syntax can
+be added to give similar effects.</p>
+</body>
+</html>
+

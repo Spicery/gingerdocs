@@ -1,0 +1,443 @@
+Re: XML Tags (Fake XML)
+
+---------------------------------------------------------------------
+Date:	30/Oct/01
+From:	Chris Dollin
+
+I've been tinkering with Zest's implementation of Spice's fake XML 
+(for which I want a handy name, SML perhaps :-).
+
+I've implemented <(randomExpression) ...> and, because it would be
+madness to demand a matching closing tag in this case, have introduced 
+the symbol </> as a "universal closer". (As it happens, I don't
+implement tag matching at all ... hmm, opportunities for improvement
+there).
+
+I've also implemented <spoo::glorp ...>, which uses the contents of
+the named variable as the tag. (The assumption here is that you've
+imported a package which defines constants for the tags. You can't
+use the unprefixed names, because they'd be treated as literals, so
+the :: syntax does double duty as a deliteraliser.)
+
+More controversially I've implemented <zank:trink ...>, ie only one
+colon, misleadingly similar to the XML notation. The tag here is
+the contents of zank concatenated with the literal "trink"; which
+is, more or less, what the XML notation means. So you can do:
+
+    const prefix = "hello/";
+    <prefix:world/> @xmlTag;
+
+which will print "hello/world". (A smart compiler, ie not mine yet, will
+do the concatenation at compile-time if prefix is a constant.)
+
+This is more in the spirit of experiment than The Designer Speaks.
+
+---------------------------------------------------------------------
+Date:	01/Nov/01
+
+Hi Chris,
+
+
+I've implemented <(randomExpression) ...> and, because it would be
+madness to demand a matching closing tag in this case, have introduced
+the symbol </> as a "universal closer". (As it happens, I don't
+implement tag matching at all ... hmm, opportunities for improvement
+there).
+
+Let adopt this.  I have had exactly the same thoughts.
+
+
+I've also implemented <spoo::glorp ...>, which uses the contents of
+the named variable as the tag. (The assumption here is that you've
+imported a package which defines constants for the tags. You can't
+use the unprefixed names, because they'd be treated as literals, so
+the :: syntax does double duty as a deliteraliser.)
+
+Hmmm - the trouble is that spoo::glorp is a valid XML element name.
+The potential for trouble is real.
+
+The question we must be specific on is what are the tokenization
+rules inside a tag?  Are they the XML rules?  Or are they normal
+Spice rules.  I am sure that the right answer is that normal
+Spice rules are involved.
+
+The next question is whether spoo::glorp is one token or three?
+In other words, can you write
+	spoo :: glorp
+with white space and expect the same effect as without?  If it
+is one token then I think this "trick" doesn't work.  If it is
+three tokens, which strikes me as the more "Spice-like" reading,
+then you could decide to handle "::" this way.
+
+But is it a good idea?  Well, the other thing you might decide to do
+with a sequence of tokens is glue them back together, after checking
+that each one is a valid part of an element name and that the result
+would be a valid element name.  I have already hit this in MillScript
+with programmers writing attributes such as http-equiv.
+
+My strong preference is for the latter choice.  There are getting
+to be a lot of element names that exploit "-" and ":" and I think
+it would be too inconvenient to have to quote the wretched things.
+
+
+More controversially I've implemented <zank:trink ...>, ie only one
+colon, misleadingly similar to the XML notation. The tag here is
+the contents of zank concatenated with the literal "trink"; which
+is, more or less, what the XML notation means. So you can do:
+
+    const prefix = "hello/";
+    <prefix:world/> @xmlTag;
+
+which will print "hello/world". (A smart compiler, ie not mine yet, will
+do the concatenation at compile-time if prefix is a constant.)
+
+This is more in the spirit of experiment than The Designer Speaks.
+
+Same argument applies as above - but much stronger.  We really want to
+be able to write down element names with colons in, these days.
+
+However, I see what you are getting at.  Perhaps we could use a character
+sequence that was not part of an element name?  e.g. "|".
+
+    const prefix = "hello/";
+    <prefix|world/> @xmlTag;     # xmlName would be better, btw
+
+---------------------------------------------------------------------
+From:	Chris Dollin
+Date:	02/Nov/01
+
+Hi Steve,
+
+> >I've also implemented <spoo::glorp ...>, which uses the contents of
+> >the named variable as the tag. (The assumption here is that you've
+> >imported a package which defines constants for the tags. You can't
+> >use the unprefixed names, because they'd be treated as literals, so
+> >the :: syntax does double duty as a deliteraliser.)
+>
+> Hmmm - the trouble is that spoo::glorp is a valid XML element name.
+
+It is? Drat. I thought that ":" was only allowed as part of a namespaced
+name. I'll have to go do some reading.
+
+> The question we must be specific on is what are the tokenization
+> rules inside a tag?  Are they the XML rules?  Or are they normal
+> Spice rules.  I am sure that the right answer is that normal
+> Spice rules are involved.
+
+I'm utterly convinced of it. (Remember that the tokeniser cannot tell
+that its inside a tag, because the preceeding "<" might be a less-than
+token; the parser needs (fragile) context to tell, we don't want that
+replicated in the lexer. The parser *could* tell the lexer about context
+switches, but then you end up with a language you can't even
+*tokenise* without having a full parser!)
+
+> The next question is whether spoo::glorp is one token or three?
+> In other words, can you write
+> 	spoo :: glorp
+> with white space and expect the same effect as without?  If it
+> is one token then I think this "trick" doesn't work.  If it is
+> three tokens, which strikes me as the more "Spice-like" reading,
+> then you could decide to handle "::" this way.
+
+I vote for three tokens.
+
+> But is it a good idea?  Well, the other thing you might decide to do
+> with a sequence of tokens is glue them back together, after checking
+> that each one is a valid part of an element name and that the result
+> would be a valid element name.  I have already hit this in MillScript
+> with programmers writing attributes such as http-equiv.
+
+Urgle. I had forgotten (suppressed, more like) that "-" is a legal
+name character. I don't cope with those at all.
+
+> My strong preference is for the latter choice.  There are getting
+> to be a lot of element names that exploit "-" and ":" and I think
+> it would be too inconvenient to have to quote the wretched things.
+
+See below for ":". The "-" I'm prepared to do some hackery for
+(grammatically, introduce the notion of a "dashed name", which
+is used for names inside FXML).
+
+> Same argument applies as above - but much stronger.  We really want to
+> be able to write down element names with colons in, these days.
+
+Yes. That's the point of the above notation: it mimics XML namespaces,
+which are the things that use ":".
+
+> However, I see what you are getting at.  Perhaps we could use a character
+> sequence that was not part of an element name?  e.g. "|".
+>
+>      const prefix = "hello/";
+>      <prefix|world/> @xmlTag;     # xmlName would be better, btw
+
+If it were not for the XML use of ":", I wouldn't have introduced ":" 
+at all ...
+
+I'm happy to change "xmlTag" to "xmlName", but I suspect that we
+should have a prefix other than "xml" to avoid controversy.
+
+I think some of these issues can be made to go away (or at least
+sit quietly and eat their dinner) with two (big) extensions.
+
+(a) Allow easy reference to the contents of XML files; ie use your
+autoloading trick for large swathes of unmodified XML.
+
+(b) Introduce a quoted-XML construct, where the tokenisation rules
+are more like those of XML (specifically, element text is unquoted,
+colons in tagnames are allowed, and it Takes Work to get back
+into Spice code).
+
+The trouble is that (b) might end up being as hard as XML itself,
+which would be pointless.
+
+
+---------------------------------------------------------------------
+From:	Chris Dollin
+Date:	02/Nov/01
+
+Hi Stevem
+
+> We need to cover hypen and period, as well as a colon.
+
+Bother. I suppose we might want to, but I don't. There's too much
+conflict with their natural use as Spice expressions.
+
+> >>  Same argument applies as above - but much stronger.  We really want to
+> >>  be able to write down element names with colons in, these days.
+> >
+> >Yes. That's the point of the above notation: it mimics XML namespaces,
+> >which are the things that use ":".
+>
+> I understand.  However, what happens when I want to write the following
+> example - taken out of the "XML Pocket Reference"?
+>
+> 	<fo:display-sequence>
+> 	  <fo:block font-size="18pt">
+> 	    "XML Pocket Reference"
+> 	  </fo:block>
+> 	</fo:display-sequence>
+>
+> This use of literal element type names when using formatting objects
+> conflicts with your proposed extension.  Comments?
+
+You declare the variable "fo" and bind it to the appropriate URI. That's
+what namespaces do.
+
+More importantly (he said) consider the following plausible XML taglets:
+
+    <if>, <while>, <function>, <do>, <from>, <to>, <in>, .....
+
+Oops.
+
+---------------------------------------------------------------------
+Date:	02/Nov/01
+
+Hi Chris,
+
+ We need to cover hypen and period, as well as a colon.
+
+Bother. I suppose we might want to, but I don't. There's too much
+conflict with their natural use as Spice expressions.
+
+I've had this in MillScript for a long time and it hasn't been an
+issue.  I don't "feel" that these conflict with their normal use.
+The interior of a tag is obviously a special context.  However, the
+way colons are handled is definitely wrong.
+
+With regard to your suggestions for using colons, I can see that my
+problem is that I do not really understand how namespaces work.
+My previous objections to your colon-based extensions were invalid.
+
+
+More importantly (he said) consider the following plausible XML taglets:
+
+    <if>, <while>, <function>, <do>, <from>, <to>, <in>, .....
+
+Oops.
+
+I do not see any problem with these - am I missing something?  As far as
+I am concerned the inside of a tag is a special quoting context so the
+usual interpretation of reserved words is disabled.  Both of my
+implementations, MillScript and the Palantir/Spice, handle this OK.
+
+
+---------------------------------------------------------------------
+Date:	03/Nov/01
+From:	Chris Dollin
+
+Hi Steve,
+
+> >More importantly (he said) consider the following plausible XML taglets:
+> >
+> >     <if>, <while>, <function>, <do>, <from>, <to>, <in>, .....
+> >
+> >Oops.
+>
+> I do not see any problem with these - am I missing something?  As far as
+> I am concerned the inside of a tag is a special quoting context so the
+> usual interpretation of reserved words is disabled.  Both of my
+> implementations, MillScript and the Palantir/Spice, handle this OK.
+
+That's because you're not using Flux and Yukk.
+
+It takes *work* using those to disentangle the keywords back into
+identifiers. 
+
+My question is: should I do said work (to get those tags into play),
+or wait until I've abandoned Lexx and Yaxx?
+
+---------------------------------------------------------------------
+Date:	03/Nov/01
+
+OK - I have been reading my XML references with respect to XML namespaces.  I now understand and
+agree with your proposal that
+	<foo:bar/>
+should mean something along the lines of
+	<(new ElementName( foo, `bar` ))/>
+
+The second proposal, that
+	<biff::bang/>
+should mean
+	<(biff::bang)/>
+I think _is_ a neat trick.  I like the idea that a package could have a lot of predefined element names for
+use this way.  I am a bit concerned that no part of this name is "quoted".  Just for contrast, had you
+proposed a syntax like this ...
+	<zoom[whoosh]/>
+meaning
+	<( zoom[ `whoosh` ] )/>
+this would have passed muster - because the right hand portion would still be quoted.  Anyhow, this
+seems like a small point.
+
+
+---------------------------------------------------------------------
+Date:	03/Nov/01
+From:	Chris Dollin
+
+> OK - I have been reading my XML references with respect to XML
+> namespaces.  I now understand and
+> agree with your proposal that
+> 	<foo:bar/>
+> should mean something along the lines of
+> 	<(new ElementName( foo, `bar` ))/>
+
+OK. I'm presently using ++ as the composition operator; it should probably be
+a user-definable procedure (not constructor) to allow for more complex
+tinkering.
+
+Hmm. If `foo` is a procedure, it should be applied to `bar`. Double
+hmm.
+
+I'm assuming that we don't go so far as to implement the xmlns:foo
+attributes for namespace scoping, given that we have a real
+programming language to exploit. A thought: should a <x> ... </x>
+region be a scope? I can think of arguments both ways.
+
+> The second proposal, that
+> 	<biff::bang/>
+> should mean
+> 	<(biff::bang)/>
+> I think _is_ a neat trick. 
+
+(bows)
+
+> I like the idea that a package could have
+> a lot of predefined element names for
+> use this way.  I am a bit concerned that no part of this name is
+> "quoted".  Just for contrast, had you
+> proposed a syntax like this ...
+> 	<zoom[whoosh]/>
+> meaning
+> 	<( zoom[ `whoosh` ] )/>
+> this would have passed muster - because the right hand portion would
+> still be quoted.  Anyhow, this
+> seems like a small point.
+
+Perhaps a suitable generalisation of the :-syntax will cope with that anyways.
+
+
+---------------------------------------------------------------------
+
+Message dated 24/Jul/03
+
+My latest addition to JSpice is XML start/end tags and implementing 
+them turned out to be a surprising amount of work.  I had forgotten 
+I needed to implement a decent XML datatype (because org.w3c.dom
+is broken!)
+
+You use start and end tags rather like list brackets.  Here's a simple
+example
+
+     val my_list = <ul> <li> "first" </li> <li> "second" </li> </ul>;
+
+This constructs an unordered list object with two list items as 
+children and sets -my_list- to point at it.
+
+This example, simple as it is, illustrates several key points.  The
+most important is that start/end tags are used to _construct_ objects.
+Unlike some server-side languages, e.g. PHP & JSP, this has nothing
+to do with printing stuff out.  (Call us wacky if you must, but we
+use -print- for printing to an output stream.)
+
+It also shows that the tags 'bracket' ordinary Spice expressions
+and not PCDATA.  This is a key design decision that is vital to
+get right.  By making this choice, we avoid the undesirable
+complexities entailed by quasi-quoting.
+
+[Of course it doesn't work nicely if you really wanted a big
+chunk of XML with a little dash of Spice in it.  In that case,
+don't panic, you aren't really writing Spice but XML.  That's
+the situation that Templates are for.]
+
+It also shows a nice little point that you don't need to put a
+comma between an end-tag and a start-tag.  Experience showed that
+if commas were required, it was very tedious to paste and edit XML 
+fragments and spoilt the visual match with XML.  Making commas 
+optional in this one context is also quite safe.
+
+Here's a nice example that shows a couple of other points.  It
+builds an XHTML table from a Map.
+
+    define makeTable( map, n ) =>
+        <table border=(n) bgcolor="grey">
+            for k ==> v on map do
+                <tr>< td> k </td> <td> v </td> </tr>
+            endfor
+        </>
+    enddefine
+
+Here, the <table> element is given attributes and the
+border attribute is computed dynamically.  The <table> element is
+closed using the special "universal" end-tag </>.  The contents
+of the <table> element are <tr> elements returned by the loop.
+
+As always, you can kick the tyres just by logging in.  I'm now working
+on the OpenSpice.Org website where the JAR file will be available
+as a download, too.
+
+---------------------------------------------------------------------
+Comment from Chris Dollin
+Message dated 26/Jul/03
+
+
+> It also shows a nice little point that you don't need to put a
+> comma between an end-tag and a start-tag.  Experience showed that
+> if commas were required, it was very tedious to paste and edit XML
+> fragments and spoilt the visual match with XML.  Making commas
+> optional in this one context is also quite safe.
+
+Erm ... that depends. The grammatical cost may be high, as in, it's
+difficult to express the grammar unambiguously and clearly.
+Looking at the symbol stream,
+
+<a> <b>      # so far so good
+        < c       # so what's this?
+
+You have to express that the < is not allowed to be a relational operator.
+(Suppose < were generalised to be an ordering relationship so that
+x < y made sense if x and y were xml nodes ...)
+
+It's easy (he said from sad experience) to write a simple recursive
+descent parser that silently disambiguates these problems, and they
+come back to bite you later. We should make sure that however we
+choose to parse Spice we can express it's grammar as, say, LALR(1)
+plus "these are disallowed" post-parse restrictions.

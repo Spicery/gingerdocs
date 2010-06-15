@@ -1,0 +1,3393 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Spice reference manual, v1.3, 23rd September 1998</title>
+</head>
+<body>
+<h1>Spice reference manual, v1.3, 23rd September 1998</h1>
+
+<h1><a name="here1"></a> 1 introduction</h1>
+
+<p>This document is intended to be a relatively terse reference manual
+for the current definition of Spice. A grammar notation is used to
+specify the allowed productions. Terminals are shown in "quotes". * is
+used to indicate zero or more terms, + for one or more terms. Square
+brackets are used for optional terms. Round brackets are used for
+grouping terms.</p>
+
+<pre>
+a ++ ","
+</pre>
+
+<p>is a contraction for</p>
+
+<pre>
+a ("," a)+
+</pre>
+
+<p>Similarly,</p>
+
+<pre>
+a ** ","
+</pre>
+
+<p>is a contraction for</p>
+
+<pre>
+a ("," a)*
+</pre>
+
+<p><br>
+<a href="#here1">1 introduction</a><br>
+<a href="#here2">2 lexis</a><br>
+ &nbsp; <a href="#here3">2.1 words</a><br>
+ &nbsp; <a href="#here4">2.2 marks</a><br>
+ &nbsp; <a href="#here5">2.3 literals</a><br>
+ &nbsp; <a href="#here17">2.4 comments</a><br>
+<a href="#here18">3 top-level syntax</a><br>
+ &nbsp; <a href="#here19">3.1 programs</a><br>
+ &nbsp; <a href="#here20">3.2 aside: qualifiers</a><br>
+ &nbsp; <a href="#here21">3.3 modules</a><br>
+ &nbsp; <a href="#here22">3.4 imports</a><br>
+ &nbsp; <a href="#here23">3.5 style definitions</a><br>
+ &nbsp; <a href="#here26">3.6 property declarations</a><br>
+ &nbsp; <a href="#here27">3.7 procedure definitions</a><br>
+ &nbsp; <a href="#here30">3.8 variable definitions</a><br>
+ &nbsp; <a href="#here31">3.9 class definitions</a><br>
+ &nbsp; <a href="#here32">3.10 unit definitions</a><br>
+ &nbsp; <a href="#here33">3.11 enumeration definitions</a><br>
+<a href="#here34">4 small syntax</a><br>
+ &nbsp; <a href="#here35">4.1 expressions</a><br>
+ &nbsp; <a href="#here65">4.2 type expressions</a><br>
+<a href="#here66">5 scope rules</a><br>
+<a href="#here67">6 the standard library</a><br>
+ &nbsp; <a href="#here68">6.1 exceptions</a><br>
+ &nbsp; <a href="#here69">6.2 generic procedures</a><br>
+ &nbsp; <a href="#here70">6.3 numbers</a><br>
+ &nbsp; <a href="#here71">6.4 enumerations</a><br>
+ &nbsp; <a href="#here72">6.5 values with units</a><br>
+ &nbsp; <a href="#here73">6.6 strings</a><br>
+ &nbsp; <a href="#here74">6.7 symbols</a><br>
+ &nbsp; <a href="#here75">6.8 booleans</a><br>
+ &nbsp; <a href="#here76">6.9 arrays</a><br>
+ &nbsp; <a href="#here77">6.10 locales</a><br>
+ &nbsp; <a href="#here78">6.11 dates</a><br>
+ &nbsp; <a href="#here79">6.12 regular expressions</a><br>
+ &nbsp; <a href="#here80">6.13 procedures</a><br>
+ &nbsp; <a href="#here81">6.14 dictionaries and tables</a><br>
+ &nbsp; <a href="#here82">6.15 io</a><br>
+ &nbsp; <a href="#here84">6.16 types</a><br>
+<a href="#here85">7 appendix: limited spice</a><br>
+<a href="#here86">8 appendix: spice standard modules</a><br>
+<a href="#here87">9 their own destiny</a><br>
+<a href="#here88">10 appendix: syntactic summary</a><br>
+<a href="#here89">11 appendix: operator and symbol table</a><br>
+<a href="#here90">12 appendix: reserved words</a></p>
+
+<h1><a name="here2"></a> 2 lexis</h1>
+
+<p>A Spice program is made up of a series of <i>tokens</i>. Tokens
+are separated by <i>token gaps</i>. Token gaps are unimportant
+except that they mey serve to separate tokens that would otherwise
+combine into single tokens (eg the two tokens "x" and "then" must
+be separated by a gap, otherwise they would be recognised as a
+single token "xthen"), and token gaps containing newlines
+("&lt;nl&gt;") may apply the semicolon insertion rule:</p>
+
+<blockquote>
+<p>The sequence <strong>A &lt;nl&gt; B</strong>, where <strong>
+A</strong> and <strong>B</strong> are tokens, is replaced by
+<strong>A;B</strong> <i>unless</i> there is "good reason" not to;
+specifically, "good reason" is:</p>
+
+<ul>
+<li>either of <strong>A</strong> or <strong>B</strong> is an
+infixed operator, such as <strong>*</strong>, <strong>+</strong>,
+or <strong>?</strong>;</li>
+
+<li>or <strong>A</strong> is an opening bracket, ie <strong>
+(</strong>, <strong>{</strong>, <strong>[</strong>, or any keyword
+<strong>K</strong> with a matching <strong>endK</strong> keyword
+defined;</li>
+
+<li>or <strong>A</strong> demands more tokens to complete the
+constructs it appears in, specifically, it is <strong>
+throws</strong>, <strong>case</strong>, <strong>op</strong>,
+<strong>returns</strong>, <strong>on</strong>, <strong>
+=&gt;</strong>, <strong>var</strong>, <strong>const</strong>,
+<strong>slot</strong>, <strong>shared</strong>, <strong>
+property</strong>, <strong>define</strong>, <strong>unit</strong>,
+<strong>extends</strong>, <strong>with</strong>, or <strong>
+result</strong>.</li>
+</ul>
+</blockquote>
+
+<p>A token gap is any sequence of spaces, newlines, horizontal or
+vertical tabs, and form-feeds, possibly containing comments (see
+below).</p>
+
+<p>A token is a <i>word</i>, a <i>mark</i>, or a <i>literal</i>. A
+word is a sequence of letters and digits; a mark is a sequence of
+mark characters; and a literal is a string, character, numeric, or
+unit constant. The lexis makes no substantive difference between
+those words (or marks) that are reserved and those that may freely
+be used as identifiers (or operators).</p>
+
+<h2><a name="here3"></a> 2.1 words</h2>
+
+<p>A word is a series of digits, letters, underbars ("_"), and
+dollar marks ("$"), startinh with a letter. Words are case
+sensitive and of unlimited length.</p>
+
+<p>Built-in Spice identifiers do not contain underbars or dollar
+marks. Spice conventions are that type names start with upper-case
+letters and that value names do not.</p>
+
+<h2><a name="here4"></a> 2.2 marks</h2>
+
+<p>A mark is either a <i>simple mark</i> or a <i>compound mark</i>.
+A <i>simple mark</i> is one of the characters "(", ")", "{", "}",
+"[", "]", ";", ",". A <i>compound mark</i> is a series of mark
+characters, where a mark character is one of
+"~!@%^&amp;*-+=|:.?/&lt;&gt;". Note that "#" is <i>not</i> a mark
+character.</p>
+
+<p>Note that this means that "&lt;&gt;", "+++", "-&gt;" etc are all
+possible Spice marks; they are reserved for future expansion.</p>
+
+<h2><a name="here5"></a> 2.3 literals</h2>
+
+<h3><a name="here6"></a> 2.3.1 numeric and unit literals</h3>
+
+<p>A numeric literal represents an integer or floating-point
+number, possibly with units, possibly in a radix other than the
+default <strong>10</strong>. Within a numeric literal, underbar
+characters may be present; they are immediately discarded, being
+there only for presentation (eg to make 7<strong>476</strong>294
+readable).</p>
+
+<h4><a name="here7"></a> 2.3.1.1 plain integer literals</h4>
+
+<p>A plain integer literal is a series of digits. It represents the
+obvious number in radix <strong>10</strong>.</p>
+
+<h4><a name="here8"></a> 2.3.1.2 radix-specified integer
+literals</h4>
+
+<p>A radix-specified integer literal consists of a radix specifier,
+which is a series of digits followed by the letter <strong>
+x</strong> (in either case), followed by a series of letters and
+digits. The letters must be consistent with the radix, in that if
+the radix is <strong>k</strong> then no letter past <strong>a + (k
+- 10)</strong> is permitted; if the radix is <strong>10</strong> or
+less, any letters terminate the numeric part of the literal.</p>
+
+<h4><a name="here9"></a> 2.3.1.3 integer literals with units</h4>
+
+<p>A plain integer literal, or a radix-specified integer literal
+with radix <strong>10</strong> or less, may be immediately followed
+by a unit name, which is a series of letters. The integer value
+represents a value in those units. Thus <strong>45cm</strong>,
+<strong>19mile</strong>, and <strong>6seconds</strong> are all
+legal, assuming that those units have been declared.</p>
+
+<p>The value denoted by <strong>nU</strong>, where <strong>
+n</strong> is the number and <strong>U</strong> the units, is that
+returned by <strong>n @inUnits `U`</strong>.</p>
+
+<h4><a name="here10"></a> 2.3.1.4 plain floating literals</h4>
+
+<p>A floating literal is a series of digits, a decimal point, and
+another series of digits; it represents the "obvious"
+floating-point number. It may be followed by an exponent specifier,
+which is the letter <strong>e</strong>, optionally followed by a
+sign (<strong>+</strong> or <strong>-</strong>), followed by a
+plain integer literal.</p>
+
+<h4><a name="here11"></a> 2.3.1.5 radix-specified floating
+literals</h4>
+
+<p>A radix-specified floating literal is a radix specifier followed
+by a series of letters and digits, a decimal point, a series of
+letters and digits, and an optional exponent specifier.</p>
+
+<p>The radix specifier gives the radix of the floating point number
+but not the exponent. If the radix is <strong>10</strong> or less,
+then letters terminate the numeric part of the literal. If the
+radix is more than <strong>10</strong>, the sign in any exponent
+specifier is not optional.</p>
+
+<h4><a name="here12"></a> 2.3.1.6 floating literals with units</h4>
+
+<p>A floating literal with radix <strong>10</strong> or less may be
+followed by a unit name, as for integer literals with units.</p>
+
+<h4><a name="here13"></a> 2.3.1.7 general specification of
+units</h4>
+
+<p>If a number in a radix greater than <strong>10</strong> is
+supposed to be in some units, then one of the general syntaxes for
+values-in-units must be used.</p>
+
+<h3><a name="here14"></a> 2.3.2 string literals</h3>
+
+<p>A string literal is a character sequence starting and ending
+with the character ("). The characters between the quotes are any
+characters except quotes (any flavour), newlines, control
+characters, or backslashes except as permitted by <i>escape
+sequences</i>:</p>
+
+<ul>
+<li>backslash n -- a newline</li>
+
+<li>backslash f -- a form feed</li>
+
+<li>backslash v -- a vertical tab</li>
+
+<li>backslash r -- a return</li>
+
+<li>backslash b -- a backspace</li>
+
+<li>backslash t -- a horizontal tab</li>
+
+<li>backslash s -- a space</li>
+
+<li>backslash backslash -- a backslash</li>
+
+<li>backslash double quote -- a double quote</li>
+
+<li>backslash single quote -- a single quote</li>
+
+<li>backslash reverse quote -- a reverse quote</li>
+
+<li>backslash "(" numeric literal * "," ")") -- the series of
+characters with those Unicode values</li>
+
+<li>backslash u Hex Hex Hex Hex -- the Unicode character with value
+given by the specified four hexadeciaml digits.</li>
+</ul>
+
+<h3><a name="here15"></a> 2.3.3 archaic string literals</h3>
+
+<p>As for string literals, except that "double quotes" are replaced
+by "single quotes".</p>
+
+<p>A string literal using single quotes is permitted for temporary
+backwards compatability <i>only</i>; quotes are too precious to
+consume two of them on a single job.</p>
+
+<p>A string literal in single quotes provokes an archaicString
+recovery action.</p>
+
+<h3><a name="here16"></a> 2.3.4 symbol literals</h3>
+
+<p>As for string literals, except that "double quotes" are replaced
+by "backquotes", and the literal is of type <strong>
+Symbol</strong>.</p>
+
+<h2><a name="here17"></a> 2.4 comments</h2>
+
+<p>A comment is either the mark "//" followed by all characters up
+to a newline or end-of file, or the mark "/*" followed by any
+series of characters excluding "*/" and then by "*/", or the
+unquoted character "#" followed by all characters up to a newline
+or end-of-file.</p>
+
+<h1><a name="here18"></a> 3 top-level syntax</h1>
+
+<p>A Spice program is composed of a collection of <i>modules</i>. A
+module consists of a <i>header</i>, which identifies the module and
+what it relies on, and its <i>body</i>, which is a series of <i>
+definitions</i> possibly interspersed with <i>executions</i>.
+Definitions define variables, procedures, classes, units, and
+styles; executions are expressions that perform some run-time
+activity.</p>
+
+<h2><a name="here19"></a> 3.1 programs</h2>
+
+<p><b>def 1. Program ::= Spice ( Module* | ModuleBody )</b></p>
+
+<p><b>def 2. Spice ::= "spice" String ( "," ( Name ":" Expr ) )
+*</b></p>
+
+<p>The <strong>String</strong> identifies the version of Spice that
+the writer assumed when the module was written; it is a
+dot-separated sequences of integers or names (eg "1.0" or
+"5.beta"). The <strong>Name</strong>-<strong>Expr</strong> pairs
+define settings for compiler preferences; each <strong>
+Expr</strong> must be evaluable at compile-time.</p>
+
+<blockquote>
+<p>No specific preference settings have been defined so far.</p>
+</blockquote>
+
+<h2><a name="here20"></a> 3.2 aside: qualifiers</h2>
+
+<p><strong>Qualifiers</strong> are annotations to declarations.
+Syntactically they look like expressions in square brackets, but
+this is just a dodge to allow for future expansion of the
+syntax.</p>
+
+<p><b>def 3. Qualifier ::= "[" CommaExpr "]"</b></p>
+
+<p>Usually the items of a <strong>Qualifier</strong> will be names
+(such as <strong>public</strong> and <strong>qualified</strong>);
+sometimes they will be more general. Qualifiers are discussed in
+the sections that require them, except we shall mention here two
+general declaration qualifiers:</p>
+
+<ul>
+<li><strong>public</strong>: the identifier(s) are put into the
+public interface of this module, ie, they can be used in modules
+that import this one.</li>
+
+<li><strong>private</strong>: the identifier(s) are <i>not</i> put
+into the public interface of this module; they cannot be referred
+to outside it at all. <strong>private</strong> is the default,
+except for identifiers declared in <strong>public</strong> classes,
+which see.</li>
+</ul>
+
+<h2><a name="here21"></a> 3.3 modules</h2>
+
+<p><b>def 4. Module ::= "module" ModuleName ModuleBody [
+"endmodule" ]</b></p>
+
+<p><b>def 5. ModuleName ::= Word++"."</b></p>
+
+<p>A module name is a seqence of dot-separated identifiers. The
+last name in the sequence is the <i>leafname</i> of the module;
+apart from in <strong>module</strong> and <strong>import</strong>
+constructs, modules are referred to only by their leafname or an
+alias for it. Note SEMI stands for a semicolon character which can
+often be omitted when followed by a newline etc.</p>
+
+<p><b>def 6. ModuleBody ::= Import**SEMI Definition**SEMI</b></p>
+
+<p>A module body consists of its import declarations followed by
+its own definitions. The definitions exported by the imported
+modules are available for use in the definitions; further, <i>
+all</i> the names defined in the defintions are available within
+<i>all</i> of the definitions -- there is no requirement to declare
+before use at the top-level.</p>
+
+<p><b>def 7. Definition ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; StyleDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | ProcedureDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | VarDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | ClassDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | UnitDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | EnumDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | PropertyDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr</b></p>
+
+<p>A definition is a style, procedure, class, unit, enumeration,
+property, or variable definition, or an expression to be evaluated
+when loading the module it appears within.</p>
+
+<h2><a name="here22"></a> 3.4 imports</h2>
+
+<p><b>def 8. Import ::= "import" ( ImportItem [ "from" Expr ] ) **
+","</b></p>
+
+<p><b>def 9. ImportItem ::= [ Qualifier ] ( ModuleName | "(" Expr
+")" )</b></p>
+
+<p>An <strong>import</strong> definition identifies a module to be
+imported and possibly a location to import it from; that location
+is given as a String-valued expression representing a URL. The name
+can be given directly or by the evaluation of an expression.</p>
+
+<p>If the qualifier <strong>public</strong> is given, then all the
+identifiers in the imported module are added to this module's
+public interface. This allows modules to act as "collectors" for
+definitions from several other places.</p>
+
+<p>Normally the imported identifiers can be referred to by their
+simple names. However, if the qualifier <strong>qualified</strong>
+is given, they must be referred to by prefixing them with <strong>
+leafname::</strong>, where <strong>leafname</strong> is the
+leafname of the exporting module. If the qualifier <strong>
+qualified(X)</strong> is given, they must be referred to by
+prefixing them with <strong>X::</strong>.</p>
+
+<p>If two (or more) modules with the same leafname are imported, at
+most one of them is allowed to remain unqualified.</p>
+
+<h2><a name="here23"></a> 3.5 style definitions</h2>
+
+<p>A style definition may be wrapped within a <strong>mode</strong>
+or <strong>media</strong> definition, which constrains what mode or
+medium that the style applies to.</p>
+
+<p><b>def 10. StyleDef ::= Mode | Media | Style</b></p>
+
+<p><b>def 11. Mode ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "define" "mode" Name ( "{" Style * "}" |
+Style * "enddefine" )<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "mode" Name "{" Style * "}"</b></p>
+
+<p><b>def 12. Media ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "define" "media" Name ( "{" Style * "}" |
+"enddefine" )<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "media" Name "{" Style * "}"</b></p>
+
+<p><b>def 13. Style ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp; &nbsp; &nbsp; &nbsp; "define"<br>
+&nbsp; &nbsp; &nbsp; &nbsp; "style"<br>
+&nbsp; &nbsp; &nbsp; &nbsp; Selectors<br>
+&nbsp; &nbsp; &nbsp; &nbsp; ( "{" Property * "}" | "=" Property *
+"enddefine" )<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "style" Selectors "{" Property *
+"}"</b></p>
+
+<p>A <strong>Style</strong> specifies <i>selectors</i>, which
+identify suitable nodes in an XML parse tree, and gives <i>
+properties</i> which apply to those nodes and which specify how
+they are to be rendered.</p>
+
+<h3><a name="here24"></a> 3.5.1 style properties</h3>
+
+<p><b>def 14. Property ::= Name [ ":" PropValue | "=&gt;" Expr ]
+SEMI</b></p>
+
+<p>A <i>style property</i> is a named collection of values, which
+are given either by an expression or as a fixed set of <strong>
+PropValue</strong>s.</p>
+
+<p><b>def 15. PropValue ::= ( PropSeq [ "with mode" Name ] [ "!" ]
+) ++ ","</b></p>
+
+<p><b>def 16. PropSeq ::= Term ++</b></p>
+
+<p>A property value is a CSS-style sequence of alternative-thingies
+separated by commas. Each sequence can be tagged as applying to a
+particular mode.</p>
+
+<p>A property alternative-thingy is a sequence of property items.
+All the items "compose" to form the value of the property.</p>
+
+<p><b>def 17. Term ::= LimitedExpr | BraceStatement</b></p>
+
+<p>A <strong>LimitedExpr</strong> is an expression which consists
+only of brackets, operator expressions, literals, names, and
+function calls. This restriction permits simplicity in parsing.</p>
+
+<p>Within a <strong>BraceStatement</strong>, which is evaluated
+each time the value of this property is demanded, the identifier
+<strong>this</strong> is bound to the current style object
+(allowing the other properties to be fetched from it).</p>
+
+<h3><a name="here25"></a> 3.5.2 style selectors</h3>
+
+<p><b>def 18. Selectors ::= Related ++ ","</b></p>
+
+<p>Several selector patterns may all share the same style
+specification; they are written together, separated by commas.</p>
+
+<p><b>def 19. Related ::= Sibling * [ ":" Name ]</b></p>
+
+<p><strong>Name</strong> is a pseudo-element (a synthetic tag on
+the XML tree) and can only appear at the end of a selector nesting
+sequence; this constraint is inherited from CSS. (There doesn't
+seem to be a good reason for the restriction in Spice.)</p>
+
+<p><b>def 20. Sibling ::= Children ++ "+"</b></p>
+
+<p><b>def 21. Children ::= Element ++ "&gt;&gt;"</b></p>
+
+<p><b>def 22. Element ::= "(" Selectors ")" | Tag [ Attribution
+]</b></p>
+
+<p><b>def 23. Tag ::= Word | Symbol | "*"</b></p>
+
+<p><b>def 24. Attribution ::= "[" AttrValue "]" | "." Name</b></p>
+
+<p>Note that the basic words in a selector may be reserved words;
+you're allowed to call a selector "if" or "endwhile" (but not "++"
+or ")", unless they are quoted as Symbols). The selector
+corresponds to an XML tag; "*" is used to qualify any tag. The
+optional <strong>AttrVal</strong> and <strong>.Name</strong>
+qualifiers restrict the selector to nodes with specific
+properties.</p>
+
+<p>The syntax <strong>.Name</strong> is CSS-compatible shorthand
+for <strong>[Name]</strong>.</p>
+
+<p><b>def 25. AttrVal ::= Word [ "[" AttrBinding ** "," "]"
+]</b></p>
+
+<p><b>def 26. AttrBinding ::= ( "=" | "~=" ) Expr</b></p>
+
+<p>An <strong>AttrVal</strong> restricts the selector match to
+nodes that have the named attribute. Further, if there is an
+<strong>AttrBinding</strong>, the value of that attribute must
+correspond to the binding.</p>
+
+<p>The meaning of "correspond" is that, for "=", the value of the
+attribute and the value of the <strong>Expr</strong> should be
+equal; and for "~=" that the attribute be a string and that the
+value of <tt>Expr</tt> be a string well-contained in the attribute
+(ie surrounded at each end with whitespace or end-of-string).</p>
+
+<blockquote>
+<p>It's entriely likely that this should be reviewed; there's so
+much more possible using Spice data-types.</p>
+</blockquote>
+
+<h2><a name="here26"></a> 3.6 property declarations</h2>
+
+<p><b>def 27. PropertyDef ::= "property" SimpleDecl</b></p>
+
+<p><b>def 28. SimpleDecl ::= Name [ Qualifier ] [ "=" Expr ] [
+TypeWord Type ]</b></p>
+
+<p>A <strong>property</strong> definition makes a property function
+with the given name. A property associates a result value with a
+key value. When a property is looked up for a key value, if there
+is a result value for that key, it is returned; otherwise the
+result value is the property's value on the prototypical object of
+the key's type object (which may itself involve further recursive
+lookup).</p>
+
+<p>A <strong>property</strong> declaration at top level specifies
+the value for [the prototypical object for] <strong>Any</strong>
+[which is <strong>absent</strong>].</p>
+
+<h2><a name="here27"></a> 3.7 procedure definitions</h2>
+
+<p>Procedures are defined by <strong>method</strong> and <strong>
+function</strong> definitions. Methods defined by <strong>method
+new</strong> are <i>initialisers</i> and are used to set up new
+objects; for more details see under expressions.</p>
+
+<p><b>def 29. ProcedureDef ::= SompleFunctionDef |
+NewProcedureDef</b></p>
+
+<p><b>def 30. SimpleFunctionDef ::= "function" Header
+BraceStatement</b></p>
+
+<p><b>def 31. NewProcedureDef ::=<br>
+&nbsp; &nbsp; &nbsp; &nbsp; "define"<br>
+&nbsp; &nbsp; &nbsp; &nbsp; ( "method" [ "new" ] | "function" )<br>
+&nbsp; &nbsp; &nbsp; &nbsp; Header<br>
+&nbsp; &nbsp; &nbsp; &nbsp; [ "throws" Expr ]<br>
+&nbsp; &nbsp; &nbsp; &nbsp; [ "returns" Type ]<br>
+&nbsp; &nbsp; &nbsp; &nbsp; [ "extends" Header ]<br>
+&nbsp; &nbsp; &nbsp; &nbsp; ProcedureBody</b></p>
+
+<p>The <strong>Header</strong> defines the procedure argument's
+names and types, the procedure name itself, and the "expected
+shape" of calls to the procedure. <strong>throws</strong> is a
+placeholder for future expansion. <strong>returns</strong> gives
+the type of the value(s) returned by a procedure.</p>
+
+<p><b>def 32. Header ::= [ Qualifier ] [ "on" Type ] CallShape [
+"=" Arg ]</b></p>
+
+<p>A <strong>Header</strong> has an optional <strong>
+Qualifier</strong>, an optional <strong>on</strong> part, the
+<strong>CallShape</strong>, and an optional updater argument
+<strong>Arg</strong>.</p>
+
+<p>The allowed <strong>Qualifer</strong>s include <strong>
+public</strong> and <strong>private</strong>. A procedure with
+qualifier <strong>frozen</strong> cannot be overloaded outside its
+module; a procedure with qualifier <strong>fluid</strong> can be.
+(By default, <strong>function</strong>s are frozen and <strong>
+method</strong>s are not.) An overloading of a procedure which
+appears outside its owning module must have the qualifier <strong>
+extension</strong>, unless it appears in a <strong>class</strong>
+and extends a method of that <strong>class</strong>.</p>
+
+<p>If the <strong>on</strong> part of the <strong>Header</strong>
+is given, it specifies the type of the first argument to the
+procedure. If the updater argument is given, this definition
+defines the <i>updater</i> of the named procedure, which must be
+declared in this module and have a compatible <strong>
+CallShape</strong>.</p>
+
+<p><b>def 33. CallShape ::= PrefixShape | DottedShape |
+InfixShape</b></p>
+
+<p><b>def 34. PrefixShape ::= NameA [ Arglist ]</b></p>
+
+<p><b>def 35. DottedShape ::= NameB . NameA [ Arglist ]</b></p>
+
+<p><b>def 36. InfixShape ::= ArgA @ NameA [ ArgB ]</b></p>
+
+<p>There are three different <strong>CallShape</strong>s; the
+conventional prefix form <strong>f(x)</strong>, the method-oriented
+form <strong>x.f(a)</strong>, and the infix-oriented form <strong>x
+@f y</strong>. <strong>NameA</strong> is the name of the procedure
+being defined in all cases. The arguments are given by the optional
+<strong>Arglist</strong> for the prefix form, by the <strong>
+Arglist</strong> and <strong>NameB</strong> for the method form,
+and by <strong>ArgA</strong> and <strong>ArgB</strong> for the
+infix form; <strong>ArgA</strong> and <strong>ArgB</strong> are
+both <strong>Arg</strong>s, see below.</p>
+
+<p>A <strong>method</strong> is implicitly in method form, with
+<strong>this.</strong> assumed as the first argument unless
+overridden explicitly. For <strong>method new</strong> it is
+permitted to make the method name the name <strong>C</strong> of
+the current class; in this case, the initialiser is that called by
+expressions of the form <strong>new C</strong>.</p>
+
+<p><b>def 37. Arglist ::= "(" Args ")"</b></p>
+
+<p><b>def 38. Args ::= Arg ** ","</b></p>
+
+<p><b>def 39. Arg ::= Name [ TypeWord [ "!" ] Type | "==" Expr ] |
+[ Name ] "..."</b></p>
+
+<p>An <strong>Arglist</strong> is just a comma-separated list of
+<strong>Arg</strong>s. An <strong>Arg</strong> is a <strong>
+Name</strong>, optionally followed by a <strong>Type</strong>
+introduced by a <strong>TypeWord</strong>, or optionally followed
+by a value introduced by "=="; or [for the last argument only] by
+<strong>...</strong>, making it an <i>indefinite</i> argument,
+bound to an array of all the extra arguments to the procedure. If
+the <strong>Name</strong> is omitted from an indefinite argument,
+the name <strong>arguments</strong> is assumed.</p>
+
+<blockquote>
+<p>All argument identifiers are immutable, ie, cannot be assigned
+to, but if they are data-structures, their components can be
+changed.</p>
+</blockquote>
+
+<p><b>def 40. TypeWord ::= "is" | "as" | ":"</b></p>
+
+<p>The <strong>TypeWord</strong> <strong>is</strong> (and its more
+tightly-binding sibling ":") mean that the argument should be of
+the given type. <strong>as</strong> means that the argument is <i>
+converted</i> to be of that type.</p>
+
+<p>The prefixing of the <strong>Type</strong> with the operator
+<strong>!</strong>, mean that the argument does not take part in
+overloaded dispatch; all overloadings of that procedure must have
+that argument, and mark it as non-dispatch.</p>
+
+<p><strong>== Expr</strong> is equivalent to <strong>: T</strong>
+where <strong>T</strong> is a type whose only value is the value of
+<strong>Expr</strong>, which is evaluated at compile-time.</p>
+
+<p><b>def 41. ProcedureBody ::= BraceStatement | "=&gt;"
+StatementSeq "enddefine"</b></p>
+
+<p>A procedure body is either done C-style, as a statement sequence
+enclosed in braces, or is introduced by <strong>=&gt;</strong> and
+ends with <strong>enddefine</strong>.</p>
+
+<h3><a name="here28"></a> 3.7.1 multiple definition</h3>
+
+<p>A method (or function) with a given name may be defined multiple
+times. If so, it is a <i>polymorphic</i> method. The different
+definitions must have the same number of arguments (up to any
+indefinite arguments) and no two definitions can have the same
+sequence of types for their arguments.</p>
+
+<p>Furthermore, for any pair of definitions with signatures (ie the
+type-sequence of its arguments) <strong>T<sub>1</sub></strong> and
+<strong>T<sub>2</sub></strong>, there must be a definition with
+type-sequence <strong>T<sub>3</sub></strong> where the <strong>
+i</strong>th element of <strong>T<sub>3</sub></strong> is a
+super-type of the <strong>i</strong>th elements of <strong>
+T<sub>1</sub></strong> and <strong>T<sub>2</sub></strong> (note
+that <strong>T<sub>3</sub></strong> might be equal to one of
+<strong>T<sub>1</sub></strong> or <strong>
+T<sub>2</sub></strong>).</p>
+
+<p>A call of such a polymorphic method will execute the most
+specific instance of it, ie, the one whose arguments are as
+specific as possible. In particular, methods can be redeclared in
+classes, when they over-ride the definitions in their parents.</p>
+
+<p>If the <strong>Type</strong> of an argument is of the form
+<strong>T</strong> then the argument is not used for polymorphic
+dispatch and all overloadings must use the same type <strong>
+T</strong> for that argument.</p>
+
+<p>By default, a function can only be overloaded within its
+original module; it must be defined with qualifier <strong>
+fluid</strong> to allow futher overloading. If a function is
+defined with qualifier <strong>only</strong>, then only <i>one</i>
+definition of that function is permitted.</p>
+
+<p>A method is fluid by default; to prevent further overloading, it
+must be declared with qualifier <strong>final</strong>.</p>
+
+<h3><a name="here29"></a> 3.7.2 super and extends</h3>
+
+<p>An overloaded procedure may wish to invoke the "next most
+general" definition to complete (or start) its work. The identifier
+<strong>super</strong> is bound to that next most general
+definition. When there is ambiguity about that, it is resolved by
+the <strong>extends</strong> clause of the function, which takes
+the form of a function call where the operands are all type names;
+<strong>super</strong> is bound to the version of the function that
+takes those types as its argument.</p>
+
+<h2><a name="here30"></a> 3.8 variable definitions</h2>
+
+<p>A variable declaration introduces one or more identifiers, may
+give their initial value, and may give their type.</p>
+
+<p><b>def 42. VarDef ::= ( "const" | "var" ) NameDecl</b></p>
+
+<p><b>def 43. NameDecl ::= [ Qualifier ] SingleDecl ++ "," [ "is"
+Type | "are" Type ]</b></p>
+
+<p><b>def 44. SingleDecl ::= ( OneDecl | "(" OneDecl ++ "," ")" ) [
+"=" Expr ]</b></p>
+
+<p><b>def 45. OneDecl ::= Name [ ":" Type | "..." ]</b></p>
+
+<p>The <strong>Qualifier</strong> may include <strong>
+public</strong> and <strong>private</strong>. A <strong>
+var</strong> may have qualifier <strong>readonly</strong>, in which
+case it cannot be updated outside of its defining module; <strong>
+const</strong>s can never be assigned to. All the names declared in
+a single <strong>const</strong> or <strong>var</strong> declaration
+share the same <strong>Qualifier</strong>.</p>
+
+<p>Each <strong>SingleDecl</strong> may initialise one or more
+names to the value(s) of an <strong>Expr</strong>; if the <strong>
+Expr</strong> is omitted, they are initialised to the default value
+of their type; if no type is specified, they are given type
+<strong>Any</strong>.</p>
+
+<p>A <strong>SingleDecl</strong> will usually contain a single
+<strong>OneDecl</strong>, but it may contain several, in which case
+the <strong>Expr</strong> must be present and they are initialised
+from it as for assignment. The <strong>...</strong> form is not
+permitted except as the last (or only) <strong>OneDecl</strong>; it
+bundles all the (remaining) values from the <strong>Expr</strong>
+into an array which is assigned to the <strong>Name</strong>.</p>
+
+<p>It is forbidden for <strong>OneDecl</strong>s to be typed if the
+entire <strong>NameDecl</strong> is typed, and <i>vice
+versa</i>.</p>
+
+<p>When a <strong>var</strong> or <strong>const</strong> appears at
+top-level, or within a class, it defines a permanent variable that
+comes into existance when the module is loaded and goes away only
+when no references to it remain.</p>
+
+<p>When a <strong>var</strong> or <strong>const</strong> appears
+within a procedure, it defines a local variable; a new location is
+allocated each time the declaration is executed. This location does
+not share with any other location. It persists as long as there are
+any references to it, which means that if it is not captured by any
+lambda-expression or hole-expression referring to it it may be
+disposed of when its scope is left (if not sooner).</p>
+
+<h2><a name="here31"></a> 3.9 class definitions</h2>
+
+<p>A Class defines a shape shared by a collection of objects which
+are its instances. Every Class is itself an object, and has a
+particular instance called its <i>prototypical instance</i>.</p>
+
+<p><b>def 46. ClassDef ::=<br>
+&nbsp; &nbsp; &nbsp; &nbsp; "define"<br>
+&nbsp; &nbsp; &nbsp; &nbsp; "class"<br>
+&nbsp; &nbsp; &nbsp; &nbsp; [ Qualifier ]<br>
+&nbsp; &nbsp; &nbsp; &nbsp; Name<br>
+&nbsp; &nbsp; &nbsp; &nbsp; [ "extends" CommaExpr ]<br>
+&nbsp; &nbsp; &nbsp; &nbsp; ( "{" ClassProperty ** SEMI "}" |
+ClassProperty ** SEMI "enddefine" )</b></p>
+
+<p>The <strong>Name</strong> is defined to be a constant bound to
+the class object, and is suitable for use as a type name.</p>
+
+<p>A class may be qualified as <strong>public</strong>, <strong>
+private</strong>, or <strong>array</strong>; if it is qualified
+<strong>array</strong>, its instances are array-type objects, and
+can be indexed with integers. A <strong>public</strong> class has
+its <strong>method</strong>s and <strong>function</strong>s (but
+not its <strong>slot</strong>s) declared <strong>public</strong> by
+default.</p>
+
+<p>If the <strong>extends</strong> clause is present, its <strong>
+CommaExpr</strong> must be a comma-separated sequence of names of
+other classes, and this class inherits all of their slots. (Slots
+that are inherited twice along different routes of course only
+count once in the new class.)</p>
+
+<p><b>def 47. ClassProperty ::= Procedure | SlotDecl | VarDef |
+Property</b></p>
+
+<p>The properties of a class are its procedures and slots. A
+<strong>NameDecl</strong> within a class acts exactly like a
+<strong>NameDecl</strong> outside a class -- they declare top-level
+permanent identifiers. Within a class, method definitions by
+default give their implicit <strong>this</strong> argument that
+class as their type.</p>
+
+<p><b>def 48. SlotDecl ::= ( "slot" | "shared" ) SimpleDecl</b></p>
+
+<p>For <strong>SimpleDecl</strong>, see the definition of <strong>
+Property</strong>.</p>
+
+<p>Slots are declared by <strong>slot</strong> and <strong>
+shared</strong> declarations. Each <strong>slot</strong>
+declaration arranges that objects of this type have a slot in them,
+suitable for storing values of the given <strong>Type</strong>, and
+defines a procedure <strong>Name</strong> of one argument which has
+the class as its type and whose action is to deliver the value of
+its slot; that procedure also has an updater which alters the value
+of that slot. A <strong>shared</strong> declaration does not
+allocate any slots in the object, but makes a procedure which
+accesses (and updates) a single shared location.</p>
+
+<p>If a slot or shared identifier is qualified <strong>
+readonly</strong>, then the procedure that it exports has no
+updater, although the locally-visible version does.</p>
+
+<p>When an object of this type is constructed, the <strong>
+Expr</strong>s of its <strong>slot</strong>s are run to get the
+initial values for those slots.</p>
+
+<p>A <strong>property</strong> declaration with a <strong>
+class</strong> specifies the value for the prototypical object of
+that <strong>class</strong>.</p>
+
+<h2><a name="here32"></a> 3.10 unit definitions</h2>
+
+<p>A <strong>unit</strong> definition informs the compiler about
+units and their dimensions.</p>
+
+<p><b>def 49. UnitDef ::= "define" ( "unit" | "units" ) UnitDef ++
+"," "enddefine"</b></p>
+
+<p><b>def 50. UnitDef ::= Word [ "=" Expr ]</b></p>
+
+<p>The <strong>Word</strong> of a <strong>UnitDef</strong> is
+declared to be legitimate unit names; they become suffix operators
+(and are allowed as the procedure part of dot-expressions). If the
+<strong>Expr</strong> of a <strong>UnitDef</strong> is present, it
+must be an compile-time expression delivering an anonymous <strong>
+Unit</strong> value, which is named by the <strong>
+Word</strong>.</p>
+
+<blockquote>
+<p>for example, we may have <strong>define unit mile = inch * 12 *
+3 * 1760 enddefine</strong>, which defines <strong>mile</strong> in
+terms of <strong>inch</strong>, or <strong>define unit length = new
+Unit(1,`length`) enddefine</strong>, which defines a new unit of
+dimension `length`.</p>
+</blockquote>
+
+<h2><a name="here33"></a> 3.11 enumeration definitions</h2>
+
+<p><b>def 51. EnumDef ::= "define" "enum" [ Qualifier ] Name "="
+Name ++ "," "enddefine"</b></p>
+
+<p>An <strong>enum</strong> declaration for <strong>Foo</strong> is
+shorthand for declaring a new class called <strong>Foo</strong>
+extending <strong>Enum</strong>, which provides two private slots
+(for the name and the magnitude of enumeration values) and an
+instance of this class for each of the <strong>Name</strong>s. The
+enumeration values atart at <strong>1</strong> and the default
+value for <strong>Foo</strong> is an instance with value <strong>
+0</strong> and name <strong>brokenFoo</strong>.</p>
+
+<p>The compiler will optimise this to in-line enum values when
+possible.</p>
+
+<h1><a name="here34"></a> 4 small syntax</h1>
+
+<p>Most of the rest of the syntax of Spice is in terms of <i>
+expressions</i>. Spice expressions may denote tuples of values; we
+say thay are <i>multiple valued</i>. Spice expressions may be
+evaluated in three modes; <i>value</i> mode, when they are
+evaluated for their value; <i>update</i> mode, when they are
+evaluated to update some location or data structure; and <i>
+void</i> mode, which is value mode except that all the values that
+are delivered are then discarded.</p>
+
+<p>Unless otherwise specified, an expression is illegal in update
+mode. All function calls and operator applications are legal there;
+every procedure <strong>P</strong> can have an updater <strong>
+U</strong>, which is the procedure that is called when a call of
+<strong>P</strong> appears as the target of an assignment.</p>
+
+<h2><a name="here35"></a> 4.1 expressions</h2>
+
+<p>A <strong>Statement</strong> is an expression, or sequence of
+expressions separated by commas. The value of a sequence of
+<strong>Statement</strong>s is the value of the <i>last</i>
+<strong>Statement</strong>; the values of all the others are
+discarded.</p>
+
+<p><b>def 52. Statement ::= Expr ++ "," SEMI</b></p>
+
+<p><b>def 53. StatementSeq ::= Statement *</b></p>
+
+<p><b>def 54. Expr ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; Name<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr "{" UnitExpr "}"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Hole<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Literal<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr "..."<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | PreOp Expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr PostOp<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr InOp Expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr AssignOp Expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "(" Expr ")"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr [ "." DotExpr ] [ "(" OptCommaExpr
+")" ]<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr "[" Expr "]"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "[" Expr "]"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | LambdaExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "op" ( PreOp | InOp | PostOp )<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "new" Name [ "(" Expr ")" ]<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "none" OptExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "return" [ [ "with" ] CommaExpr ]<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "break" [ [ "with" ] CommaExpr ]<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "continue"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "throw" Expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | TryCatchExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "memo" CommaExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | IfExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | WhileExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | ForExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | SwitchExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | BraceStatement<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | VarDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | ProcedureDef</b></p>
+
+<p>Operator expressions are disambiguated by the "usual" precedence
+rules. Here, <strong>Expr</strong> is an expression that cannot
+contain top-level commas.</p>
+
+<p><b>def 55. OptExpr ::= [ Expr ]</b></p>
+
+<p><b>def 56. CommaExpr ::= Expr ++ ","</b></p>
+
+<p><b>def 57. OptCommaExpr ::= [ CommaExpr ]</b></p>
+
+<h3><a name="here36"></a> 4.1.1 name</h3>
+
+<p>A <strong>Name</strong> is either a simple identifier, or an
+imported identifier <strong>short::id</strong>, where <strong>
+short</strong> is the short name of a module and <strong>
+id</strong> is the name of the identifier within it.</p>
+
+<h3><a name="here37"></a> 4.1.2 values with units</h3>
+
+<p>An expression followed by a <strong>UnitExpr in braces puts the
+expression into the specified units. This is used when the unit
+specification cannot contain the unit directly (eg its name begins
+with</strong> x <strong>or it is something like</strong>
+m/s<strong>).</strong></p>
+
+<p><b>def 58. UnitExpr ::= ( Word ** "*" | _ 1 _ ) [ "/" Word **
+"*" ]</b></p>
+
+<p>A <strong>UnitExpr</strong> allows a simple unit expression in
+terms of products and quotients of units.</p>
+
+<h3><a name="here38"></a> 4.1.3 hole</h3>
+
+<p>A Hole is a "virtual operand" used when making partial
+applications. Thus the expression "_ + 1" is a function that adds 1
+to things. The expression "_2 - _1" is reverse subtract; the
+arguments to a partial application are numbered 1..N,
+left-to-right.</p>
+
+<p><b>def 59. Hole ::= "_" [ Integer ]</b></p>
+
+<h3><a name="here39"></a> 4.1.4 literal</h3>
+
+<p>Literals may be symbols, strings, characters, numbers, or
+reserved literals. Symbols, strings, numbers, and reserved literals
+are themselves lexical items.</p>
+
+<p><b>def 60. Literal ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; StringLiteral<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | SymbolLiteral<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | NumberLiteral<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | ReservedLiteral<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Character</b></p>
+
+<p><b>def 61. Character ::= Backslash ( String | Word )</b></p>
+
+<p>A character literal is expressed as a string literal or name
+prefixed by a backslash. If a string, it must be one character
+long, and the character literal is the only character of the
+string. If a name, it must be one of the reserved names <strong>
+newline</strong>, <strong>space</strong>, <strong>tab</strong>,
+<strong>return</strong>, or <strong>formfeed</strong>, with the
+obvious meanings.</p>
+
+<h3><a name="here40"></a> 4.1.5 explosions</h3>
+
+<p>The value of the expression <strong>E...</strong> is the <i>
+explosion</i> of the value of <strong>E</strong>, ie it is
+equivalent to <strong>(E).explode</strong>; all the components of
+all the values of <strong>E</strong>.</p>
+
+<p>In update mode (ie as the target of an assignment) <strong>
+E</strong> must be an updatable expression; it is assigned an array
+constructed of all the values on the source of the expression.</p>
+
+<h3><a name="here41"></a> 4.1.6 prefix operators</h3>
+
+<p>The value of a prefix expression is found by applying the
+procedure bound to the prefix operator to the value delivered by
+the operand, <i>except</i> for the special operator <strong>
+once</strong>, which arranges that its operand is evaluated only
+once, "as soon as possible".</p>
+
+<p>The prefix operator <strong>one</strong> delivers the first of
+its arguments, and <strong>absent</strong> if it called with no
+arguments.</p>
+
+<h3><a name="here42"></a> 4.1.7 postfix operators</h3>
+
+<p>The value of a postfix expression is found by applying the
+procedure bound to the postfix operator to the value delivered by
+the operand.</p>
+
+<p><b>def 62. PostOp ::= LexicalPostfixOperator | "@" ( Word | "("
+Expr ")" )</b></p>
+
+<p>[Note that <strong>@</strong> can serve as a infix or postfix
+call marker.]</p>
+
+<h3><a name="here43"></a> 4.1.8 infix operators</h3>
+
+<p><b>def 63. InOp ::= LexicalInfixOperator | "@" ( Name | "(" Expr
+")" )</b></p>
+
+<p><strong>Note</strong>. The logical operators <strong>
+&amp;&amp;</strong> and <strong>||</strong>, and the relational
+operators <strong>==</strong>, <strong>&lt;=</strong>, <strong>
+&gt;=</strong>, <strong>&lt;</strong>, <strong>&gt;</strong>,
+<strong>!=</strong>, <strong>/==</strong>, <strong>===</strong>,
+<strong>/===</strong> are special in that they all automatically
+<strong>one</strong> their arguments.</p>
+
+<p>Further, the relational operators are <i>continued
+relationals</i>; if <strong>R</strong> and <strong>S</strong> are
+relational operators, the expression <strong>a R b S c</strong> is
+shorthand for <strong>a R b &amp;&amp; b S c</strong>, except that
+<strong>b</strong> is only evaluated once.</p>
+
+<h3><a name="here44"></a> 4.1.9 assignment operators</h3>
+
+<p>The assignment operators <strong>X=</strong> for some operators
+<strong>X</strong> (ie <strong>+=</strong>, <strong>-=</strong>,
+<strong>*=</strong>, <strong>/=</strong>, <strong>&amp;=</strong>,
+<strong>|=</strong>, <strong>^=</strong>) are shorthand for
+assignments where the target and left operand of <strong>X</strong>
+are the same, ie, <strong>E<sub>1</sub> X= E<sub>2</sub></strong>
+is equivalent to <strong>E<sub>1</sub> = E<sub>1</sub> X
+E<sub>2</sub></strong> except that side-effects of <strong>
+E<sub>1</sub></strong> are only applied once.</p>
+
+<p>The assignment operator <strong>=</strong> evaluates its left
+operand in update mode with the "source value" being its right
+operand.</p>
+
+<p>The left operand is some sequence of updateable expressions, and
+the right operand has delivered some sequence of values.
+Assignments are done right-to-left; each assignment target takes
+the appropriate number of values from the right-hand end of the
+value sequence and the rest of the value sequence is handed to the
+remaining targets. If the assignment target is an identifier, one
+value is assigned into it. If it is a procedure call, its updater
+is invoked, passing it the remaining values to assign (it will
+return those it does not need).</p>
+
+<blockquote>
+<p>At most one assignment target in an assignment is allowed to be
+a procedure call with an updater which takes an indefinite number
+of assigned values. (Otherwise, in <strong>(f(), g()) =
+(1,2,3)</strong>, where <strong>f</strong> and <strong>g</strong>
+both have indefinite updaters, there would be no way to tell how
+the values were to be distributed between <strong>f</strong> and
+<strong>g</strong>.)</p>
+</blockquote>
+
+<h3><a name="here45"></a> 4.1.10 bracketed expressions</h3>
+
+<p>The expression <strong>(E)</strong> has the same value that
+<strong>E</strong> does.</p>
+
+<h3><a name="here46"></a> 4.1.11 call expressions</h3>
+
+<p>The expression <strong>x.f</strong> is a call of <strong>
+f</strong> with argument(s) <strong>x</strong>, as are the
+expressions <strong>f(x)</strong> and <strong>x @f</strong>. The
+expression <strong>x.f(y)</strong> is a call of <strong>f</strong>
+with arguments <strong>(x,y)</strong>, as is <strong>x @f
+y</strong>.</p>
+
+<p>When a call appears as the target of an assignment, eg <strong>
+f(x)=E</strong>, it is equivalent to calling the updater of
+<strong>f</strong> with the argument list <strong>
+(x,E)</strong>.</p>
+
+<p><b>def 64. DotExpr ::= Name | "(" Expr ")"</b></p>
+
+<p>The expression permitted after a dot may be a <strong>
+Name</strong> or an arbitrary expression in brackets.</p>
+
+<h3><a name="here47"></a> 4.1.12 array expressions</h3>
+
+<p>The expression "[E]" is an <i>array expression</i>; it creates a
+new array by evaluating its operand and piling all the results into
+the new array.</p>
+
+<h3><a name="here48"></a> 4.1.13 index expressions</h3>
+
+<p>The value of the expression <strong>a[i]</strong> is that
+obtained by calling the <i>index function</i> associated with the
+type of <strong>a</strong>, supplying it with <strong>a</strong>
+and <strong>i</strong>. If <strong>a</strong> is an array, this
+attempts to index the array. If <strong>a</strong> is a table, it
+looks <strong>i</strong> up in that table. Otherwise it attempts to
+find the <strong>i</strong>-property of <strong>a</strong>.</p>
+
+<p>When an index expression is used in update mode, the updater of
+the associated index function is called.</p>
+
+<h3><a name="here49"></a> 4.1.14 lambda expressions</h3>
+
+<p>A lambda-expression is an inline procedure definition; it is the
+procedure taking the specified arguments and computing the desired
+result.</p>
+
+<p><b>def 65. LambdaExpr ::= "(" Args "=&gt;" StatementSeq
+")"</b></p>
+
+<h3><a name="here50"></a> 4.1.15 op expressions</h3>
+
+<p>The "op" syntax allows operators to be converted into the
+corresponding functions. Only operators that do not assign to their
+arguments can be so converted (because Spice does not have
+pass-by-reference). By a happy coincidence, this eliminates those
+operators that have different meaning in their prefix and postfix
+forms, apart from "+" and "-"; we declare that "op +" means
+addition and "op -" means subtraction. The standard functions
+"positive" and "neg[ative]" correspond to the prefix "+" and
+"-".</p>
+
+<p>The procedures delivered by <strong>op &amp;&amp;</strong> and
+<strong>op ||</strong> will, of course, have both arguments
+evaluated when they are called.</p>
+
+<h3><a name="here51"></a> 4.1.16 new expressions</h3>
+
+<p>A <strong>new</strong> expression <strong>new Id(E)</strong>
+extracts the prototypical object <strong>PI</strong> for <strong>
+id</strong>, makes a <strong>copy</strong> of that object, and then
+hands it to <strong>Id</strong> together with the arguments
+<strong>E</strong>:</p>
+
+<blockquote>
+<p>new Id(X) == Id.getPrototypicalInstance.copy.Id( X )</p>
+</blockquote>
+
+<p>If the argument list <strong>(E)</strong> is omitted, this does
+<i>not</i> mean that it is present but empty; it is as though one
+had written</p>
+
+<blockquote>
+<p>(X =&gt; new Id( X ))</p>
+</blockquote>
+
+<p>where <strong>X</strong> can denote multiple values. <strong>
+Id</strong> should be a constructor function or a class object (if
+the latter, no arguments should be supplied).</p>
+
+<h3><a name="here52"></a> 4.1.17 none expressions</h3>
+
+<p>The expression <strong>none</strong> denotes no values. The
+expression <strong>none E</strong> evaluates <strong>E</strong> and
+discards all the values it computes.</p>
+
+<h3><a name="here53"></a> 4.1.18 return expressions</h3>
+
+<p>The expression <strong>return E</strong> or <strong>return with
+E</strong> evaluates <strong>E</strong> and then returns from the
+current procedure. <strong>return</strong> is equivalent to
+<strong>return none</strong>.</p>
+
+<h3><a name="here54"></a> 4.1.19 break expressions</h3>
+
+<p>The expression <strong>break E</strong> or <strong>break with
+E</strong> evaluates <strong>E</strong> and then breaks out of the
+current loop, bypassing the evaluation of its <strong>with
+result</strong> clause (if any). <strong>break</strong> is
+equivalent to <strong>break none</strong>.</p>
+
+<h3><a name="here55"></a> 4.1.20 continue expressions</h3>
+
+<p>The expression <strong>continue</strong> abandons evaluation of
+the current loop iteration and starts the next one.</p>
+
+<h3><a name="here56"></a> 4.1.21 throw and try expressions</h3>
+
+<blockquote>
+<p><i>this section is present for discussion</i>. We need to clear
+up some details to do with error-handling in general. But this
+stuff is "known technology", so we should be OK.</p>
+</blockquote>
+
+<p>The expression <strong>throw E</strong> raises an exception with
+value the value of <strong>E</strong>. If this exception is not
+caught within the program, it is caught by the top-level Spice
+environment, which will deal with it in an implementation-specific
+fashion.</p>
+
+<p>The <strong>try</strong> expression allows exceptions to be
+caught and handled.</p>
+
+<p><b>def 66. TryCatchExpr ::= "try" StatementSeq CatchSeq
+"endtry"</b></p>
+
+<p><b>def 67. CatchSeq ::= ( "catch" Arglist [ "with" ]
+StatementSeq ) **</b></p>
+
+<p>The <strong>StatementSeq</strong> of the <strong>try</strong> is
+evaluated and the <strong>try</strong> expression resturns its
+result if no exception is thrown. If an exception <strong>
+E</strong> is thrown, then the <strong>catch</strong> body who's
+<strong>Arglist</strong> best matches the thrown value is executed
+(just as though the <strong>catch</strong> blocks were alternative
+definitions for an overloaded function) and the reult of the
+<strong>try</strong> is the result of that <strong>catch</strong>
+block.</p>
+
+<p>If there is no <strong>catch (x: Any)</strong> catch clause, it
+is as though the clause <strong>catch (x:Any) with throw x</strong>
+had been supplied.</p>
+
+<blockquote>
+<p>Note that this is <i>not</i> sequential testing. Sequential
+testing means that you have to write the general case last, not
+first, and makes things more order-dependant than they need be.
+Making the <strong>catch</strong> clauses share the semantics of
+procedure call makes the language more coherent and offers
+alternative implementation tactics.</p>
+</blockquote>
+
+<h3><a name="here57"></a> 4.1.22 memo expressions</h3>
+
+<blockquote>
+<p><i>this section is present for discussion as a placeholder for a
+possible future facility</i>.</p>
+</blockquote>
+
+<p>Evaluating the expression <strong>memo E</strong> delivers no
+values, but arranges that the expression <strong>E</strong> will be
+evaluated when the current scope is left, <i>however it is left</i>
+-- even if there's an exception thrown. Memoised expressions are
+evaluated in reverse order of their appearance.</p>
+
+<p>If the current scope is a <strong>try</strong> expression body,
+its <strong>memo</strong> expressions are evaluated at the end of
+its <strong>catch</strong> blocks if an exception is thrown. If
+not, if an exception is throw, the <strong>memo</strong>
+expresssions are evaluated before the excetion "escapes" out to any
+enclosing <strong>try</strong>-expression.</p>
+
+<h3><a name="here58"></a> 4.1.23 if</h3>
+
+<p>An <strong>if</strong> expression expresses a choice. Both
+C-style (including the "ternary operator" <strong>E?E:E</strong>
+form) and new-style if-endif forms are supported.</p>
+
+<p><b>def 68. IfExpr ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; NewIfExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr "?" CommaExpr ":" Expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "if" "(" Expr ")" Statement [ "else"
+Statement ]</b></p>
+
+<p><b>def 69. NewIfExpr ::=<br>
+&nbsp; &nbsp; &nbsp; &nbsp; ( "if" | "unless" )<br>
+&nbsp; &nbsp; &nbsp; &nbsp; Expr<br>
+&nbsp; &nbsp; &nbsp; &nbsp; Then<br>
+&nbsp; &nbsp; &nbsp; &nbsp; StatementSeq<br>
+&nbsp; &nbsp; &nbsp; &nbsp; ( "elseif" Expr Then StatementSeq )<br>
+&nbsp; &nbsp; &nbsp; &nbsp; * [ "else" StatementSeq ]<br>
+&nbsp; &nbsp; &nbsp; &nbsp; ( "endif" | "endunless" )</b></p>
+
+<p><b>def 70. Then ::= "then" | "do"</b></p>
+
+<p>An <strong>if</strong> must have a matching <strong>
+endif</strong>, and an <strong>unless</strong> must have a matching
+<strong>endunless</strong>. <strong>then</strong> and <strong>
+do</strong> are equivalent in <strong>if</strong> and <strong>
+unless</strong> expressions.</p>
+
+<h3><a name="here59"></a> 4.1.24 aside: loop results and "all"</h3>
+
+<p>The <strong>while</strong>, <strong>until</strong> and <strong>
+for</strong> loops of Spice all deliver results. Normally, a loop
+delivers one result, either from its <strong>with result</strong>
+clause, or, if the loop terminates early using <strong>
+break</strong>, from the <strong>break</strong> expression.
+However, if the loop's <strong>do</strong> is followed by <strong>
+all</strong>, <i>all</i> of the results of the loop body are part
+of the loop result.</p>
+
+<p><b>def 71. LoopDo ::= [ "with" "result" CommaExpr ] "do" [ "all"
+]</b></p>
+
+<p>All breaks in a loop <strong>with result</strong> must have
+associated <strong>Expr</strong>s, and if a loop has a
+break-with-<strong>Expr</strong> it must have a <strong>with
+result</strong>.</p>
+
+<h3><a name="here60"></a> 4.1.25 while and until</h3>
+
+<p>The <strong>until</strong> loop is equivalent to the <strong>
+while</strong> loop with the test inverted.</p>
+
+<p><b>def 72. WhileExpr ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "while" Expr LoopDo StatementSeq
+"endwhile"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "until" Expr LoopDo StatementSeq
+"enduntil"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "while" "(" Expr ")" Statement</b></p>
+
+<h3><a name="here61"></a> 4.1.26 for</h3>
+
+<p><b>def 73. ForExpr ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "for" ForBindings LoopDo StatementSeq
+"endfor"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "for" "(" Name "in" Expr ")"
+StatementSeq<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "for" "(" CIteration ")"
+Statement</b></p>
+
+<p><b>def 74. CIteration ::= [ [ "var" ] Name "=" Expr ] SEMI
+OptExpr SEMI OptExpr</b></p>
+
+<p><b>def 75. ForBindings ::= ( ForBinding | "while" Expr | "until"
+Expr ) ++ ","</b></p>
+
+<p>A <strong>ForBinding</strong> binds names to sequences of
+values. The <strong>while</strong> and <strong>until</strong> forms
+allow the loop to be terminated early without having to use
+<strong>break</strong>.</p>
+
+<p><b>def 76. ForBinding ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; [ "each" ] ForName "in" Expr [ ":" Type
+]<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | ForName "from" Expr [ "to" Expr ] [
+"step" Expr ]</b></p>
+
+<p><b>def 77. ForName ::= Name [ TypeWord Type ]</b></p>
+
+<p>For-loop identifiers are declared there, are immutable, and are
+local to the loop. What is more, a <i>new</i> identifier is bound
+each time round the loop (this is noticable only if the loop body
+forms closures using lambda-expressions or holes which involve the
+identifiers).</p>
+
+<p>The meaning of a <strong>ForBindings</strong> is that each
+<strong>Name</strong> introduced is given successive values from
+its <strong>Expr</strong>, in parallel (ie on the <strong>
+N</strong>th iteration each <strong>Name</strong> has its <strong>
+N</strong>th value), until at least one of the <strong>
+Expr</strong>s is exhausted. If a <strong>Type</strong> on the
+<strong>Expr</strong> is given, the <strong>Expr</strong> should be
+of that type, and a type-specific iteration is done; otherwise it
+is as though it had been written as <strong>[Expr
+@explode]:Array</strong>.</p>
+
+<p>The form <strong>from E<sub>1</sub> to E<sub>2</sub></strong> is
+equivalent to <strong>in [E<sub>1</sub>..E<sub>2</sub>]</strong>.
+If <strong>step E</strong> is used, the increment between values is
+<strong>E</strong> rather than the default <strong>1</strong>. If
+<strong>to E</strong> is omitted, then the loop is unbounded (it
+will terminate only via <strong>break</strong> or if a parallel
+iteration terminates).</p>
+
+<p>The <strong>for</strong>-form <strong>for (Name in
+Expr)</strong> binds <strong>Name</strong> to each property of
+<strong>Expr</strong> in turn.</p>
+
+<h3><a name="here62"></a> 4.1.27 switch</h3>
+
+<p><b>def 78. SwitchExpr ::= "switch" Expr ( "{" Case ** ";" "}" |
+"into" Case ** ";" "endswitch" )</b></p>
+
+<p>Switches are available in C-style or Spice-style.</p>
+
+<p><b>def 79. Case ::= ( "case" CommaExpr ":" ) + StatementSeq |
+"default" [ ":" ] StatementSeq</b></p>
+
+<p>Each <strong>case</strong> clause starts with some number of
+<strong>case</strong> expressions (or <strong>default</strong>) and
+is followed by the expressions to evaluate when the switch
+expression takes the value of one of those labels.</p>
+
+<p>A Spice switch may switch on <i>any</i> values; it is not
+restricted to integer constants (although it may be much more
+efficient on them). In particular, a Spice switch may switch on
+strings and symbols.</p>
+
+<p>A <strong>switch</strong> can have at most one <strong>
+default</strong>.</p>
+
+<p>The result from a <strong>switch</strong> is the result from the
+selected <strong>case</strong> statement or statement sequence.
+Thus a <strong>switch</strong> may deliver multiple values.</p>
+
+<h3><a name="here63"></a> 4.1.28 brace expressions</h3>
+
+<p>A brace expression is just a syntactic grouping of statements,
+and delivers the value that statement sequence delivers.</p>
+
+<p><b>def 80. BraceStatement ::= "{" StatementSeq "}"</b></p>
+
+<h3><a name="here64"></a> 4.1.29 var and procedure expressions</h3>
+
+<p>A <strong>VarDef</strong> and a <strong>ProcedureDef</strong>
+counts as expressions, but they deliver no values.</p>
+
+<p>Note that this means that procedure definitions may be nested. A
+procedure may access the local variables of the procedure that it
+appears in; Spice has full lexical scope.</p>
+
+<h2><a name="here65"></a> 4.2 type expressions</h2>
+
+<p>A <strong>type expression</strong> is syntactically an
+expression. While the operators of a type expression look the same
+as those in a value expression, they have different meanings.</p>
+
+<p><b>def 81. Type ::= Expr</b></p>
+
+<p>The language of type expressions is intended to allow the
+programmer to give the compiler useful information about the
+program.</p>
+
+<p>The basic type expression is the <i>name</i>. A name used as a
+type expression should be the name of one of the built-in types or
+a class. <strong>Any</strong> is the name of the universal type,
+<strong>Object</strong> is the name of all object types.</p>
+
+<p>If <strong>T</strong> and <strong>U</strong> are
+type-expressions, the type-expression <strong>T|U</strong> is the
+union of the two types; any <strong>T</strong> or <strong>
+U</strong> will do.</p>
+
+<p>If <strong>T</strong> is a type-expression, then <strong>
+T??</strong> represents the <i>optional type</i> of <strong>
+T</strong>; it is the type of values which may be <strong>
+T</strong> or may be the value <strong>absent</strong>. <strong>
+absent</strong> is also spelt <strong>null</strong>.</p>
+
+<p>If <strong>T</strong> and <strong>U</strong> are
+type-expressions, so is <strong>T,U</strong>, which represents the
+type of multiple values with first component(s) or type <strong>
+T</strong> and second component(s) of type <strong>U</strong>.</p>
+
+<p>If <strong>T</strong> is a type expression then so is <strong>
+T**</strong>, the type of lots of multiple values all of type
+<strong>T</strong>.</p>
+
+<p>If <strong>T</strong> is a type-expression, <strong>T[]</strong>
+("array of T", "row of T") is the type of arrays who's elements are
+required to be of type <strong>T</strong>.</p>
+
+<h1><a name="here66"></a> 5 scope rules</h1>
+
+<p>Spice has simple scope rules.</p>
+
+<p>All the <strong>Definition</strong>s in a module are mutually in
+scope. <strong>class</strong>es do not introduce new scopes; the
+declarations within a class put names into the top-level namespace.
+The same name cannot legally declared more than once, except that
+procedures with the same name may be defined multiple times with
+type-distinct parameter lists. (As <strong>slot</strong>s are
+procedures, this means that different classes can have slots with
+the same name.)</p>
+
+<p>A procedure definition introduces a new scope; the arguments and
+the body share that scope. (Thus is it illegal to have two
+arguments with the same name, or an argument to have the same name
+as a top-level local of the procedure.)</p>
+
+<p>A <strong>LambdaExpr</strong> introduces a new scope. All the
+names from the surrounding scope are visible inside the lambda,
+with the same rights; in particular, it is permitted to assign to
+locals of the surrounding context, and for this to "work": Spice
+has full lexical scoping.</p>
+
+<p>A <strong>try</strong> expression introduces a new scope which
+extends to the first <strong>catch</strong> clause (or to the
+<strong>endtry</strong> if there are no explicit <strong>
+catch</strong> clauses). A <strong>catch</strong> clause introduces
+a new scope which ends at the next [non-nested] <strong>
+catch</strong> or <strong>endtry</strong>.</p>
+
+<p>A <strong>BraceStatement</strong> introduces a new scope which
+ends at its closing brace.</p>
+
+<p>Each of the arms of an <strong>if</strong> or <strong>
+unless</strong> expression have their own scopes. The body of a
+<strong>while</strong> or <strong>until</strong> loop is a scope.
+(What's more, variables declared in the body of a loop are
+re-declared <i>each time round the loop</i>.)</p>
+
+<p>Each <strong>SpiceCase</strong> introduces a new scope which
+ends at the end of its <strong>StatementSeq</strong>.</p>
+
+<p>A <strong>for-do</strong> statement introduces a new scope. The
+identifiers declared in a <strong>ForBinding</strong> are in scope
+in any succeeding <strong>while</strong> or <strong>until</strong>
+clause, and in the loop body, but <i>not</i> in the <strong>
+Expr</strong> parts of other <strong>ForBinding</strong>s of this
+loop. As for <strong>while</strong> and <strong>until</strong>
+loops, these identifiers are re-declared each time round the
+loop.</p>
+
+<p>The right operand of an <strong>&amp;&amp;</strong> or <strong>
+||</strong> or relational operator has its own scope. (This odd
+rule is because <strong>x &amp;&amp; ((var y = 42), z)</strong> is
+a legal expression, but then questions would arise about <strong>
+y</strong>'s existence or value if <strong>x</strong> were <strong>
+false</strong>.)</p>
+
+<h1><a name="here67"></a> 6 the standard library</h1>
+
+<p>Spice has a large library of standard values and procedures.</p>
+
+<h2><a name="here68"></a> 6.1 exceptions</h2>
+
+<p>(to be done)</p>
+
+<h2><a name="here69"></a> 6.2 generic procedures</h2>
+
+<ul>
+<li><strong>x.typeof</strong>: the type of <strong>x</strong>.</li>
+
+<li><strong>x.printOn( s )</strong>: send a human-readable
+representation of x down the stream s. Characters are sent as-is,
+integers are printed as their signed decimal representation [note:
+there ought to be a way of defining a negative numeric literal],
+strings are printed as their sequence of characters, arrays are
+printed as [elem1 elem2 ...], and objects are printed as defined by
+their overloading of printOn (and Class.printOn( s ) does something
+sensible).</li>
+
+<li><strong>x.print</strong> shorthand for x.printOn(
+standardOutput )</li>
+
+<li><strong>x.report</strong>: shorthand for x.printOn(
+standardReport )</li>
+
+<li><strong>println( x... )</strong>: <strong>print</strong> all
+the arguments in turn, prefixing all but the first with a space,
+and printing a newline after printing all the arguments.</li>
+
+<li><strong>x.copy</strong>: make a copy of x. If x is atomic (Int,
+Symbol, Char, Procedure) just delivers x. If x is composite object,
+defaults to making a shallow copy of x. Overloadable for new
+types.</li>
+
+<li><strong>x.toString</strong>: convert <strong>x</strong> to a
+string in the same way that <strong>print</strong> does.</li>
+
+<li><strong>equals( x, y )</strong> the procedure implementing ==.
+Overloadable on new types, but the programmer has to ensure that
+the new definition respects the usual rules for equality
+(reflexive, transitive, symmetric).</li>
+
+<li>If x and y are both Int, Symbol, Char, or Procedure, equals
+delivers x === y (ie identity). If x === y, equals delivers
+true.</li>
+
+<li>If x and y are both objects, by default equals does a slot-by-
+slot == test on all the init-slots that x and y have in common. If
+any of these fail, equals delievrs false; otherwise it delivers
+true.</li>
+
+<li>If x and y are both String, equals does the obvious string
+equality test. If they are both arrays, equals does the obvious
+sequence-equality test.</li>
+
+<li><strong>x.hashCode</strong>: a type-specific hashcode for the
+value <strong>x</strong>.</li>
+
+<li><strong>apply( f, x... )</strong>: called when evaluating f(X)
+and f is not a function. Overloadable. On arrays and strings is
+equivalent to indexing. On tables is table lookup. Has the obvious
+updater. Allows objects to represent functions compactly.</li>
+
+<li><strong>x.length</strong>: overloadable. Should deliver the
+"length" of the object. On strings and arrays has the obvious
+meaning. On objects delivers the number of "obvious" slots (see
+explode). On atomic objects delivers 0.</li>
+
+<li><strong>x.explode</strong>: overloadable. Delivers the "parts"
+of a value. On Int and Char delivers <strong>none</strong>. On
+arrays and strings delivers their components. On Symbol delivers
+its characters. On an object delivers the "obvious" slots.</li>
+
+<li>The number of results delivered by x.explode should be the same
+as the value x.length.</li>
+
+<li>If x is of type T, then T( x.explode ) == x should be
+true.</li>
+
+<li><strong>x @asType t</strong>: <strong>t</strong> must be a
+type. The value <strong>x</strong> is converted to that type in a
+type-specific way (<strong>asType</strong> is overloadable), or an
+exception is thrown. <strong>x @asType String</strong> is
+equivalent to <strong>toString</strong>.</li>
+
+<li><strong>s.eval</strong>: equavalent to <strong>s @eval
+absent</strong>.</li>
+
+<li><strong>s @eval c</strong>: <strong>s</strong> should be a
+string, and <strong>c</strong> either <strong>absent</strong> or
+some dictionary type. <strong>s</strong> is compiled and executed
+in the top-level environment <i>of the module in which the
+reference to <strong>eval</strong> was made</i>, with the entries
+in <strong>c</strong> providing additional top-level bindings.</li>
+</ul>
+
+<h2><a name="here70"></a> 6.3 numbers</h2>
+
+<p>Spice has several kinds of number: small integers
+(<strong>Int</strong>), big integers (<strong>BigInt</strong>),
+short and long floating point values (<strong>Float</strong>,
+<strong>Double</strong>), ratios (ie fractions)
+(<strong>Ratio</strong>), and complex numbers
+(<strong>Complex</strong>).</p>
+
+<p>The operators <strong>+</strong>, <strong>-</strong>, <strong>
+*</strong>, <strong>/</strong>, <strong>div</strong>, <strong>
+rem</strong>, <strong>%</strong> work more-or-less as you'd expect
+on plain numbers (they work on some other values, too, for which
+see the section on <strong>units</strong>). <strong>div</strong> is
+integer division; the operands must be integers and the result is
+truncated toward <strong>0</strong>. <strong>rem</strong> is
+integer remainder; the operands must be integers and the result is
+the appropriate remainder. <strong>/</strong> will produce a
+floating-point value if the result is not an exact integer.</p>
+
+<p>The operator <strong>/:</strong> is <i>exact division</i>; its
+result uses ratios to express non-floating non-integer components.
+This is the primary way (the only way, at root) that ratio values
+are generated.</p>
+
+<p>The operator <strong>..</strong> ("upto") delivers multiple
+results: all the integers from the left operand (inclusive) to the
+right operand (also inclusive).</p>
+
+<p>The bitwise operators <strong>&amp;</strong>, <strong>
+|</strong>, <strong>~</strong>, <strong>&lt;&lt;</strong>, <strong>
+&gt;&gt;</strong> work on integer operands <i>only</i>. <strong>
+&gt;&gt;</strong> does a signed right shift. To do an unsigned
+right shift, use the procedure <strong>bitSrl</strong> (<strong>x
+@bitSrl y</strong> shifts <strong>x</strong> right <strong>
+y</strong> places).</p>
+
+<p>The relational operators <strong>&lt;=</strong>, <strong>
+&lt;</strong>, <strong>&gt;=</strong>, <strong>&gt;</strong>,
+<strong>==</strong>, <strong>/==</strong> work as you'd expect.
+Note that it's unwise to use <strong>==</strong> and <strong>
+/==</strong> on floating-point values.</p>
+
+<p>There are also a number of standard functions.</p>
+
+<ul>
+<li><strong>x.abs</strong> and its synonym <strong>
+x.magnitude</strong> is the absolute value of <strong>x</strong>;
+if <strong>x</strong> is not complex, its sign is made positive; if
+<strong>x</strong> is complex, it is its magnitude.</li>
+
+<li><strong>x.neg</strong> and its equivalent <strong>
+x.negative</strong> invert the sign of the value of <strong>
+x</strong>. <strong>x.positive</strong> returns <strong>x</strong>
+if it is a (non-complex) number.</li>
+
+<li><strong>x @min y</strong>, <strong>x @max y</strong> deliver
+the minimum (maximum) of their argument values <strong>x</strong>
+and <strong>y</strong>.</li>
+
+<li><strong>x @logToBase y</strong> delivers the logarithm of
+<strong>x</strong> to the (positive integer) base <strong>
+y</strong>.</li>
+
+<li><strong>x @toPower y</strong> delivers <strong>x</strong>
+raised to the power <strong>y</strong>.</li>
+
+<li><strong>x.sqrt</strong> is the square root of <strong>
+x</strong>. An exception is thrown if the result must be <strong>
+Complex</strong> but this implemention does not support it.</li>
+
+<li><strong>x.round</strong>, <strong>x.floor</strong>, <strong>
+x.ceiling</strong> convert the value <strong>x</strong> to an
+integer (details to be added).</li>
+
+<li><strong>x.cos</strong>, <strong>x.sin</strong>, <strong>
+x.tan</strong> are the usual trigonometric functions. The argument
+is in radians.</li>
+
+<li><strong>x.inRadians</strong> takes an angle in degrees <strong>
+x</strong> and converts it to radians. <strong>x.inDegrees</strong>
+takes an angle in radians and converts it to degrees.</li>
+
+<li><strong>x.acos</strong>, <strong>x.asin</strong>, <strong>
+x.atan</strong> are the usual inverse trigonometric functions. Note
+that <strong>atan</strong> is only suitable for simple
+programs.</li>
+</ul>
+
+<p>[various complex functions etc to be done]</p>
+
+<h2><a name="here71"></a> 6.4 enumerations</h2>
+
+<p>Enumeration values can be queried for their numeric value and
+name, and can be created from numeric values or names. Note that
+the number of enumeration values is fixed by the declaration; the
+constructor delivers existing values, not fresh ones.</p>
+
+<ul>
+<li><strong>e.index</strong>: if <strong>e</strong> is an
+enumeration value, its index is its position in the list in which
+it was declared.</li>
+
+<li><strong>new E(n)</strong>: if <strong>E</strong> is an
+enumeration type, the <strong>n</strong>th enumeration value that
+it was declared with, or an error is thrown if <strong>n</strong>
+is out of range.</li>
+
+<li><strong>e.enumName</strong>: if <strong>e</strong> is an
+enumeration value, the symbol which names it.</li>
+
+<li><strong>new E(s)</strong>: if <strong>E</strong> is an
+enumeration type, and <strong>s</strong> is a string or symbol, the
+enumeration value of <strong>E</strong> named by that string or
+symbol, or an error is thrown.</li>
+</ul>
+
+<h2><a name="here72"></a> 6.5 values with units</h2>
+
+<p>Spice has values with <strong>units</strong>. Values with units
+represent lengths, or times, or other inter-related quantities. All
+the unit procedures are imported qualified from <strong>
+Spice.language.units</strong>.</p>
+
+<p>A <strong>unit</strong> expresses an amount along a given
+dimension. A <strong>basic dimension</strong> is represented by a
+symbol naming that dimension. A <strong>compound dimension</strong>
+is the result of a product or quotient of dimensions.</p>
+
+<ul>
+<li><strong>Unit</strong>: the type of units.</li>
+
+<li><strong>Unit( scale, unitName, dimension )</strong>: make a new
+unit object. <strong>dimension</strong> must be a symbol or string;
+it specifies the dimension of the unit. (Typical values are
+<strong>length</strong>, <strong>time</strong>, <strong>
+colour</strong>.) <strong>unitName</strong> must be a symbol or
+string; it names the unit itself. [It is an error if a unit with
+that name already exists.] The <strong>scale</strong> expresses the
+scale of this unit in terms of the "canonical unit" for this kind;
+a scale of <strong>1</strong> defines the canonical unit.</li>
+
+<li><strong>U @unitProduct V</strong>: <strong>U</strong> and
+<strong>V</strong> must be unit objects. The result is the product
+of those units.</li>
+
+<li><strong>U @unitQuotient V</strong>: <strong>U</strong> and
+<strong>V</strong> must be unit objects. The result is the quotient
+of those units.</li>
+
+<li><strong>U.scale</strong>: <strong>U</strong> must be a <strong>
+Unit</strong> object; the result is its scale.</li>
+
+<li><strong>U.name</strong>: <strong>U</strong> must be a <strong>
+Unit</strong>object; the result it its unit name.</li>
+
+<li><strong>U.dimension</strong>: <strong>U</strong> must be a
+<strong>Unit</strong> object; the result is its dimension.</li>
+
+<li><strong>x @inUnits y</strong>: <strong>x</strong> must be a
+numeric value, and <strong>y</strong> must be a unit name (symbol
+or string) or a <strong>Unit</strong> object (eg from <strong>
+unitNamed</strong>). The result is a unit value with <strong>
+x</strong> as its number and the unit (named by) <strong>y</strong>
+as its unit.</li>
+
+<li><strong>n.unitNamed</strong>: the <strong>Unit</strong> value
+named by <strong>n</strong>, which must be a string or a
+symbol.</li>
+
+<li><strong>u.number</strong>: the number of the value <strong>
+u</strong>, which must be a value with units.</li>
+
+<li><strong>u.unit</strong>: the unit of the value <strong>
+u</strong>, which must be a value with units.</li>
+
+<li><strong>u.explode</strong>: <strong>u</strong> must be a value
+with units; exploding it gets the number and unit, in that
+order.</li>
+</ul>
+
+<p>The arithmetic operators also work on values with units. There
+is a minor complication in that different units of the same kind
+may be inter-converted. Multiplication and division also work on
+<strong>Unit</strong> objects themselves to produce new <strong>
+Unit</strong> objects; this is intended for use in <strong>define
+unit</strong> definitions.</p>
+
+<ul>
+<li><strong>u + v, u - v</strong>: <strong>u</strong> and <strong>
+v</strong> must be values with the same dimension. The number with
+the larger unit is scaled to the size of the smaller, and the
+result is the sum (difference) of the numbers, with the smaller
+unit as its unit. [<i>ie</i>, adding inches to miles gets a result
+in inches.]</li>
+
+<li><strong>u * v</strong>: if <strong>u</strong> or <strong>
+v</strong> has units, the result has number <strong>u.number *
+v.number</strong> and units <strong>u.unit @unitProduct
+v.unit</strong>.</li>
+
+<li><strong>U * V</strong>: if <strong>U</strong> and <strong>
+V</strong> are units or numbers, the result is a new unit which has
+dimensions the product of the dimensions of <strong>U</strong> and
+<strong>V</strong>, and number the product of the numbers of
+<strong>U</strong> and <strong>V</strong>.</li>
+
+<li><strong>u / v</strong>: if <strong>u</strong> or <strong>
+v</strong> has units, the result has number <strong>u.number /
+v.number</strong> and units <strong>u.unit @unitQuotient
+v.unit</strong>.</li>
+
+<li><strong>U / V</strong>: if <strong>U</strong> and <strong>
+V</strong> are units or numbers, the result is a new unit with
+dimensions the quotient of the dimensions of <strong>U</strong> and
+<strong>V</strong>, and number the quotient of the numbers of
+<strong>U</strong> and <strong>V</strong>.</li>
+
+<li><strong>u &lt; v</strong>: equivalent to <strong>number(v - u)
+&lt; 0</strong>, and similarly for the other relational
+operators.</li>
+</ul>
+
+<h2><a name="here73"></a> 6.6 strings</h2>
+
+<p>Strings are sequences of Unicode characters in canonical form.
+Strings created as literal tokens are immutable. Strings, like
+arrays, can be indexed using the <strong>s[i]</strong> notation.
+The infix operator <strong>&lt;&gt;</strong> concatenates strings
+(and arrays).</p>
+
+<p>There are many built-in functions on strings. Note that strings,
+like arrays, can be rebased.</p>
+
+<ul>
+<li><strong>s.length</strong> is the length in characters of
+<strong>s</strong>.</li>
+
+<li><strong>s.stringBase</strong> delivers the base index of the
+string.</li>
+
+<li><strong>s @rebase n</strong> delivers a string just like
+<strong>s</strong> except that it is based at <strong>n</strong>;
+if <strong>s</strong> is already based at <strong>n</strong>, it
+delivers <strong>s</strong> unchanged. Note that <strong>s</strong>
+is itself is never changed by <strong>rebase</strong>.</li>
+
+<li><strong>s @indexOf x</strong> delivers the index in <strong>
+s</strong> of the first occurance of <strong>x</strong>, which can
+be a character or a string. If <strong>s</strong> does not contain
+any occurence of <strong>x</strong>, <strong>indexOf</strong>
+delivers <strong>absent</strong>. The result has the same base as
+the string does.</li>
+
+<li><strong>s @lastIndexOf x</strong> is the same as <strong>
+indexOf</strong>, except that it searches for the last occurence of
+<strong>x</strong>, not the first.</li>
+
+<li><strong>s @chopAt x</strong>, where <strong>x</strong> is a
+string or character, delivers <i>two</i> results <strong>(before,
+after)</strong> such that <strong>s == (before &lt;&gt; x &lt;&gt;
+after)</strong> and <strong>x</strong> does not occur earlier in
+<strong>s</strong>.</li>
+
+<li><strong>s @chopAt x</strong>, where <strong>x</strong> is an
+integer, delivers <strong>(after, before)</strong> such that
+<strong>s = before &lt;&gt; after</strong> and <strong>after.length
+== x</strong> - s.stringBase.</li>
+
+<li><strong>s @split x</strong> delivers an array of strings
+obtained by repeatedly chopping <strong>s</strong> with <strong>
+x</strong>.</li>
+
+<li><strong>s.toLower</strong> is a copy of <strong>s</strong> with
+all upper-case characters replaced by their lower-case
+counterparts; <strong>s.toUpper</strong> is a copy of <strong>
+s</strong> with all lower-case characters replaced by their
+upper-case counterparts.</li>
+
+<li><strong>x @catStringly y</strong>: equivalent to <strong>x
+&lt;&gt; y.toString</strong>.</li>
+</ul>
+
+<h2><a name="here74"></a> 6.7 symbols</h2>
+
+<p>In Spice, the <i>symbol literal</i> <strong>`foo`</strong>
+represents a <i>symbol</i> (a value of type <strong>
+Symbol</strong>) whose <i>spelling</i> is the string <strong>
+foo</strong>. The important difference between symbols and strings
+is that there is only one symbol with a given spelling. (You can
+tell the difference using the Spice <i>identity operator</i>
+<strong>===</strong>.)</p>
+
+<p>You can index symbols using <strong>s[i]</strong>, but if you do
+so, you are probably using symbols for something other than their
+intended use; supplying the programmer with an infinite set of
+mnenomic values.</p>
+
+<ul>
+<li><strong>s.intern</strong>, where <strong>s</strong> is a
+string, delivers the symbol whose spelling is <strong>s</strong>,
+making it if necessary.</li>
+
+<li><strong>s.spelling</strong>, where <strong>s</strong> is a
+symbol, delivers an immutable string which is the spelling of
+<strong>s</strong>.</li>
+
+<li><strong>s.explode</strong>, where <strong>s</strong> is a
+symbol, delivers all the characters of <strong>s</strong>,
+rightmost last.</li>
+</ul>
+
+<h2><a name="here75"></a> 6.8 booleans</h2>
+
+<p>The built-in operators <strong>!</strong>, <strong>
+&amp;&amp;</strong>, <strong>||</strong> on booleans operate as you
+might expect; <strong>!</strong> negates its operand, <strong>
+&amp;&amp;</strong> is boolean <strong>and</strong> and <strong>
+||</strong> is boolean <strong>or</strong>, neither of which
+evaluate their second operand unless it's necessary.</p>
+
+<ul>
+<li><strong>x.asBoolean</strong> converts any value to a boolean
+one. Boolean values pass through unchanged. <strong>
+absent</strong>, <strong>0</strong>, <strong>0.0</strong>, and the
+null string <strong>""</strong> are all converted to <strong>
+false</strong>. <i>All</i> other values are converted to <strong>
+true</strong>. <strong>asBoolean</strong> exists mainly to support
+older programming styles; its use is discouraged in new code.</li>
+</ul>
+
+<h2><a name="here76"></a> 6.9 arrays</h2>
+
+<p>Array elements can be accessed and updated using the <strong>
+a[i]</strong> notation.</p>
+
+<ul>
+<li><strong>a.length</strong>: delivers the length of the array
+<strong>a</strong>.</li>
+
+<li><strong>a.arrayBase</strong>: delivers the base of the array
+<strong>a</strong>.</li>
+
+<li><strong>a @rebase n</strong>: delivers an array just like
+<strong>a</strong> except that it is based at <strong>n</strong>;
+if <strong>a</strong> is itself based at <strong>n</strong>, it is
+passed through unchanged.</li>
+
+<li><strong>a @reduceBy (x, p)</strong>: <strong>a</strong> must be
+an array, <strong>x</strong> some value, and <strong>p</strong> a
+dyadic procedure. The result is obtained by starting with <strong>
+x</strong> and repeatedly replacing it by the result of <strong>
+p(result,ai)</strong> for <strong>ai</strong> being bound to all
+the elements of <strong>a</strong> in turn.</li>
+
+<li><strong>a @join s, a.join</strong>: equivalent to <strong>a
+@reduceBy (s, catStringly)</strong>; with one argument, <strong>
+s</strong> is taken to be the null string <strong>""</strong>.</li>
+
+<li><strong>a @sortInPlaceWith f</strong>: sorts the array <strong>
+a</strong> according to the comparison function <strong>f</strong>.
+<strong>f</strong> should accept two arguments <strong>(x,
+y)</strong> and deliver <strong>true</strong> if <strong>x</strong>
+should go before <strong>y</strong> in the ordering and <strong>
+false</strong> otherwise. <strong>sortInPlaceWith</strong> is
+guaranteed to be stable if <strong>f</strong> is sane.</li>
+
+<li><strong>a @sortWith f</strong>: makes a copy of <strong>
+a</strong> and sorts that in place with <strong>f</strong>, so far
+as anyone can tell. (The implementor is at liberty to make a more
+efficient version.)</li>
+
+<li><strong>a.reverse</strong>: a copy of <strong>a</strong> with
+the elements reversed.</li>
+
+<li><strong>a.reverseInPlace</strong>: reverses the order of the
+elements of <strong>a</strong>.</li>
+</ul>
+
+<h2><a name="here77"></a> 6.10 locales</h2>
+
+<p>[locales and things that depend on them to be specified]</p>
+
+<h2><a name="here78"></a> 6.11 dates</h2>
+
+<p>[date procedures to be specified]</p>
+
+<h2><a name="here79"></a> 6.12 regular expressions</h2>
+
+<p>[placeholder for regular expressions]</p>
+
+<h2><a name="here80"></a> 6.13 procedures</h2>
+
+<p>There are several standard functions on procedures.</p>
+
+<ul>
+<li><strong>p.updater</strong>: if <strong>p</strong> is a
+procedure, then delivers its updater (or <strong>absent</strong> if
+if hasn't got one).</li>
+
+<li><strong>p @apply</strong> x: <strong>p</strong> must be a
+procedure, and <strong>x</strong> a collection of values; applies
+<strong>p</strong> to all the values in <strong>x</strong>, ie, is
+<strong>x.explode.p</strong> except that <strong>x</strong> must be
+a compound type.</li>
+</ul>
+
+<p>The different kinds of procedures can be recognised by
+predicates.</p>
+
+<ul>
+<li><strong>x.isProcedure</strong> is <strong>true</strong> when
+<strong>x</strong> is any kind of procedure, and <strong>
+false</strong> otherwise.</li>
+
+<li><strong>x.isMethod</strong> is <strong>true</strong> if
+<strong>x</strong> is defined by a <strong>method</strong>
+definition, and <strong>false</strong> otherwise;</li>
+
+<li><strong>x.isFunction</strong> if <strong>x</strong> is defined
+by a <strong>function</strong> definition, and <strong>
+false</strong> otherwise;</li>
+
+<li><strong>x.isConstructor</strong> is <strong>true</strong> when
+<strong>x</strong> has been defined with <strong>method
+new</strong>, and <strong>false</strong> otherwise;</li>
+
+<li><strong>x.isLambda</strong> is <strong>true</strong> when
+<strong>x</strong> is the result of a lambda-expression or
+hole-expression, and <strong>false</strong> otherwise.</li>
+</ul>
+
+<h2><a name="here81"></a> 6.14 dictionaries and tables</h2>
+
+<p>The type <strong>Lookup</strong> is the parent type of a variety
+of mapping data types; the <i>simple</i> mapping types map single
+values to single values, while the <i>compond</i> mapping types map
+tuples of values to tuples of values. There are no direct instances
+of <strong>Lookup</strong>. The type <strong>Maplet</strong> is the
+type of pairs of (simple) values. The type <strong>
+Dictionary</strong> is an extension of <strong>Lookup</strong> that
+maps <strong>Symbol</strong>s to values.</p>
+
+<ul>
+<li><strong>l.length</strong>: the number of key-value associations
+stored in the lookup <strong>l</strong>.</li>
+
+<li><strong>l.explode</strong>: the key-value pairs stored in the
+lookup <strong>l</strong>. Each pair is represented by an instance
+of the type <strong>Maplet</strong>.</li>
+
+<li><strong>p @mapOver l</strong>: apply the procedure <strong>
+p</strong> to each of the key-value pairs in <strong>l</strong> in
+turn. <strong>p</strong> will be called with two arguments, being
+the key and the value. <i>All the results of <strong>p</strong>
+will be returned.</i></li>
+
+<li><strong>l @hasKey k</strong>: if <strong>l</strong> is an
+instance of an extension of <strong>Lookup</strong>, <strong>
+hasKey</strong> returns <strong>true</strong> if <strong>k</strong>
+is a key for a non-default value in <strong>l</strong> and <strong>
+false</strong> otherwise.</li>
+
+<li><strong>l @fetch k</strong>: if <strong>l</strong> is an
+instance of an extension of <strong>Lookup</strong>, <strong>
+fetch</strong> gets the value bound to the key <strong>k</strong>.
+If no value is bound, some type-specific computation is performed.
+<strong>fetch</strong> has an updater which alters the bound value,
+or creates a binding if none already exists.</li>
+
+<li><strong>l @apply k</strong>: if <strong>l</strong> is an
+instance of an extension of <strong>Lookup</strong>, applying it
+runs <strong>fetch</strong>.</li>
+
+<li><strong>m.key</strong>: the key part of <strong>m</strong>, ie,
+the value which would be looked up.</li>
+
+<li><strong>m.value</strong>: the value part of <strong>m</strong>,
+ie, the value that would be returned when looking up the <strong>
+key</strong> part.</li>
+
+<li><strong>Dictionary()</strong>: constructs an empty <strong>
+Dictionary</strong> object with default value <strong>
+absent</strong>. A <strong>Dictionary</strong> is an extension of
+<strong>Lookup</strong>.</li>
+
+<li><strong>Dictionary(d)</strong>: constructs an empty <strong>
+Dictionary</strong> with default value <strong>d</strong>.</li>
+
+<li><strong>Dictionary(d, k<sub>1</sub>, v<sub>1</sub>, ...,
+k<sub>n</sub>, v<sub>n</sub>)</strong>: constructs a <strong>
+Dictionary</strong> with default value <strong>d</strong> and
+bindings which bind k<sub>i</sub> to v<sub>i</sub>. If several
+k<sub>i</sub> are equal, the last one wins. All the k<sub>i</sub>
+must be <strong>Symbol</strong>s.</li>
+
+<li><strong>Table</strong>: an extension of <strong>Lookup</strong>
+with constructors in the same style as <strong>Dictionary</strong>.
+A <strong>Table</strong> can have key arguments of any type; they
+are compared using <strong>==</strong> (and hashed using <strong>
+hashCode</strong>, qv).</li>
+
+<li><strong>FatTable</strong>: an compound mapping extension of
+<strong>Lookup</strong>. <strong>FatTable</strong> has similar
+constructors to <strong>Dictionary</strong>, except that the keys
+and values must all be arrays; all the keys must have the same
+length, and all the values must have the same length. A <strong>
+FatTable</strong> maps tuples of values to tuples of values.</li>
+
+<li><strong>f @fetch (k<sub>1</sub>, ..., k<sub>n</sub>)</strong>:
+if <strong>f</strong> is a <strong>FatTable</strong>, look up the
+value(s) specified by the sequence of keys <strong>
+k<sub>i</sub></strong>, which must be the same length as the key
+arrays used in the constructor of <strong>f</strong>. Deliver the
+associated multiple values. The updater of <strong>fetch</strong>
+will store multiple values into <strong>f</strong>.</li>
+</ul>
+
+<h2><a name="here82"></a> 6.15 io</h2>
+
+<p>Spice includes some simple I/O operations in its core; the type
+<strong>Pathname</strong>, the type <strong>File</strong>, and the
+type <strong>Stream</strong>.</p>
+
+<ul>
+<li><strong>s.parsePath</strong>: <strong>s</strong> must be a
+string or symbol. It is parsed into a <strong>Pathname</strong>, or
+an exception thrown if it is illegal in some way. (See below for
+the syntax of pathnames).</li>
+
+<li><strong>p.pathScheme</strong>, <strong>p.pathRoot</strong>,
+<strong>p.pathDirs</strong>, <strong>p.pathName</strong>, <strong>
+p.pathSuffix</strong>, <strong>p.pathType</strong>: the
+corresponding components of the pathname. If the component was
+omitted in the originating string, the result is <strong>
+absent</strong>.</li>
+
+<li><strong>p @openIn</strong>: <strong>p</strong> must be a
+pathname (or string or symbol, which is immediatley parsed into a
+pathname). The external entity named by the path is opened for
+input. <strong>openIn</strong> delivers a <strong>File</strong>
+object.</li>
+
+<li><strong>p @openOut</strong>: <strong>p</strong> must be a
+pathname (or string or symbol, which is immediatley parsed into a
+pathname). The external entity named by the path is opened for
+output. <strong>openOut</strong> delivers a <strong>File</strong>
+object.</li>
+
+<li><strong>f.openedOn</strong>: if <strong>f</strong> is a file,
+then the pathname it was opened on.</li>
+
+<li><strong>f.close</strong>: <strong>f</strong> must be a file; if
+it is not closed, it is hereby closed, committing all writes (if
+open for output).</li>
+
+<li><strong>f @readInto (b, w, l)</strong>: <strong>f</strong> must
+be a file open for input. <strong>readInto</strong> reads the next
+<strong>l</strong> bytes (or fewer) into the buffer <strong>
+b</strong>, which must be a byte array, starting at position
+<strong>w</strong>. An exception is thrown if <strong>w</strong> or
+<strong>w+l</strong> would be outside the bounds of <strong>
+b</strong>. The number of bytes actually read is returned as the
+result.</li>
+
+<li><strong>f @writeFrom (b, w, l)</strong>: <strong>f</strong>
+must be a file open for output. <strong>l</strong> bytes from the
+byte array <strong>b</strong> are written, starting at offset
+<strong>w</strong>. An exception is thrown if <strong>w</strong> or
+<strong>w+l</strong> would be outside the bounds of <strong>
+b</strong>.</li>
+
+<li><strong>f.inFrom</strong>: <strong>f</strong> is a file open
+for input, or a pathname (which is immediately <strong>
+openIn</strong>'ed). The result is an byte <strong>
+InStream</strong> on the file.</li>
+
+<li><strong>f.outTo</strong>: <strong>f</strong> is a file open for
+output, or a pathname (which is immediately <strong>
+openOut</strong>'ed). The result is an byte <strong>
+OutStream</strong> on the file.</li>
+
+<li><strong>s.next</strong>: <strong>s</strong> must be an <strong>
+InStream</strong>; the result is the next object from <strong>
+s</strong>, or <strong>absent</strong> if the file has been
+exhausted. <strong>next</strong> has an updater which puts objects
+back onto the stream. Arbitrarily many objects can be put back, and
+they need not correspond to objects originally present in the
+stream.</li>
+
+<li><strong>s @out x</strong>: <strong>s</strong> must be an
+<strong>OutStream</strong> and <strong>x</strong> an object; that
+object is appended to the stream.</li>
+
+<li><strong>s.streamFile</strong>: if <strong>s</strong> is a
+stream based on a file, delivers that file; otherwise an exception
+is thrown.</li>
+</ul>
+
+<h3><a name="here83"></a> 6.15.1 pathname syntax and accessors</h3>
+
+<p>A pathname has several components. The basic elements are
+<strong>Word</strong>s which, within this section, are sequences of
+characters not otherwise reserved to the pathname syntax.</p>
+
+<p>In this section, the identifier <strong>p</strong> is presumed
+to contain a <strong>Pathname</strong> value.</p>
+
+<p><b>def 82. Pathname ::= [ Scheme ] [ Root ] [ Directories ] [
+Name ] [ Suffix ] [ Type ]</b></p>
+
+<p><b>def 83. Scheme ::= Word ":"</b></p>
+
+<p>The <strong>Scheme</strong> of a pathname directs how the
+components are to be interpreted. The standard schemes are <strong>
+file</strong>, <strong>http</strong>, and <strong>
+socket</strong>.</p>
+
+<p><strong>p.pathScheme</strong> is a <strong>Symbol</strong>.</p>
+
+<p><b>def 84. Root ::= "//" Dotted</b></p>
+
+<p>The <strong>Root</strong> identifies where the pathname is
+anchored. For an <strong>http</strong> or <strong>net</strong>
+pathname, the <strong>Root</strong> is the IP address where the
+named entity is located. For a <strong>file</strong> scheme, the
+<strong>Unit</strong> identifies some root in the filing system in
+an implementation-specific way.</p>
+
+<p><strong>p.pathRoot</strong> is an array of <strong>
+Symbol</strong> values, one for each word-part of the <strong>
+Dotted</strong>.</p>
+
+<p><b>def 85. Directories ::= [ "/" ] ( Dotted "/" ) ++</b></p>
+
+<p>The <strong>Directories</strong> identify some place within the
+<strong>Root</strong> where an entity is found, by giving a
+sequence of <strong>Dotted</strong>s. For a <strong>file</strong>
+scheme, thet are the names of filing-system directories. For an
+<strong>http</strong> scheme, they are successive components of the
+directory part of the URL. For a <strong>socket</strong> scheme,
+they identify the port number to be used for the socket; typically
+there is but one <strong>Dotted</strong> and it names an IP
+service.</p>
+
+<p><strong>p.pathDirectories</strong> is an array of <strong>
+Symbol</strong>s, each symbol being the spelling of a <strong>
+Dotted</strong>.</p>
+
+<p><b>def 86. Name ::= Word</b></p>
+
+<p>The <strong>Name</strong> is the leafname of the entity being
+described.</p>
+
+<p><strong>p.pathName</strong> is a Symbol.</p>
+
+<p><b>def 87. Suffix ::= "." Word</b></p>
+
+<p>The <strong>Suffix</strong> is the suffix part of the entity
+name.</p>
+
+<p><strong>p.pathSuffix</strong> is a <strong>Symbol</strong>.</p>
+
+<p><b>def 88. Type ::= ";" Word</b></p>
+
+<p>The <strong>Type</strong> is the type of the entity. When a
+pathname is being used to create an object, is specifies the type
+of object to create. When it is being used to access an existing
+object, the object should be of a compatible type.</p>
+
+<p><strong>p.pathType</strong> is a <strong>Symbol</strong>.</p>
+
+<p><b>def 89. Dotted ::= Word ++ "."</b></p>
+
+<h2><a name="here84"></a> 6.16 types</h2>
+
+<p>The standard types are</p>
+
+<ul>
+<li><strong>Lookup</strong>, the parent type of data
+dictionaries.</li>
+
+<li><strong>Maplet</strong>, a helper type for data
+dictionaries.</li>
+
+<li><strong>Table</strong>, the type of tables.</li>
+
+<li><strong>FatTable</strong>, the type of compound tables.</li>
+
+<li><strong>Int</strong>, the type of small integers.</li>
+
+<li><strong>Number</strong>, the type of all numbers -- integers,
+floats, rationals (when implemented), complexes (ditto).</li>
+
+<li><strong>Complex</strong>, the type of complex values.</li>
+
+<li><strong>Ratio</strong>, the type of ratios.</li>
+
+<li><strong>BigInt</strong>, the type of big integers.</li>
+
+<li><strong>Float</strong>, the type of all floating-point
+numbers.</li>
+
+<li><strong>String</strong>, the type of strings.</li>
+
+<li><strong>Procedure</strong>, the type of all procedures.</li>
+
+<li><strong>Bool</strong>, the type of booleans.</li>
+
+<li><strong>Char</strong>, the type of characters.</li>
+
+<li><strong>Any</strong>, the type of anything whatsoever.</li>
+
+<li><strong>Object</strong>, the type of all objects (ie things
+defined by classes).</li>
+
+<li><strong>Date</strong>, the type of dates.</li>
+
+<li><strong>Unit</strong>, the type of units.</li>
+
+<li><strong>Pathname</strong>, the type of pathname objects used to
+represent URLs (and local file names, etc).</li>
+</ul>
+
+<h1><a name="here85"></a> 7 appendix: limited spice</h1>
+
+<p>Not all environments will be able to implement the full Spice
+language. This section will define some "natural boundaries" along
+which the language can be carved. The programmer can make explicit
+that support for a feature is required by explicitly importing the
+relevant Spice module; Spice implementations that do not offer a
+feature must reject the import.</p>
+
+<p>An implementation may omit support for complex numbers. In this
+case, operations that would generate them should throw the
+exception <strong>noComplexSupport</strong>.</p>
+
+<p>An implementation may omit support for ratios. In this case,
+operations that would generate them (ie, <strong>/:</strong>)
+should throw the exception <strong>noRatioSupport</strong>.</p>
+
+<p>An implementation may omit support for <strong>BigInt</strong>.
+In this case, operations that would generate them should throw the
+exception <strong>noBigNumSupport</strong>.</p>
+
+<p>An implementation may omit support for styles. In this case, the
+compiler will reject code that uses styles with the apology
+<strong>noStyleSupport</strong>.</p>
+
+<p>An implementation may omit support for <strong>
+property</strong>. In this case, the compiler will reject <strong>
+property</strong> declarations with the <strong>
+noPropertySupport</strong> apology.</p>
+
+<p>An implementation may omit support for units. In this case, the
+compiler will reject unit literals and <strong>define unit</strong>
+definitions with the <strong>noUnitSupport</strong> apology. The
+type <strong>Unit</strong> and the unit-specific procedures will
+not be declared.</p>
+
+<p>An implementation may omit support for exception-handling. In
+this case, the compiler will reject <strong>try</strong>
+expressions with the <strong>noExceptionSupport</strong> apology.
+<strong>throw</strong> expressions will be permitted, but their
+effect is to terminate execution up to the "top level" of the
+implementation; the thrown value may be discarded, or displayed, or
+some other implementation-specific action may be taken.</p>
+
+<p>An implementation may omit support for <strong>memo</strong>;
+the compiler will reject any <strong>memo</strong> expressions with
+the apology <strong>noMemoSupport</strong>.</p>
+
+<p>An implementation may omit support for multiple-valued loops. In
+this case, loops containing <strong>do all</strong> will be
+rejected with the apology <strong>noLoopSupport</strong>.</p>
+
+<p>An implementation may omit support for multiple values (apart
+from procedure arguments). In this case, the compiler will reject
+the use of commas, apart from in argument lists and in expressions
+whose values are discarded, with the <strong>
+noMultipleValueSupport</strong> apology.</p>
+
+<p>An implementation may omit support for multiple inheritance (ie
+require that a class <strong>extends</strong> clause can mention
+only one name). In this case, it will reject multiply-inheriting
+class with the apology <strong>
+noMultipleInheritanceSupport</strong>.</p>
+
+<p>An implementation may omit support for multi-methods (ie
+procedures that dispatch on more than one argument). In this case,
+the compiler will reject procedures that are overloaded on multiple
+arguments. with the apology <strong>
+noMultiDispatchSupport</strong>. However, it will accept procedures
+that are overloaded on <i>any</i> single argument -- it doesn't
+have to be the first.</p>
+
+<p>An implementation may omit support for procedures overloaded on
+anything but their first argument. The compiler will reject
+procedures that overload other arguments with the apology <strong>
+noAnyDispatchSupport</strong>.</p>
+
+<p>An implementation may omit support for overloading completely,
+only allowing <strong>[only]</strong> procedures and rejecting
+other procedures with the apology <strong>
+noOverloadSupport</strong>. (Similarly, developers may reject the
+compiler with the <strong>noWaySunshine</strong> retort.)</p>
+
+<h1><a name="here86"></a> 8 appendix: spice standard modules</h1>
+
+<p>Spice compes with a collection of standard modules. Most of them
+are automaticlly imported by the compiler (except in limited
+implementations), but it is permitted to export them
+explicitly.</p>
+
+<table border="1">
+<tr>
+<td>"<strong>module name</strong>"</td>
+<td>"<strong>description</strong>"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.complex"</td>
+<td>"handling complex arithmetic"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.ratios"</td>
+<td>"handling rational numbers"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.bignums"</td>
+<td>"handling big integers"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.styles"</td>
+<td>"style operations"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.units"</td>
+<td>"<strong>define unit</strong> definitions and operations"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.properties"</td>
+<td>"<strong>property</strong> declarations and operations"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.multimethods"</td>
+<td>"support for multimethods"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.multivalues"</td>
+<td>"support for multiple values"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.monomethods"</td>
+<td>"support for monomethods (single-argument polymorphism)"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.multiheritance"</td>
+<td>"support for multiple inheritance"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.dates"</td>
+<td>"the <strong>Date</strong> type and its operations"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.io"</td>
+<td>"basic input/output support, including pathnames"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.files"</td>
+<td>"file input/output support"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.net"</td>
+<td>"network input/output support"</td>
+</tr>
+
+<tr>
+<td>"Spice.core.tables"</td>
+<td>"lookup table support"</td>
+</tr>
+</table>
+
+<h1><a name="here87"></a> 9 their own destiny</h1>
+
+<p>Other things that Spice may or may not feature:</p>
+
+<ul>
+<li>immutable objects: the operator <strong>immutable</strong>
+takes its operands and stamps it immutable, ie, no direct updates
+to it are permitted. It delivers the object as a result.</li>
+
+<li>immutable strings: strings may become immutable by
+default.</li>
+</ul>
+
+<h1><a name="here88"></a> 10 appendix: syntactic summary</h1>
+
+<p>This section gathers together all the syntax from the rest of
+the document.</p>
+
+<p><b>def 1. Program ::= Spice ( Module * | ModuleBody )</b></p>
+
+<p><b>def 2. Spice ::= "spice" String ( "," ( Name ":" Expr ) )
+*</b></p>
+
+<p><b>def 3. Qualifier ::= "[" CommaExpr "]"</b></p>
+
+<p><b>def 4. Module ::= "module" ModuleName ModuleBody [
+"endmodule" ]</b></p>
+
+<p><b>def 5. ModuleName ::= Word ++ "."</b></p>
+
+<p><b>def 6. ModuleBody ::= Import ** SEMI Definition **
+SEMI</b></p>
+
+<p><b>def 7. Definition ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; StyleDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | ProcedureDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | VarDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | ClassDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | UnitDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | EnumDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | PropertyDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr</b></p>
+
+<p><b>def 8. Import ::= "import" ( ImportItem [ "from" Expr ] ) **
+","</b></p>
+
+<p><b>def 9. ImportItem ::= [ Qualifier ] ( ModuleName | "(" Expr
+")" )</b></p>
+
+<p><b>def 10. StyleDef ::= Mode | Media | Style</b></p>
+
+<p><b>def 11. Mode ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "define" "mode" Name ( "{" Style * "}" |
+Style * "enddefine" )<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "mode" Name "{" Style * "}"</b></p>
+
+<p><b>def 12. Media ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "define" "media" Name ( "{" Style * "}" |
+"enddefine" )<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "media" Name "{" Style * "}"</b></p>
+
+<p><b>def 13. Style ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp; &nbsp; &nbsp; &nbsp; "define"<br>
+&nbsp; &nbsp; &nbsp; &nbsp; "style"<br>
+&nbsp; &nbsp; &nbsp; &nbsp; Selectors<br>
+&nbsp; &nbsp; &nbsp; &nbsp; ( "{" Property * "}" | "=" Property *
+"enddefine" )<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "style" Selectors "{" Property *
+"}"</b></p>
+
+<p><b>def 14. Property ::= Name [ ":" PropValue | "=&gt;" Expr ]
+SEMI</b></p>
+
+<p><b>def 15. PropValue ::= ( PropSeq [ "with mode" Name ] [ "!" ]
+) ++ ","</b></p>
+
+<p><b>def 16. PropSeq ::= Term ++</b></p>
+
+<p><b>def 17. Term ::= LimitedExpr | BraceStatement</b></p>
+
+<p><b>def 18. Selectors ::= Related ++ ","</b></p>
+
+<p><b>def 19. Related ::= Sibling * [ ":" Name ]</b></p>
+
+<p><b>def 20. Sibling ::= Children ++ "+"</b></p>
+
+<p><b>def 21. Children ::= Element ++ "&gt;&gt;"</b></p>
+
+<p><b>def 22. Element ::= "(" Selectors ")" | Tag [ Attribution
+]</b></p>
+
+<p><b>def 23. Tag ::= Word | Symbol | "*"</b></p>
+
+<p><b>def 24. Attribution ::= "[" AttrValue "]" | "." Name</b></p>
+
+<p><b>def 25. AttrVal ::= Word [ "[" AttrBinding ** "," "]"
+]</b></p>
+
+<p><b>def 26. AttrBinding ::= ( "=" | "~=" ) Expr</b></p>
+
+<p><b>def 27. PropertyDef ::= "property" SimpleDecl</b></p>
+
+<p><b>def 28. SimpleDecl ::= Name [ Qualifier ] [ "=" Expr ] [
+TypeWord Type ]</b></p>
+
+<p><b>def 29. ProcedureDef ::= SompleFunctionDef |
+NewProcedureDef</b></p>
+
+<p><b>def 30. SimpleFunctionDef ::= "function" Header
+BraceStatement</b></p>
+
+<p><b>def 31. NewProcedureDef ::=<br>
+&nbsp; &nbsp; &nbsp; &nbsp; "define"<br>
+&nbsp; &nbsp; &nbsp; &nbsp; ( "method" [ "new" ] | "function" )<br>
+&nbsp; &nbsp; &nbsp; &nbsp; Header<br>
+&nbsp; &nbsp; &nbsp; &nbsp; [ "throws" Expr ]<br>
+&nbsp; &nbsp; &nbsp; &nbsp; [ "returns" Type ]<br>
+&nbsp; &nbsp; &nbsp; &nbsp; [ "extends" Header ]<br>
+&nbsp; &nbsp; &nbsp; &nbsp; ProcedureBody</b></p>
+
+<p><b>def 32. Header ::= [ Qualifier ] [ "on" Type ] CallShape [
+"=" Arg ]</b></p>
+
+<p><b>def 33. CallShape ::= PrefixShape | DottedShape |
+InfixShape</b></p>
+
+<p><b>def 34. PrefixShape ::= NameA [ Arglist ]</b></p>
+
+<p><b>def 35. DottedShape ::= NameB . NameA [ Arglist ]</b></p>
+
+<p><b>def 36. InfixShape ::= ArgA @ NameA [ ArgB ]</b></p>
+
+<p><b>def 37. Arglist ::= "(" Args ")"</b></p>
+
+<p><b>def 38. Args ::= Arg ** ","</b></p>
+
+<p><b>def 39. Arg ::= Name [ TypeWord [ "!" ] Type | "==" Expr ] |
+[ Name ] "..."</b></p>
+
+<p><b>def 40. TypeWord ::= "is" | "as" | ":"</b></p>
+
+<p><b>def 41. ProcedureBody ::= BraceStatement | "=&gt;"
+StatementSeq "enddefine"</b></p>
+
+<p><b>def 42. VarDef ::= ( "const" | "var" ) NameDecl</b></p>
+
+<p><b>def 43. NameDecl ::= [ Qualifier ] SingleDecl ++ "," [ "is"
+Type | "are" Type ]</b></p>
+
+<p><b>def 44. SingleDecl ::= ( OneDecl | "(" OneDecl ++ "," ")" ) [
+"=" Expr ]</b></p>
+
+<p><b>def 45. OneDecl ::= Name [ ":" Type | "..." ]</b></p>
+
+<p><b>def 46. ClassDef ::=<br>
+&nbsp; &nbsp; &nbsp; &nbsp; "define"<br>
+&nbsp; &nbsp; &nbsp; &nbsp; "class"<br>
+&nbsp; &nbsp; &nbsp; &nbsp; [ Qualifier ]<br>
+&nbsp; &nbsp; &nbsp; &nbsp; Name<br>
+&nbsp; &nbsp; &nbsp; &nbsp; [ "extends" CommaExpr ]<br>
+&nbsp; &nbsp; &nbsp; &nbsp; ( "{" ClassProperty ** SEMI "}" |
+ClassProperty ** SEMI "enddefine" )</b></p>
+
+<p><b>def 47. ClassProperty ::= Procedure | SlotDecl | VarDef |
+Property</b></p>
+
+<p><b>def 48. SlotDecl ::= ( "slot" | "shared" ) SimpleDecl</b></p>
+
+<p><b>def 49. UnitDef ::= "define" ( "unit" | "units" ) UnitDef ++
+"," "enddefine"</b></p>
+
+<p><b>def 50. UnitDef ::= Word [ "=" Expr ]</b></p>
+
+<p><b>def 51. EnumDef ::= "define" "enum" [ Qualifier ] Name "="
+Name ++ "," "enddefine"</b></p>
+
+<p><b>def 52. Statement ::= Expr ++ "," SEMI</b></p>
+
+<p><b>def 53. StatementSeq ::= Statement *</b></p>
+
+<p><b>def 54. Expr ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; Name<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr "{" UnitExpr "}"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Hole<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Literal<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr "..."<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | PreOp Expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr PostOp<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr InOp Expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr AssignOp Expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "(" Expr ")"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr [ "." DotExpr ] [ "(" OptCommaExpr
+")" ]<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr "[" Expr "]"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "[" Expr "]"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | LambdaExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "op" ( PreOp | InOp | PostOp )<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "new" Name [ "(" Expr ")" ]<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "none" OptExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "return" [ [ "with" ] CommaExpr ]<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "break" [ [ "with" ] CommaExpr ]<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "continue"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "throw" Expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | TryCatchExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "memo" CommaExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | IfExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | WhileExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | ForExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | SwitchExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | BraceStatement<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | VarDef<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | ProcedureDef</b></p>
+
+<p><b>def 55. OptExpr ::= [ Expr ]</b></p>
+
+<p><b>def 56. CommaExpr ::= Expr ++ ","</b></p>
+
+<p><b>def 57. OptCommaExpr ::= [ CommaExpr ]</b></p>
+
+<p><b>def 58. UnitExpr ::= ( Word ** "*" | _ 1 _ ) [ "/" Word **
+"*" ]</b></p>
+
+<p><b>def 59. Hole ::= "_" [ Integer ]</b></p>
+
+<p><b>def 60. Literal ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; StringLiteral<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | SymbolLiteral<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | NumberLiteral<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | ReservedLiteral<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Character</b></p>
+
+<p><b>def 61. Character ::= Backslash ( String | Word )</b></p>
+
+<p><b>def 62. PostOp ::= LexicalPostfixOperator | "@" ( Word | "("
+Expr ")" )</b></p>
+
+<p><b>def 63. InOp ::= LexicalInfixOperator | "@" ( Name | "(" Expr
+")" )</b></p>
+
+<p><b>def 64. DotExpr ::= Name | "(" Expr ")"</b></p>
+
+<p><b>def 65. LambdaExpr ::= "(" Args "=&gt;" StatementSeq
+")"</b></p>
+
+<p><b>def 66. TryCatchExpr ::= "try" StatementSeq CatchSeq
+"endtry"</b></p>
+
+<p><b>def 67. CatchSeq ::= ( "catch" Arglist [ "with" ]
+StatementSeq ) **</b></p>
+
+<p><b>def 68. IfExpr ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; NewIfExpr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | Expr "?" CommaExpr ":" Expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "if" "(" Expr ")" Statement [ "else"
+Statement ]</b></p>
+
+<p><b>def 69. NewIfExpr ::=<br>
+&nbsp; &nbsp; &nbsp; &nbsp; ( "if" | "unless" )<br>
+&nbsp; &nbsp; &nbsp; &nbsp; Expr<br>
+&nbsp; &nbsp; &nbsp; &nbsp; Then<br>
+&nbsp; &nbsp; &nbsp; &nbsp; StatementSeq<br>
+&nbsp; &nbsp; &nbsp; &nbsp; ( "elseif" Expr Then StatementSeq )<br>
+&nbsp; &nbsp; &nbsp; &nbsp; * [ "else" StatementSeq ]<br>
+&nbsp; &nbsp; &nbsp; &nbsp; ( "endif" | "endunless" )</b></p>
+
+<p><b>def 70. Then ::= "then" | "do"</b></p>
+
+<p><b>def 71. LoopDo ::= [ "with" "result" CommaExpr ] "do" [ "all"
+]</b></p>
+
+<p><b>def 72. WhileExpr ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "while" Expr LoopDo StatementSeq
+"endwhile"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "until" Expr LoopDo StatementSeq
+"enduntil"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "while" "(" Expr ")" Statement</b></p>
+
+<p><b>def 73. ForExpr ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; "for" ForBindings LoopDo StatementSeq
+"endfor"<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "for" "(" Name "in" Expr ")"
+StatementSeq<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | "for" "(" CIteration ")"
+Statement</b></p>
+
+<p><b>def 74. CIteration ::= [ [ "var" ] Name "=" Expr ] SEMI
+OptExpr SEMI OptExpr</b></p>
+
+<p><b>def 75. ForBindings ::= ( ForBinding | "while" Expr | "until"
+Expr ) ++ ","</b></p>
+
+<p><b>def 76. ForBinding ::=<br>
+&nbsp;&nbsp;&nbsp;&nbsp; [ "each" ] ForName "in" Expr [ ":" Type
+]<br>
+&nbsp;&nbsp;&nbsp;&nbsp; | ForName "from" Expr [ "to" Expr ] [
+"step" Expr ]</b></p>
+
+<p><b>def 77. ForName ::= Name [ TypeWord Type ]</b></p>
+
+<p><b>def 78. SwitchExpr ::= "switch" Expr ( "{" Case ** ";" "}" |
+"into" Case ** ";" "endswitch" )</b></p>
+
+<p><b>def 79. Case ::= ( "case" CommaExpr ":" ) + StatementSeq |
+"default" [ ":" ] StatementSeq</b></p>
+
+<p><b>def 80. BraceStatement ::= "{" StatementSeq "}"</b></p>
+
+<p><b>def 81. Type ::= Expr</b></p>
+
+<p><b>def 82. Pathname ::= [ Scheme ] [ Root ] [ Directories ] [
+Name ] [ Suffix ] [ Type ]</b></p>
+
+<p><b>def 83. Scheme ::= Word ":"</b></p>
+
+<p><b>def 84. Root ::= "//" Dotted</b></p>
+
+<p><b>def 85. Directories ::= [ "/" ] ( Dotted "/" ) ++</b></p>
+
+<p><b>def 86. Name ::= Word</b></p>
+
+<p><b>def 87. Suffix ::= "." Word</b></p>
+
+<p><b>def 88. Type ::= ";" Word</b></p>
+
+<p><b>def 89. Dotted ::= Word ++ "."</b></p>
+
+<h1><a name="here89"></a> 11 appendix: operator and symbol
+table</h1>
+
+<table border="1">
+<tr>
+<td>symbol</td>
+<td>precedence</td>
+<td>associativity</td>
+<td>description</td>
+</tr>
+
+<tr>
+<td>_</td>
+<td>NONE</td>
+<td>NONE</td>
+<td>"hole marker in partial application"</td>
+</tr>
+
+<tr>
+<td>...</td>
+<td>NONE</td>
+<td>NONE</td>
+<td>"trailing values of argument list"</td>
+</tr>
+
+<tr>
+<td>=&gt;</td>
+<td>10</td>
+<td>NONE</td>
+<td>"marker in procedure definitions and expressions"</td>
+</tr>
+
+<tr>
+<td>.</td>
+<td>170</td>
+<td>left</td>
+<td>"property lookup pseudo-operator"</td>
+</tr>
+
+<tr>
+<td>"[]"</td>
+<td>160</td>
+<td>left</td>
+<td>"property lookup/indexing pseudo-operator"</td>
+</tr>
+
+<tr>
+<td>"()"</td>
+<td>160</td>
+<td>left</td>
+<td>"procedure call pseudo-operator"</td>
+</tr>
+
+<tr>
+<td>"++, --"</td>
+<td>150</td>
+<td>"pre/post"</td>
+<td>"increment and decrement"</td>
+</tr>
+
+<tr>
+<td>"-, ~"</td>
+<td>150</td>
+<td>pre</td>
+<td>"minus, bitwise complement"</td>
+</tr>
+
+<tr>
+<td>"!"</td>
+<td>150</td>
+<td>left</td>
+<td>"logical not (cannot use <tt>not</tt>)"</td>
+</tr>
+
+<tr>
+<td>typeof</td>
+<td>150</td>
+<td>left</td>
+<td>"get run-time type of value"</td>
+</tr>
+
+<tr>
+<td>new</td>
+<td>150</td>
+<td>left</td>
+<td>"part of constructor invocation"</td>
+</tr>
+
+<tr>
+<td>unitName</td>
+<td>150</td>
+<td>post</td>
+<td>"unit conversion operator"</td>
+</tr>
+
+<tr>
+<td>%</td>
+<td>150</td>
+<td>post</td>
+<td>"percentage unit conversion operator"</td>
+</tr>
+
+<tr>
+<td>**</td>
+<td>145</td>
+<td>left</td>
+<td>"raise-to-the-power-of"</td>
+</tr>
+
+<tr>
+<td>"*, /, /:, div, rem"</td>
+<td>140</td>
+<td>left</td>
+<td>"multiplication, division"</td>
+</tr>
+
+<tr>
+<td>"+, -"</td>
+<td>130</td>
+<td>left</td>
+<td>"addition, subtraction"</td>
+</tr>
+
+<tr>
+<td>"&lt;&gt;"</td>
+<td>130</td>
+<td>left</td>
+<td>"string concatenation"</td>
+</tr>
+
+<tr>
+<td>"&lt;&lt;, &gt;&gt;, &gt;&gt;&gt;"</td>
+<td>120</td>
+<td>left</td>
+<td>"bitwise shifting"</td>
+</tr>
+
+<tr>
+<td>".."</td>
+<td>120</td>
+<td>left</td>
+<td>"range construction"</td>
+</tr>
+
+<tr>
+<td>"&lt;, &lt;=, &gt;, &gt;=, ==, !=, /==, ===, /===, =="</td>
+<td>110</td>
+<td>left</td>
+<td>"relationals"</td>
+</tr>
+
+<tr>
+<td>"&amp;"</td>
+<td>100</td>
+<td>left</td>
+<td>"bitwise and"</td>
+</tr>
+
+<tr>
+<td>"^"</td>
+<td>90</td>
+<td>left</td>
+<td>"bitwise xor"</td>
+</tr>
+
+<tr>
+<td>"|"</td>
+<td>80</td>
+<td>left</td>
+<td>"bitwise or"</td>
+</tr>
+
+<tr>
+<td>"@"</td>
+<td>75</td>
+<td>left</td>
+<td>"infix function call marker"</td>
+</tr>
+
+<tr>
+<td>"&amp;&amp;"</td>
+<td>70</td>
+<td>left</td>
+<td>"logical and (cannot use <tt>and</tt>)"</td>
+</tr>
+
+<tr>
+<td>"||"</td>
+<td>60</td>
+<td>left</td>
+<td>"logical or (cannot use <tt>or</tt>)"</td>
+</tr>
+
+<tr>
+<td>=</td>
+<td>40</td>
+<td>right</td>
+<td>"assignment"</td>
+</tr>
+
+<tr>
+<td>"XX="</td>
+<td>30</td>
+<td>right</td>
+<td>"assign-and-op for XX=dyadic op"</td>
+</tr>
+
+<tr>
+<td>","</td>
+<td>20</td>
+<td>left</td>
+<td>"sequential evaluation"</td>
+</tr>
+</table>
+
+<h1><a name="here90"></a> 12 appendix: reserved words</h1>
+
+<table border="1">
+<tr>
+<td>keyword</td>
+<td>description</td>
+</tr>
+
+<tr>
+<td>all</td>
+<td>"specifies that a loop returns its body's results"</td>
+</tr>
+
+<tr>
+<td>are</td>
+<td>"specifies type of properties or identifers"</td>
+</tr>
+
+<tr>
+<td>break</td>
+<td>"break statement; break from loop, optionally with result"</td>
+</tr>
+
+<tr>
+<td>const</td>
+<td>"declares an immutable variable"</td>
+</tr>
+
+<tr>
+<td>catch</td>
+<td>"specifies an exception-handling clause"</td>
+</tr>
+
+<tr>
+<td>continue</td>
+<td>"continue statement; start next iteration"</td>
+</tr>
+
+<tr>
+<td>define</td>
+<td>"introduces a definition"</td>
+</tr>
+
+<tr>
+<td>do</td>
+<td>"punctuation in while and for loops"</td>
+</tr>
+
+<tr>
+<td>each</td>
+<td>"punctuation in for-loops"</td>
+</tr>
+
+<tr>
+<td>else</td>
+<td>"introduces else-part of if-expression"</td>
+</tr>
+
+<tr>
+<td>elseif</td>
+<td>"introduces else-if part of if-expression"</td>
+</tr>
+
+<tr>
+<td>endfor</td>
+<td>"closes a for-loop"</td>
+</tr>
+
+<tr>
+<td>endif</td>
+<td>"closes if-expression"</td>
+</tr>
+
+<tr>
+<td>endmodule</td>
+<td>"(optional) ends module body"</td>
+</tr>
+
+<tr>
+<td>endtry</td>
+<td>"ends a try-expression"</td>
+</tr>
+
+<tr>
+<td>endwhile</td>
+<td>"ends a while-loop"</td>
+</tr>
+
+<tr>
+<td>enduntil</td>
+<td>"ends an until-loop"</td>
+</tr>
+
+<tr>
+<td>endunless</td>
+<td>"closes an unless expression"</td>
+</tr>
+
+<tr>
+<td>extends</td>
+<td>"specifies parent of a class"</td>
+</tr>
+
+<tr>
+<td>for</td>
+<td>"introduces a for-loop"</td>
+</tr>
+
+<tr>
+<td>foreign</td>
+<td>"part of foreign-function interface"</td>
+</tr>
+
+<tr>
+<td>from</td>
+<td>"part of import, part of for-loop"</td>
+</tr>
+
+<tr>
+<td>function</td>
+<td>"declares a function"</td>
+</tr>
+
+<tr>
+<td>if</td>
+<td>"introduces if-expression"</td>
+</tr>
+
+<tr>
+<td>implements</td>
+<td>"reserved for class expansion"</td>
+</tr>
+
+<tr>
+<td>import</td>
+<td>"specifies other modules to import"</td>
+</tr>
+
+<tr>
+<td>in</td>
+<td>"punctuation in for-loops"</td>
+</tr>
+
+<tr>
+<td>import</td>
+<td>"import a module's public interface into this module"</td>
+</tr>
+
+<tr>
+<td>is</td>
+<td>"specifes type of identifier"</td>
+</tr>
+
+<tr>
+<td>media</td>
+<td>"introduces media-constrained styles"</td>
+</tr>
+
+<tr>
+<td>method</td>
+<td>"declares a method"</td>
+</tr>
+
+<tr>
+<td>memo</td>
+<td>"specifies an expression to evaluate on scope exit"</td>
+</tr>
+
+<tr>
+<td>mode</td>
+<td>"introduces mode-constrained styles"</td>
+</tr>
+
+<tr>
+<td>module</td>
+<td>"names module"</td>
+</tr>
+
+<tr>
+<td>new</td>
+<td>"part of constructor declaration/invocation"</td>
+</tr>
+
+<tr>
+<td>none</td>
+<td>"delivers no values"</td>
+</tr>
+
+<tr>
+<td>on</td>
+<td>"gives type of first argument in procedure header"</td>
+</tr>
+
+<tr>
+<td>op</td>
+<td>"converts operator into its procedure value"</td>
+</tr>
+
+<tr>
+<td>class</td>
+<td>"introduces a new class"</td>
+</tr>
+
+<tr>
+<td>property</td>
+<td>"declares a property of a class"</td>
+</tr>
+
+<tr>
+<td>result</td>
+<td>"part of loop-result syntax"</td>
+</tr>
+
+<tr>
+<td>return</td>
+<td>"return statement; exit from procedure"</td>
+</tr>
+
+<tr>
+<td>returns</td>
+<td>"specifies return type of procedure"</td>
+</tr>
+
+<tr>
+<td>shared</td>
+<td>"declares a class-specific slot of a class"</td>
+</tr>
+
+<tr>
+<td>slot</td>
+<td>"declares a instance-specific slot of a class"</td>
+</tr>
+
+<tr>
+<td>spice</td>
+<td>"identifies version, gives preferences"</td>
+</tr>
+
+<tr>
+<td>step</td>
+<td>"punctuation in for-loops"</td>
+</tr>
+
+<tr>
+<td>style</td>
+<td>"introduces style-sheet"</td>
+</tr>
+
+<tr>
+<td>then</td>
+<td>"introduces then-part of if-expression"</td>
+</tr>
+
+<tr>
+<td>throws</td>
+<td>"reserved for exception declaration"</td>
+</tr>
+
+<tr>
+<td>to</td>
+<td>"punctuation in for-loops"</td>
+</tr>
+
+<tr>
+<td>try</td>
+<td>"introduces a try-expression for controlling exceptions"</td>
+</tr>
+
+<tr>
+<td>unless</td>
+<td>"an <strong>if</strong> with inverted test condition"</td>
+</tr>
+
+<tr>
+<td>until</td>
+<td>"a <strong>while</strong> with inverted test condition"</td>
+</tr>
+
+<tr>
+<td>var</td>
+<td>"declares a mutable top-level or local variable"</td>
+</tr>
+
+<tr>
+<td>while</td>
+<td>"introduces a while-loop"</td>
+</tr>
+
+<tr>
+<td>with</td>
+<td>"general punctuation marker"</td>
+</tr>
+</table>
+</body>
+</html>
+

@@ -1,0 +1,268 @@
+XML Transport Format for Spice
+==============================
+
+[Work in progress]
+
+The inevitable design question when embedding semantics in XML is what
+whether simple string-like information should be denoted as attribute or
+body text.  (It should be noted that this question only arises because
+XML attributes are hopelessly underpowered.)  The position taken in this
+embedding is that attributes are reserved for semantic annotations, e.g.
+tail-call position, typically added by compilers.
+
+This in turn raises the issue of sensitivity to white space.  The answer
+in this embedding is that wherever body text is significant so is white
+space.
+
+The main issue, though, is whether arguments are determined by position
+or by 'keyword'.  In the case of vector-like constructs (lists,
+elements, loop bindings) it is clear that position is best.  It is not
+so clear for constructions such as function invocations.
+
+For the purposes of documentation I intend to do both at the same time. 
+Whenever I use the suffix "-record" for a tag this will denote the
+keyword version and indicate there is a non keyworded version without
+the suffix.
+
+e.g.
+	<foo-record>
+		<lhs> <absent/> </lhs>
+		<rhs> <string>the quick brown fox</string> </rhs>
+	</foo-record>
+implies the equivalence of
+	<foo> <absent/> <string>the quick brown fox</string> </foo>
+
+In other words I am deliberately deferring this important decision
+until I've had a good chance to chat with CJD.
+
+
+
+
+Primitive Values
+----------------
+
+Absent
+	<Absent/>
+	<absent/>
+	<id>Absent</id>
+	<id>absent</id>
+	
+Boolean
+	<Boolean/>
+	<boolean>true</boolean>
+	<boolean>false</boolean>
+	<true/>
+	<false/>
+	<id>true</id>
+	<id>false</id>
+	<id>Boolean</id>
+	<boolean value="true"/>
+	<boolean value="false"/>
+
+Numbers
+	<number value="42.3+5/6i"/>
+	<number>42.3+5/6i</number>
+
+	Integer
+		<integer value="123"/>
+		<integer>123</integer>
+
+	Ratio
+		<ratio numerator="355" denominator="113"/>
+		<ratio-record><numerator>113</numerator><denominator>355</denominator></ratio>
+
+	Float (of varying precisions, BigDecimal?)
+		<float value="3.1415926535"/>
+		<float>3.1415926535</float>
+
+	Complex
+		<complex real="3.2" imaginary="4"/>
+		<complex-record><real>3.2</real><imaginary>4</imaginary></complex-record>
+
+Characters (styles)
+	<characters value="foo"/>
+	<characters>foo</characters>
+	
+Strings
+	<string value="bar"/>
+	<string>bar</string>
+	
+Words/Atoms/Symbols
+	<atom value="gort"/>
+	<atom>gort</atom>
+
+
+Literals
+--------
+
+Maps & Maplets
+	<map> E* </map>
+	<maplet> E* </maplet>	# accomodates multi-valued maplets
+	
+Lists
+	<list> E </list>
+	
+XML Elements
+	<element-record>
+		<tag> E </tag>
+		<attribute-list> 
+			<attribute-record> 
+				<name> E </name> 
+				<value> E </value> 
+			</attribute-record>* 
+		</attribute-list>
+		<children> E* </children>
+	</element-record>
+	
+	
+Variables
+---------
+
+	<id name="quagga_wagga"/>
+	<id>quagga_wagga</id>
+
+Operations
+----------
+
+Type restriction
+	<isa-record>
+		<value> E </value>
+		<type> T </type>
+	</isa-record>
+
+Indexing
+	<index-record> <item> E </item> <arg> E </arg> </index-record>
+	# what about multi-dimensional indexing?  How do we express a group that is not
+	# necessarily a sequence i.e. the type of things that are separated by semi-colons?
+	# I suspect this is an invalid question and the answer is that each construct needs
+	# to sort this out for itself.
+
+Function application
+	<apply-record> <item> E </item> <arg> E </arg> </apply-record>
+
+Arithmetic ops, ++
+	?????
+
+Comma (Sequencing)
+	<seq> E* </seq>
+
+Boolean operators
+	<and> E* </and>
+	<or> E* </or>
+	<not> E </not>						
+
+Present operators	
+	<and-present> E* </and-present>
+	<or-present> E* </or-present>
+	<not-present> E </not-present>
+
+New
+	<new> ??? </new>
+
+
+Constructs
+----------
+
+Empty
+	<skip/>		# synonym <seq/>
+
+Ifs
+	<if-record> <test> E </test> <then> E </then> <else> E </else> </if-record>
+
+Switches
+	<switch-record>
+		<on> E </on>
+		<case-list>
+			<case-record>
+				<match-list> E* </match-list>
+				<then> E </then>
+			</case-record>
+		</case-list>
+		<else> E </else>
+	</switch-record>
+
+For-loops (inc Bindings)
+	<for-record> 
+		<binding-list> B* </binding-list>
+		<while-list> W* </while-list>
+		<do> E </do>
+		<finally> E </finally>
+	</for-record>
+
+	<binding name="V"> E </binding>	# what about multiple targets?
+	<binding-record>
+		<loop-var> V </loop-var>
+		<iterator> E </iterator>
+	</binding-record>
+
+	<from-by-to-record>
+		<from> E </from>
+		<by> E </by>
+		<to> E </to>
+	</from-by-to-record>
+
+	<from-to-times-record>
+		<from> E </from>
+		<by> E </by>
+		<times> E </times>
+	</from-to-times-record>
+
+	<in> E </in>
+	
+	<while-record>
+		<test> E </test>
+		( <result> E </result> | <use-finally/> )
+	</while-record>
+
+
+Abstractions
+------------
+
+Lambda abstraction
+	<lambda-record>
+		<name> N </name>
+		<parameter-list> PATTERN </parameter-list>
+		<body> E </body>
+	</lambda-record>
+	
+
+Declarations
+------------
+
+Pattern
+	<seq> PATTERN* </seq>
+	<val name=NAME/>
+	<var name=NAME/>
+	<val> NAME </val>
+	<var> NAME </var>
+	<dotdotdot> PATTERN </dotdotdot>
+	<anon/>
+	<type-record> <pattern> PATTERN </pattern> <type> TYPE </type> </type-record>
+	
+Val/Const/Var declarations
+	<bind-record> <lhs> PATTEN </lhs> <rhs> E </rhs> </bind>
+	
+Function declaration
+	<bind>
+		<val name="factorial"/>
+		<function>
+			<
+		</function>
+	</bind>
+	<function-record>
+		<name> NAME </name>
+		<dispatch> GOT HERE ... trying to sort out the best place for type restrictions 
+					on formal parameters
+		</dispatch>
+	</function-record>
+
+Updater declaration
+
+Override declaration
+
+Class declaration
+
+Packages
+
+
+

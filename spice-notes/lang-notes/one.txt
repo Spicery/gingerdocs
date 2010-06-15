@@ -1,0 +1,48 @@
+Re: one
+
+---------------------------------------------------------------------
+Date:	17/Dec/02
+
+Hi Chris,
+
+I'd just like to double check how you think "one" should work - I don't have a copy of the manual to hand.  I have implemented it as follows:
+
+define spiceOne( n );        ;;; n = number of args
+    if n == 0 then
+        spiceAbsent
+    else
+        erasenum( n - 1 )   ;;; leave leftmost argument on stack???
+    endif
+enddefine;
+
+Should it be the leftmost or rightmost?  Or have I remembered "one" completely wrongly?
+
+
+---------------------------------------------------------------------
+Date:	17/Dec/02
+From:	Chris Dollin
+
+> I'd just like to double check how you think "one" should work - I
+> don't have a copy of the manual to hand.  I have implemented it as
+> follows:
+>
+> define spiceOne( n );        ;;; n = number of args
+>      if n == 0 then
+>          spiceAbsent
+>      else
+>          erasenum( n - 1 )   ;;; leave leftmost argument on stack???
+>      endif
+> enddefine;
+>
+> Should it be the leftmost or rightmost?  Or have I remembered "one"
+> completely wrongly?
+
+No, that's right: the leftmost argument, or absent if there are no arguments:
+
+    define function one( args ... ) =>
+         (args.length == 0 | absent | args[1])
+    enddefine
+
+is how the manual puts it.
+
+---------------------------------------------------------------------

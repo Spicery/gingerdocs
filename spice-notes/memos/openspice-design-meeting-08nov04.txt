@@ -1,0 +1,118 @@
+Summary of Spice Design Meeting, 08/11/04
+
+Location
+	12 Cedar Close, Long Ashton
+
+Attending Members
+	Chris Dollin	CJD		(eh@electric-hedgehog.net)
+	Kevin Rogers	KR		(krogers@openworld.org)
+	Steve Leach		SFKL	(steve@watchfield.com)
+
+[1] Summary
+-----------
+
+[1.1] Summary of Tasks and Follow-Ups
+-------------------------------------
+
+[1.2] Summary of Resolutions Passed
+-----------------------------------
+
+  * "new" is deprecated from OpenSpice
+  * Multiple unlabeled holes to be numbered sequentially.
+  * StrictMap to be named BoundedMap.
+  * Meetings moved to second Monday of the month.
+
+[1.3] Update on Previous Tasks and Follow-Ups
+---------------------------------------------
+
+Action:			'==' to work on numbers in JSpice
+Assigned-to:	SFKL
+Status:			Added to JSpice 0.4.17 onwards.
+
+Action:			JUnit in OpenSpice
+Assigned-to:	CJD
+Status:			on hold
+
+Action:			Continue breaking out small topics for discussion from 
+				the structure matching "umbrella".
+Assigned-to:	SFKL 
+Status:			Generally seems to have been successful.  SFKL to continue.
+
+Action:			Summarize assignment rules
+Requested-by:	CJD
+Assigned-to:	SFKL
+Status:			On hold
+
+Action:			Reference Manual Progress
+Requested-by:	All
+Assigned-to:	All
+Status:			Some contributions by KR.
+
+
+[2] Multiple Holes
+------------------
+
+SFKL raised the knotty issue of multiple holes, yet again.	Thankfully this time we made substantial progress.	The question to which the team addressed itself was the numbering of "unlabeled" holes when two or more appear in a single function application.  e.g. does ? + ? mean ( x, y => x + y ) or ( x => x + x ).
+
+KR pointed out that MillScript decided this rather elegantly by using the same algorithm for labeling holes and assigning arguments for the "format" function.	The algorithm in MillScript is that each unlabeled hole is given a number one greater than the hole to its left if it exists, otherwise 1.
+
+SFKL tried to present an argument based on the idea that any labeling algorithm should cope with mixed labeled and unlabeled holes.	 In particular, explicitly labeling a hole with the value it would be assigned implicitly should not change the result.	 However, this argument did not prove incisive (to my disappointment).
+
+However, CJD found an argument which neatly eliminated the decision decision he had previously championed.	He brought our attention to functions whose arguments are of different type e.g. allbutlast.  It would be inappropriate to use the same value for each argument.  It would also be undesirable to determine sharing based on the functions signature (as this would be in danger of conflicting with the Dollin principle).	 We collectively commend CJDs principled approach.
+
+It was therefore resolved that in expressions in which all holes are unlabeled, they would be considered to be numbered sequentially from 1 in left to right order.	 The group was not able to bring itself to a consensus on mixtures of labeled and unlabeled holes at this time.	 Such expressions therefore remain forbidden.
+
+
+[3] isA/instanceOf Predicate 
+----------------------------
+
+SFKL raised the topic of the equivalent to Java's instanceof operator.	There was some debate about whether or not this deserved to be an operator or could be left as a function.	The group tentatively agreed it should be a function.
+
+No member was willing to strongly endorse a particular function name at this time.	Candidates "is", "isA", "hasInstance", "instanceOf" were floated.  CJD pointed out that Zest uses "is".
+
+No conclusion was reached.
+
+
+[4] Proposal to Drop "new" Operator
+-----------------------------------
+
+The proposed elimination of the "new" operator was discussed.  This followed on a comment (in a previous meeting) by CJD that "new" was superfluous.
+
+To make this possible the role of the "new" syntax would have to be shifted elsewhere.	This was to distinguish between the use of an "init" value as a constructor or an initializer.	In the following example, the keyword "extends" is used to indicate that the "init" should be used as an initializer.
+
+	define class Spoo
+		slot x;
+		slot y;
+		
+		define init Foo( p, q ) => 
+			this.x := p;
+			this.y := q;
+		enddefine
+		
+		define init Bar() =>
+		extends Foo( 1, 2 )			//	using Foo as an initializer
+		enddefine
+
+	enddefine
+	
+In this example, one might construct an instance of Spoo as follows
+	
+	val my_spoo = Foo( 88, 99 );
+	
+However, one could not use Foo as an initializer this way.	It would be necessary to invoke it in some special way e.g.
+
+	Foo.init( my_spoo, 88, 99 )
+	
+
+	
+	
+[5] StrictMap to be renamed BoundedMap
+--------------------------------------
+
+With little debate it was agreed that StrictMap should be called BoundedMap.  This is a better description and has been adopted.
+
+
+[5] Any Other Business
+----------------------
+
+It was proposed and agreed to shift the Design Meetings to the second Monday of the month rather than the first.  

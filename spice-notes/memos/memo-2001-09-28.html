@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
+<html>
+<head>
+	<title>Spice Memo (28th September 2001)</title>
+	<meta name="generator" content="BBEdit 6.1.2">
+</head>
+<body>
+
+<h1>Memo: Phone Conversation, Friday 28th September 2001</h1>
+
+<h2>Participants</h2>
+<ul>
+<li>Steve Leach (SFKL)</li>
+<li>Chris Dollin (CJD)</li>
+</ul>
+
+<!--
+<div align="left">
+<table>
+<tr><th align="left">Participants</th><tr>
+<tr><td>Steve Leach (SFKL)</td><tr>
+<tr><td>Chris Dollin (CJD)</td><tr>
+</table>
+</div>
+-->
+
+<h2>Discussion</h2>
+
+<ol>
+	<li><p>
+Prompted by the addition of regular expressions to Spice/Palantir, SFKL and CJD noted several incompatibilities between Spice strings and the conventional regular expression syntax, exemplified by Perl 4.  In particular, \s means a space inside a Spice string but a 1-character regexp that matches any whitespace character inside Perl.  Also \( starts a Spice string insertion but means a 1-character regexp matching an open parenthesis in Perl.
+</p>
+</li>
+
+	<li><p>
+We perceive two distinct kinds of compatibility, compatibility with Perl regexps and compatibility with Spice strings.  We decided to resolve this conflict by having two syntaxes for regular expressions <i>traditional</i> and <i>native</i>.  The traditional syntax would maximize compatibility with Perl / JavaScript / Java.  The native syntax would vary the convention to suit the Spice programmer.
+</p>
+</li>
+
+	<li><p>
+The traditional regular expression would be introduced with // and terminate with /.  This allows cut and paste of regular expressions.
+e.g. //abc.*def/
+</p>
+</li>
+
+	<li><p>
+The native syntax will use /" and terminate with ".  This emphasizes the connection to Spice strings.  It will also allow us to make a better selection of metacharacters (such as avoiding the troublesome ".") e.g. /"abc?*def"
+</p>
+</li>
+</ol>
+
+
+
+
+</body>
+</html>
