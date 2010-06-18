@@ -195,7 +195,7 @@ an function that invokes the sysapp.
 	### possible implementation of sysfn called 'foo'	
 	<fn title="foo">
 		<explode>x</explode>
-		<sysapp value="foo"><explode>x</explode></sysapp>
+		<sysapp name="foo"><explode>x</explode></sysapp>
 	</fn>
 
 This highlights that the entitlement to efficiency is only
@@ -207,7 +207,7 @@ inefficient form such as the one below.
 
 	<fn>
 		<explode>x</explode>
-		<sysapp value="foo"><explode>x</explode></sysapp>
+		<sysapp name="foo"><explode>x</explode></sysapp>
 	</fn>
 
 However it is guaranteed that direct calls of sysfns will
@@ -216,7 +216,7 @@ be as efficient as sysapps.
 	### This form will be treated as identical to
 	### the one below. (The reverse is not true.)
 	<app><sysfn value="foo"/> ... </app> turns into
-	<sysapp value="foo"> ... </sysapp>
+	<sysapp name="foo"> ... </sysapp>
 
 
 [*.*] Examples of SysApp's
