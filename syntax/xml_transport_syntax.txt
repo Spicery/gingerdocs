@@ -1,4 +1,4 @@
-XML Transport Format for AppMetro
+XML Transport Format for Ginger
 
 [*] Element and Meta-attributes ------------------------------------------------
 
