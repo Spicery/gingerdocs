@@ -254,7 +254,14 @@ ELSE_PART ::= EXPR
 
 [*] For Loops -----------------------------------------------------------------
 
-[To be done]
+[This is work in progress. Easier to understand if declarations come 1st.]
+
+	LOOP ::= <for> QUERY STMNTS </for>
+	
+	QUERY ::= 
+		<dec> PATTERN EXPR </dec>
+		<from> PATTERN FROM TO </from>
+
 
 [*] Declarations and Patterns -------------------------------------------------
 
