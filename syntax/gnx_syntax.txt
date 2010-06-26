@@ -263,6 +263,7 @@ ELSE_PART ::= EXPR
 		<from> PATTERN FROM TO </from>
 
 
+
 [*] Declarations and Patterns -------------------------------------------------
 
 [*.*] Overview
@@ -291,7 +292,6 @@ A PATTERN is any of the following
 
 	PATTERN_APP ::=
 		<app> EXPR PATTERN </app>
-
 
 [*.*] Pattern Variables
 
@@ -323,6 +323,18 @@ that a variable may be declared in multiple facets. I suspect this means
 we have to represent this with multiple facet elements.]
 
 [Note: we also need to cope with forward declarations.]
+
+[*.*] As a Query
+
+A declaration is a type of query that either fails or succeeds once. 
+In particular this loop would execute once:
+
+	<for>
+		<dec>
+			<var name="foo"/>
+		</dec>
+		<absent value="absent"/>
+	</for>
 
 [*.*] Examples:
 		
