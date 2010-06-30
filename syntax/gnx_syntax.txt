@@ -79,6 +79,7 @@ CONSTANT ::=
 	<list value="empty"/>				### Empty list, immutable constant
 	<vector value="empty"/>				### Empty vector, immutable constant
 	<sysfn value=TEXT/>					### Named procedure
+	<sysclass value=TEXT>				### Named class
 
 	
 [*.*] Examples
@@ -98,7 +99,7 @@ a sequence of characters.
 [*.*] Available Named Procedures
 
 Note that these constants are not necessarily bound to identifiers in Ginger. 
-These constants are intended to direct support for built-in operators (e.g.
+These constants are intended as direct support for built-in operators (e.g.
 arithmetic) and syntactic forms such as list construction, string interpolation, 
 etc.
 
@@ -124,6 +125,24 @@ available from the "std" package. Hence they are functionally equivalent to
 <id name=NAME pkg="sys"/>
 
 See also the 'sysapp' element. 
+
+[*.*] Available Named Classes
+
+There is a built-in class for every type of built-in value, although they are
+not necessarily bound to identifiers in Ginger.
+
+	<sysclass value="Absent"/>			### class for absent
+	<sysclass value="Bool"/>			### class for true & false
+	<sysclass value="SmallInt"/>		### class for 'small' integers
+	<sysclass value="Float"/>			### class for floats
+	<sysclass value="String"/>			### class for strings
+	<sysclass value="Char"/>			### class for characters
+	<sysclass value="Nil"/>				### class for nil
+	<sysclass value="Pair"/>			### class for list pairs
+	<sysclass value="Vector"/>			### class for vectors
+	<sysclass value="Fn"/>				### class for function objects
+	<sysclass value="Class"/>			### class for classes
+
 
 	
 [*] Variable Reference ----------------------------------------------------------
@@ -192,7 +211,7 @@ versa. Unlike sysapp's, sysfns are not guaranteed to be
 efficient but may be implemented behind the scenes as
 an function that invokes the sysapp.
 
-	### possible implementation of sysfn called 'foo'	
+	### permitted possible implementation of sysfn called 'foo'	
 	<fn title="foo">
 		<explode>x</explode>
 		<sysapp name="foo"><explode>x</explode></sysapp>
