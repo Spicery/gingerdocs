@@ -109,12 +109,15 @@ etc.
 	<sysfn value="/"/>					### }
 	<sysfn value="**"/>					### }
 	<sysfn value="..."/>				### Equivalent to explode
+	<sysfn value="headList"/>
+	<sysfn value="isEmptyList"/>
 	<sysfn value="newList"/>
 	<sysfn value="newVector"/>
 	<sysfn value="newMap"/>				
 	<sysfn value="newSet"/>
 	<sysfn value="newBag"/>
 	<sysfn value="not"/>				### Boolean negation
+	<sysfn value="tailList"/>
 	<sysfn value="!!"/>					### Absent negation
 	
 N.B. There may be implementation-extensions to this list, it is not intended
@@ -143,6 +146,8 @@ not necessarily bound to identifiers in Ginger.
 	<sysclass value="Fn"/>				### class for function objects
 	<sysclass value="Class"/>			### class for classes
 
+Note that classes are not exactly he same astypes. All function objects share
+the same class but may have entirely different types.
 
 	
 [*] Variable Reference ----------------------------------------------------------
