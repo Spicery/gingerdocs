@@ -43,4 +43,21 @@ How to Add a New Instruction
 		FREEZE = copy volatile state into VM object
 		MELT   = copy VM state into volatile store
 		
-4.	
+4.	Add the new instruction to the Java code generator. This needs rework
+	unfortunately, so it is a bit messy.
+	
+	(a) Add new instruction to GeneralInstructionSet.java
+	(b) Add to Implementation#instructions()
+	
+5.	Change directory to the appginger source directory. Clean out the
+	*.o files and rebuild.
+
+		cd $appginger/c/appginger/cpp
+		make clean
+		make
+		
+6.	Rerun functional tests.
+
+		cd $appginger/c/appginger/functests
+		make clean
+		make check
