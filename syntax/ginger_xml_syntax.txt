@@ -284,7 +284,8 @@ ELSE_PART ::= EXPR
 	
 	QUERY ::= 
 		<dec> PATTERN EXPR </dec>
-		<from> PATTERN FROM TO </from>
+		<from> PATTERN FROM_EXPR TO_EXPR </from>
+		<in> PATTERN EXPR </in>
 
 
 
@@ -399,6 +400,18 @@ In particular this loop would execute once:
 
 [*] Packages and Imports ------------------------------------------------------
 
-[To be done. Very important though. In particular it impacts on how identifiers
-are named.]
+[*.*] Overview
+
+The package element introduces a new package. Items within the package are
+compiled with the new package as the default.
+
+If a package attempts to introduce a pre-existing package, the action taken
+depends on whether or not appginger is in development-mode (reloaded allowed)
+or in run-mode (reloading forbidden).
+
+[*.*] Example
+
+	<package url="http://this.is.a.domain.name/">
+		...
+	</package>
 	
