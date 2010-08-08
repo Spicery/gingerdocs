@@ -307,7 +307,7 @@ A PATTERN is any of the following
 	PATTERN ::= PATTERN_VAR | PATTERN_SEQ | PATTERN_APP | PATTERN_CONST
 	
 	PATTERN_VAR ::=
-		<var [name=NAME] [(match|type)=TYPE_EXPR] [protected=BOOL]/>
+		<var [name=NAME] [facet=FACET_NAME] [(match|type)=TYPE_EXPR] [protected=BOOL]-/>
 		
 	PATTERN_SEQ ::=
 		<seq> PATTERN* </seq>
@@ -317,6 +317,7 @@ A PATTERN is any of the following
 
 	PATTERN_APP ::=
 		<app> EXPR PATTERN </app>
+		
 
 [*.*] Pattern Variables
 
@@ -360,6 +361,37 @@ In particular this loop would execute once:
 		</dec>
 		<absent value="absent"/>
 	</for>
+
+[*.*] Important Note on Facets
+
+Planned future expansion:
+
+In general a variable can be in multiple facets. However XML does not support
+multiple attributes of the same name. The intention is to permit multiple 
+facet names separated by the ASCII unit-separator (US) character (&#31; or 
+&#x1F;).
+
+Since the US character is not a normal printing character, it is unlikely to
+ever be required as part of a facet name. However, should it be necessary to
+cope with that eventuality, it would be necessary to go through the general 
+annotation mechanism.
+
+The general annotation mechanism is not yet defined. It would look something
+like the following:
+
+	<tagged>
+		<tag category=TAG> EXPR </tag > *
+		STMNTS
+	</tagged>
+
+Consequently, an expanded facet definition would look like this
+
+	<!-- equivalent to: var [facet(version13),facet(version14)] x -->
+	<tagged>
+		<tag category="facet"><id name="version13"/></tag>
+		<tag category="facet"><id name="version14"/></tag>
+		<var name="x"/>
+	</tagged>
 
 [*.*] Examples:
 		
@@ -411,7 +443,19 @@ or in run-mode (reloading forbidden).
 
 [*.*] Example
 
+PACKAGE ::=
 	<package url="http://this.is.a.domain.name/">
-		...
+		IMPORT*
+		STMNT*
 	</package>
+
+IMPORT ::=
+	<import	
+		from=PACKAGE_URL
+		facet=FACET_NAME
+		alias=ALIAS_NAME
+		shadowable=("true"|"false")
+		mode=("into"|"uses")
+	/>
+	
 	
