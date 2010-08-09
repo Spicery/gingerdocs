@@ -441,10 +441,10 @@ If a package attempts to introduce a pre-existing package, the action taken
 depends on whether or not appginger is in development-mode (reloaded allowed)
 or in run-mode (reloading forbidden).
 
-[*.*] Example
+[*.*] Syntax
 
 PACKAGE ::=
-	<package url="http://this.is.a.domain.name/">
+	<package url=URL>
 		IMPORT*
 		STMNT*
 	</package>
@@ -454,8 +454,7 @@ IMPORT ::=
 		from=PACKAGE_URL
 		facet=FACET_NAME
 		alias=ALIAS_NAME
-		shadowable=("true"|"false")
-		mode=("into"|"uses")
+		( linkedAs=("maskable"|"nonmaskable") | includedAs=FACET_NAME )
 	/>
 	
 	
