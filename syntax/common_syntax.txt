@@ -1,5 +1,21 @@
+Package =
+	'package' PackageName [';'] {Import} Statements 'endpackage' .
+	
+Import =
+	'import' {ImportQualifier} [Tags] from PackageName [ 'alias' AliasName ] [ 'into' Tags ] ';' .
+
+ImportQualifier =
+	'pervasive' |
+	'nonpervasive' |
+	'qualified' |
+	'unqualified' .
+	
+Tags = 
+	'(' ')' |
+	'(' Tag {',' Tag} ')' .
+
 Statements =
-    Statement ( ';' Statements )* .
+    Statement { ';' Statements } .
 
 Statement =
     Query |
@@ -11,14 +27,28 @@ Query =
         'in' Expr |
         FromByTo
     ) .
+    
+Pattern =
+	Literal |
+	[ [ 'var' | 'val' ] Tags ] Identifier |
+	Pattern ( (','|';') Pattern )+  |
+	'(' Pattern? ')' |
+	'[' Pattern? ']' |
+	'{' Pattern? '}' |
+	'{%' Pattern? '%}' |
+	ApplyPattern .
+
+ApplyPattern =
+	Expr '(' Pattern? ')' |
+	Pattern ( '.'|'@') ( Identifier | '(' Expr ')' ) Pattern .
 
 FromByTo =
-    'from' Expr ('by' Expr )? ('to' Expr)? |
-    'by' Expr ('to' Expr)? |
+    'from' Expr ['by' Expr ] ['to' Expr] |
+    'by' Expr ['to' Expr] |
     'to' Expr .
 
 Expr = 
-    PrimaryExpr ( InfixOperator Expr )* .
+    PrimaryExpr { InfixOperator Expr } .
 	
 
 PrimaryExpr = 
@@ -100,8 +130,8 @@ CharacterConstant =
 	
 QuotedCharacter =
 	printing_character |
-	'\' ( 'n' | 'r' | 's' | 't' | 'v' ) |
-	'\&' HTMLEntity ';' |  
-	'\(' Expr ')' .
+	'\\' ( 'n' | 'r' | 's' | 't' | 'v' ) |
+	'\\&' HTMLEntity ';' |  
+	'\\(' Expr ')' .
 
 InfixOperator = ',' | '+' | '-' | '*' | '/' .
