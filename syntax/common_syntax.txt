@@ -1,5 +1,5 @@
 Package =
-	'package' PackageName [';'] {Import} Statements 'endpackage' .
+	'package' PackageName ';' {Import} Statements 'endpackage' .
 	
 Import =
 	'import' {ImportQualifier} [Tags] from PackageName [ 'alias' AliasName ] [ 'into' Tags ] ';' .
@@ -110,7 +110,7 @@ ConditionalExpr =
     'unless' CoreConditional 'endunless' .
 
 CoreConditional =
-    Expr then Statements MoreConditional* ( 'else' Statements ) .
+    Expr then Statements MoreConditional* [ 'else' Statements ] .
 
 MoreConditional =
     ( 'elseif' | 'elseunless' ) Expr then Statements .
