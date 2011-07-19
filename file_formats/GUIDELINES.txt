@@ -1,1 +1,18 @@
-Why make this split? It seemed to me that we would want to separate the formal description of MinX, GinX and LinX from the description of the Ginger language. The former is only of interest to people trying to customise the toolkit but the language is core. 
+The File Formats of the Ginger Toolchain Pipeline
+-------------------------------------------------
+
+* This section is intended to be the reference for the internal stages of the Ginger pipeline. 
+
+* Readers of this section are likely to be trying to
+  - Customise the Ginger IDE, hence they need to understand the formats in depth.
+
+* It should certainly cover
+  - MinX
+  - GinX
+  - Linx
+
+* It specifically excludes the configuration files of particular tools, which should be documented in their own sections.
+
+* Nor should it cover the Ginger programming language. The Ginger programming language is not a generic pipeline stage that can be reused. It is the client of the 
+
+* By the same argument, DSLs should be also described in their own sections as they are not generic. Hence gson2gnx documents GSON and not this section.
