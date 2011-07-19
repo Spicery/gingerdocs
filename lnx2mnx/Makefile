@@ -1,8 +1,8 @@
-all: xson2gnx.html
+all: lnx2mnx.html
 
 clean:
-	/bin/rm -f xson2gnx.html
+	/bin/rm -f lnx2mnx.html
 
-xson2gnx.html: xson2gnx.txt
-	asciidoc --attribute=tabsize=4 -n xson2gnx.txt
+lnx2mnx.html: lnx2mnx.txt
+	asciidoc --attribute=tabsize=4 -n lnx2mnx.txt
 
