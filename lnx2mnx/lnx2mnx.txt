@@ -1,21 +1,23 @@
-XSON2GNX - an extensible parser
+lnx2mnx - an extensible parser
 ===============================
 
-Usage: xson2gnx --grammar=FILENAME < SOURCE > GNX
+Usage: lnx2mnx --grammar=FILENAME < SOURCE > GNX
 
-A configurable parser that allows you to parse a variety of useful languages into GNX. The configuration would be done at runtime. The basic technology is a recursive descent parser with operator precedence and a generic lexer.
+A configurable parser that allows you to parse a variety of useful languages into MinX. The configuration would be done at runtime. The basic technology is a recursive descent parser with operator precedence and a generic lexer.
 
 The grammer should define the reserved tokens and their lexical properties. This should include their role and precedence:
 
----------------
+_WARNING: The rest of this file is hopelessly out of date_
+
+--------------------------------------------------------------------------------
 	<lex token="if" role="special"/>
 	<lex token="then" role="nonfix"/>
 	<lex token=";" role="infix" precedence="10"/>
----------------
+--------------------------------------------------------------------------------
 
 The grammar file should be written in GNX, naturally enough. It should support grammar rules that allow for very efficient deterministic parsing. Here's an example for parsing an "if" form.
 
------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 <!-- Code for the if-form -->
 <form title="if-form">
 	<lex token="if" role="special"/>
@@ -50,11 +52,11 @@ The grammar file should be written in GNX, naturally enough. It should support g
 		<must.read token="endif"/>
 	</rule>
 </form>
------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 
 The recursive descent can be defined like this.
------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 <form title="General Expression">
 	<lex token="(" role="special"/>
 	<lex token=")" role="nonfix"/>
@@ -82,11 +84,11 @@ The recursive descent can be defined like this.
 	</rule>
 </form>
 
------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 
 The following rule would serve for parsing normal identifiers.
------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 <form title="id">
 	<rule state="PRIMARY" role="unreserved">
 		<element name="id">
@@ -95,12 +97,12 @@ The following rule would serve for parsing normal identifiers.
 		</element>
 	</rule>
 </form>
------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 How does precedence work? Every *read* has a state and a precedence. But default the precedence is 0. A continuation rule may have an associated precedence; if the current precedence is too high, the rule cannot be taken.
 
 Here's an example showing how one defines infix operators.
------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 <form title="+ operator>
 	<lex token="+" role="infix" precedence="1000"/>
 	<lex token="," role="infix" precedence="100"/>
@@ -120,4 +122,4 @@ Here's an example showing how one defines infix operators.
 		</element>
 	</rule>
 </form>
------------------------------------------------------------------------
+--------------------------------------------------------------------------------
