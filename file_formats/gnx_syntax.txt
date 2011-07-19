@@ -7,7 +7,7 @@ Revised, August 2010
 Revised, May 2011
 
 
-Reader, please note that this is very much a work-in-progress. It is being written up as we design the relevant sections in appginger.
+_Reader, please note that this is very much a work-in-progress. It is being written up as we design the relevant sections in appginger._
 
 GinX Overview
 -------------
