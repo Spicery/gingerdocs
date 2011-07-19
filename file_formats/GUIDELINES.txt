@@ -7,9 +7,9 @@ The File Formats of the Ginger Toolchain Pipeline
   - Customise the Ginger IDE, hence they need to understand the formats in depth.
 
 * It should certainly cover
-  - MinX
-  - GinX
-  - Linx
+  - MinX, Minimal XML
+  - GinX, Ginger XML < MinX
+  - Linx, Lexis in XML < MinX
 
 * It specifically excludes the configuration files of particular tools, which should be documented in their own sections.
 

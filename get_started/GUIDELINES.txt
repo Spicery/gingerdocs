@@ -1,0 +1,7 @@
+Getting Started
+---------------
+
+* The Reader has decided to install the system
+  - In order to learn the system or evaluate it. Simple install.
+  - To use in earnest, where they need more sophisticated options.
+  
