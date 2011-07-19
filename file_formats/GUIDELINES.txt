@@ -1,0 +1,1 @@
+Why make this split? It seemed to me that we would want to separate the formal description of MinX, GinX and LinX from the description of the Ginger language. The former is only of interest to people trying to customise the toolkit but the language is core. 

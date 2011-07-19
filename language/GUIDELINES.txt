@@ -1,0 +1,1 @@
+I also moved the top-level 'std' folder into 'language'. I am not entirely sure this is the right classification. But I felt that the 'language' folder should contain the information you need to compose Ginger programs and that surely includes the library. I then renamed it 'standard_library'
