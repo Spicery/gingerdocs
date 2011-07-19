@@ -1,3 +1,0 @@
-Minimal XML (or S-Expressions Reloaded)
-=======================================
-
