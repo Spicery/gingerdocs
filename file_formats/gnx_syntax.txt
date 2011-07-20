@@ -436,9 +436,7 @@ Comment! Qualifier or alias?
 Pattern Variables
 ~~~~~~~~~~~~~~~~~
 
-These are the most basic and familiar types of pattern. They introduce an optionally
-typed variable. The protected attribute plays the same role as in Pop-11, protecting
-the variable from assignment (n.b. this is shallow rather than deep protection.)
+These are the most basic and familiar types of pattern. They introduce an optionally typed variable. The protected attribute plays the same role as in Pop-11, protecting the variable from assignment (n.b. this is shallow rather than deep protection.)
 
 name=NAME::
 The "name" attribute is optional. If it is omitted then it is an anonymous variable.

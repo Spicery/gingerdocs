@@ -9,7 +9,7 @@ Documentation Guidelines for lnx2mnx, the extensible parser
   - Those who want to replace lnx2mnx with their own tool.
   - They want to understand its role in the architecture of the Ginger IDE.
 
-* The grammar file is unique to this program and so should be detailed in this folder and no where else.
+* The grammar file is unique to this program and so should be detailed in this folder and nowhere else.
 
 * The LinX and MinX formats are useful in a variety of settings. They should be casually described here and the reader guided to the file-format section for reference.
 

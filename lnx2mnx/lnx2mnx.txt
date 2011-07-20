@@ -5,7 +5,7 @@ Usage: lnx2mnx --grammar=FILENAME < SOURCE > GNX
 
 A configurable parser that allows you to parse a variety of useful languages into MinX. The configuration would be done at runtime. The basic technology is a recursive descent parser with operator precedence and a generic lexer.
 
-The grammer should define the reserved tokens and their lexical properties. This should include their role and precedence:
+The grammar should define the reserved tokens and their lexical properties. This should include their role and precedence:
 
 _WARNING: The rest of this file is hopelessly out of date_
 
