@@ -1,0 +1,89 @@
+Extending JSON in the Ginger Environment: gson2gnx
+==================================================
+:Author:    Stephen Leach
+:Email:     stephen.leach@steelypip.com
+Created, July 2011
+
+
+[NOTE]
+================================================================================
+This is a note on a bit of programming I did with the GNX toolkit to amuse 
+myself, it has no practical significance as far as I know, but it may have 
+some nerdy entertainment value. If you can find any use for this, it would be 
+very interesting!
+================================================================================
+
+I was idly looking at JSON the other day and wondering whether or not there was a connection with GNX, the simplified XML I use as an abstract syntax tree. After some experimentation, I decided that it was worth defining an extension to JSON; the alternative would be to define an encoding in JSON but that isn't very useful.
+
+If you don't know JSON take a look at http://www.json.org/ which is a really nice one-page introduction to it. In essence, JSON is a kind of S-expression notation for languages with C-syntax. It support three kinds of atomic values: strings, numbers and name constants (true, false, null). And it supports two compound types: an array and "object", which is actually a map from strings to values.
+
+--------------------------------------------------------------------------------
+	EXPR ::= PRIMITIVE | COMPOUND 
+	PRIMITIVE ::= STRING | NUMBER | NAMED_CONSTANT
+	COMPOUND ::= ARRAY | OBJECT
+	ARRAY ::= [ EXPR,... ]
+	OBJECT ::= { (STRING : EXPR) ,... }
+--------------------------------------------------------------------------------
+
+So one might represent a mapping from words to their alternative anagrams like this:
+
+--------------------------------------------------------------------------------
+	{ "cat" : [], "dog" : [ "god" ], evil : [ "vile", "live" ] }
+--------------------------------------------------------------------------------
+
+GNX only has one recursive datatype, the CDATA-less element. In Haskell, it would be declared like this:
+
+--------------------------------------------------------------------------------
+	data Gnx = Gnx String ( Map String String ) [ Gnx ]
+--------------------------------------------------------------------------------
+
+It took me a while to come up with GSON - an extension to JSON that I felt worked. I am going to skip my reasoning as there are lots of viable choice points and that makes the explanation very complicated. But the output is straightforward. The result was that I added a new compound form to represent elements that looks like this.
+
+--------------------------------------------------------------------------------
+	NAME< ( NAME = STRING ),... >[ EXPR,... ]
+--------------------------------------------------------------------------------
+
+Note that both the attribute part and the children part are optional. I also generalised the named constant to represent variables.
+
+Here's how we might represent the Ginger expression
+
+--------------------------------------------------------------------------------
+	Ginger:		if x then 1 else 2 endif
+	GNX:		<if><id name="x"/><int value="1"/><int value="2"/></if>
+	GSON:		if[ x, 1, 2 ]
+--------------------------------------------------------------------------------
+
+I also went ahead and added function applications. It was too tedious to write f(x,y) as
+
+--------------------------------------------------------------------------------
+	app[ f, seq[ x, y ] ]
+--------------------------------------------------------------------------------
+
+So I added parentheses. Prefix parentheses are simply shorthand for "seq" so the above could be written as
+
+--------------------------------------------------------------------------------
+	app[ f, (x,y) ]
+--------------------------------------------------------------------------------
+
+but I went further and added prefix function application, so you can write
+
+--------------------------------------------------------------------------------
+	f( x, y )
+--------------------------------------------------------------------------------
+
+The grammar looks something like this. Note that OBJECT is generalised to become a MAP, corresponding to the Ginger map syntax, and that both ":" and "=" are acceptable ways of denoting a maplet.
+
+--------------------------------------------------------------------------------
+	EXPR ::= PRIMITIVE | COMPOUND | EXPR( EXPR,... )
+	PRIMITIVE ::= STRING | NUMBER | VARIABLE
+	COMPOUND ::= ARRAY | MAP | SEQ | ELEMENT
+	ARRAY ::= [ EXPR,... ]
+	MAP ::= { ((EXPR : EXPR)|(NAME=EXPR)) ,... }
+	SEQ ::= ( EXPR,... )
+	ELEMENT ::= NAME ATTRS? ARRAY | NAME ATTRS
+	ATTRS ::= < ( NAME = STRING ),... >
+--------------------------------------------------------------------------------
+
+I have added this to the AppGinger suite as the UNIX filter gson2gnx. It does exactly what it says on the tin. It is still something of a work in progress (variable names not general enough, needs support for more primitives, might deserve support for boolean literals) and has no known practical use. But I think it is very cute! It has the generality and compactness of S-expressions but is far easier to read.
+
+It's also worth saying that I added // and /*...*/ comments. JSON does not support comments, although an earlier version did, and plenty of people regard that as an omission. JSON-C is an extension to JSON that supports C-style comments. GSON is a strict superset of JSON-C.

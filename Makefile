@@ -3,3 +3,4 @@ all clean:
 	$(MAKE) -C introduction $@
 	$(MAKE) -C language $@
 	$(MAKE) -C lnx2gnx $@
+	$(MAKE) -C gson2gnx $@
