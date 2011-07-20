@@ -1,1 +1,13 @@
-I also moved the top-level 'std' folder into 'language'. I am not entirely sure this is the right classification. But I felt that the 'language' folder should contain the information you need to compose Ginger programs and that surely includes the library. I then renamed it 'standard_library'
+Documentation Guidelines for the Ginger Language
+------------------------------------------------
+
+* The Reader is likely to be reading this section to
+  - Learn the Ginger language from scratch (tutorial needed)
+  - Refresh their memory of some element of Ginger (index needed)
+  - Compare the Ginger language with another language (cross-overs + overview)
+
+* This is the definitive statement of the Ginger language.
+
+* It should be sufficient for someone to read and write Ginger code.
+
+* It should therefore include the standard libraries.
