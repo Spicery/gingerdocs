@@ -1,18 +1,8 @@
-The File Formats of the Ginger Toolchain Pipeline
--------------------------------------------------
+GinX: Ginger XML, a File Format of the Ginger Toolchain Pipeline
+----------------------------------------------------------------
 
-* This section is intended to be the reference for the internal stages of the Ginger pipeline. 
+* 	This section is intended to be the reference for the GinX
+	- 	a key internal stage of the Ginger pipeline. 
 
-* Readers of this section are likely to be trying to
-  - Customise the Ginger IDE, hence they need to understand the formats in depth.
-
-* It should certainly cover
-  - MinX, Minimal XML
-  - GinX, Ginger XML < MinX
-  - Linx, Lexis in XML < MinX
-
-* It specifically excludes the configuration files of particular tools, which should be documented in their own sections.
-
-* Nor should it cover the Ginger programming language. The Ginger programming language is not a generic pipeline stage that can be reused. It is the client of the 
-
-* By the same argument, DSLs should be also described in their own sections as they are not generic. Hence gson2gnx documents GSON and not this section.
+* 	Readers of this section are likely to be trying to
+  	- 	Customise the Ginger IDE, hence they need to understand the formats in depth.
