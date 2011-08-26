@@ -20,7 +20,7 @@ If you don't know JSON take a look at http://www.json.org/ which is a really nic
 --------------------------------------------------------------------------------
 	EXPR ::= PRIMITIVE | COMPOUND 
 	PRIMITIVE ::= STRING | NUMBER | NAMED_CONSTANT
-	COMPOUND ::= ARRAY | OBJECT
+	COMPOUND ::= ARRAY | OBJECT 
 	ARRAY ::= [ EXPR,... ]
 	OBJECT ::= { (STRING : EXPR) ,... }
 --------------------------------------------------------------------------------
@@ -53,33 +53,29 @@ Here's how we might represent the Ginger expression
 	GSON:		if[ x, 1, 2 ]
 --------------------------------------------------------------------------------
 
-I also went ahead and added function applications. It was too tedious to write f(x,y) as
-
---------------------------------------------------------------------------------
-	app[ f, seq[ x, y ] ]
---------------------------------------------------------------------------------
-
-So I added parentheses. Prefix parentheses are simply shorthand for "seq" so the above could be written as
-
---------------------------------------------------------------------------------
-	app[ f, (x,y) ]
---------------------------------------------------------------------------------
-
-but I went further and added prefix function application, so you can write
+I also went ahead and added function applications. It was too tedious to write f(x,y) as +app[ f, seq[ x, y ] ]+ so I added the usual prefix form. 
 
 --------------------------------------------------------------------------------
 	f( x, y )
 --------------------------------------------------------------------------------
 
+Having added paratheses, I then defined prefix parentheses. These are simply shorthand for "seq" so that +(x, y)+ is simply shorthand for
+
+--------------------------------------------------------------------------------
+	seq[ x, y ]
+--------------------------------------------------------------------------------
+
+
 The grammar looks something like this. Note that OBJECT is generalised to become a MAP, corresponding to the Ginger map syntax, and that both ":" and "=" are acceptable ways of denoting a maplet.
 
 --------------------------------------------------------------------------------
-	EXPR ::= PRIMITIVE | COMPOUND | EXPR( EXPR,... )
+	EXPR ::= PRIMITIVE | COMPOUND
 	PRIMITIVE ::= STRING | NUMBER | VARIABLE
-	COMPOUND ::= ARRAY | MAP | SEQ | ELEMENT
+	COMPOUND ::= APPLY | SEQ | ARRAY | MAP  | ELEMENT
+	APPLY ::= EXPR SEQ
+	SEQ ::= ( EXPR,... )
 	ARRAY ::= [ EXPR,... ]
 	MAP ::= { ((EXPR : EXPR)|(NAME=EXPR)) ,... }
-	SEQ ::= ( EXPR,... )
 	ELEMENT ::= NAME ATTRS? ARRAY | NAME ATTRS
 	ATTRS ::= < ( NAME = STRING ),... >
 --------------------------------------------------------------------------------
