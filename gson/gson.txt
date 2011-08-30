@@ -1,4 +1,4 @@
-GSON: Gingerised JSON
+﻿GSON: Gingerised JSON
 =====================
 :Author:    Stephen Leach
 :Email:     stephen.leach@steelypip.com
@@ -9,54 +9,70 @@ Overview
 
 GSON is a strict superset of JSON that is convenient for writing GNX. It also incorporates the C-style comments of JSON-C and hence is also a strict extension of JSON-C. To find out more about JSON you can read this excellent website http://www.json.org/.
 
-The purpose of GSON is twofold. Firstly it directly supports JSON expressions in Ginger. Secondly it is a more compact and friendly way of writing low-level GNX code. It can represent, in a natural way, any GNX term. 
+The purpose of GSON is twofold. Firstly it directly supports JSON expressions in Ginger. Secondly it is a more compact and friendly way of writing both MNX elements and GNX code. It can represent, in a natural way, any MNX element or GNX expression. 
 
-In order to avoid clever encoding tricks, I added a few extensions to JSON to create GSON. The main extension allows GSON to represent arbitrary MNX trees but there are several minor extensions to cover frequent patterns such as function application.
+In order to avoid clever encoding tricks, I added a few extensions to JSON to create MNX elements and GNX values. The main extension allows GSON to represent arbitrary MNX elements but there are several minor extensions to cover frequent patterns such as function application.
 
-As an example, consider the following Ginger expression:
+Tokenisation
+------------
 
---------------------------------------------------------------------------------
-define andThen( f, g ) => 
-	fn () => f(); g() endfn 
-enddefine;
---------------------------------------------------------------------------------
+Because GSON supports comments, it is best to think of GSON having a separate tokenisation phase. GSON supports the following tokens:
 
-This will expand into the following fairly unreadable GNX code.
+* Double-quoted strings. JSON compatible.
+* Numbers. JSON compatible.
+* Names: These follow the same rules as XML names. 
+* Signs: Single sign character (multiple-character signs are future expansion)
 
---------------------------------------------------------------------------------
-<bind>
-    <var name="andThen" protected="true"/>
-    <fn name="andThen">
-        <seq>
-            <var name="f"/>
-            <var name="g"/>
-        </seq>
-        <fn>
-            <seq/>
-            <seq>
-                <app>
-                    <id name="f"/>
-                    <seq/>
-                </app>
-                <app>
-                    <id name="g"/>
-                    <seq/>
-                </app>
-            </seq>
-        </fn>
-    </fn>
-</bind>
---------------------------------------------------------------------------------
+Both comments and inter-token white space are ignored.
 
-In GSON, it appears as shown below. As you can see, GSON is just as machine friendly as GNX but more compact and more readable.
+Comments
+~~~~~~~~
+
+Comments may be inserted between tokens. Javascript style comments are supported, compatible with JSON-C. 
+
+//	starts an end-of-line comment. 
+
+/* ... */ are long comments that may cross several lines. They may not be nested.
+
+
+Double-quoted String Tokens
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 --------------------------------------------------------------------------------
-bind[
-	var< name="andThen", +protected >,
-	fn< name="andThen" >( f, g ){ fn<>{ f(), g() } }
-]
+STRING ::= " CHAR* "
+CHAR 
+		::= any-Unicode-character-except-"-or-\-or-control-character
+		::= \" | \\ | \/ | \b | \f | \n | \r | \t | 
+		::= \u HEX**4
+HEX 	::= any-one-of 0123456789ABCDEF
 --------------------------------------------------------------------------------
 
+Number Tokens
+~~~~~~~~~~~~~
+
+--------------------------------------------------------------------------------
+NUM 	::= INT FRAC? EXP?
+INT 	::= SIGN? DIGIT+
+SIGN 	::= any-one-of +-
+DIGIT 	::= any-one-of 0123456789
+FRAC 	::= . DIGIT*
+EXPR	::= (+e+|+E+) SIGN? DIGIT+
+--------------------------------------------------------------------------------
+
+
+Name Tokens
+~~~~~~~~~~~
+
+Names may contain essentially any alphanumeric character. This includes the standard English letters A through Z and a through z as well as the digits 0 through 9. XML names may also include non-English letters, numbers, and ideograms such as ö, ç, , and . They may also include these three punctuation characters: the underscore (_), the hyphen (-) and the period (.).
+
+Names may not contain other punctuation characters such as quotation marks, apostrophes, dollar signs, carets, percent symbols, semicolons or the colon. Names may not contain whitespace of any kind, whether a space, a carriage return, a line feed, a nonbreaking space, and so forth. 
+
+Names may only start with letters, ideograms, and the underscore character. They may not start with a number, hyphen, or period. There is no limit to the length of a name. 
+
+Sign Tokens
+~~~~~~~~~~~
+
+The
 
 Grammar and Tokenisation
 ------------------------
@@ -141,3 +157,51 @@ Lastly I added a shorthand for writing lambda functions. In GNX, a lambda functi
 fn< ATTRIBUTES >( ARG, ... ){ EXPR, ... }
 fn< ATTRIBUTES >{ EXPR, ... }                 // No arguments = ().
 --------------------------------------------------------------------------------
+
+Example
+-------
+
+As an example, consider the following Ginger expression:
+
+--------------------------------------------------------------------------------
+define andThen( f, g ) => 
+	fn () => f(); g() endfn 
+enddefine;
+--------------------------------------------------------------------------------
+
+This will expand into the following fairly unreadable GNX code.
+
+--------------------------------------------------------------------------------
+<bind>
+    <var name="andThen" protected="true"/>
+    <fn name="andThen">
+        <seq>
+            <var name="f"/>
+            <var name="g"/>
+        </seq>
+        <fn>
+            <seq/>
+            <seq>
+                <app>
+                    <id name="f"/>
+                    <seq/>
+                </app>
+                <app>
+                    <id name="g"/>
+                    <seq/>
+                </app>
+            </seq>
+        </fn>
+    </fn>
+</bind>
+--------------------------------------------------------------------------------
+
+In GSON, it appears as shown below. As you can see, GSON is just as machine friendly as GNX but more compact and more readable.
+
+--------------------------------------------------------------------------------
+bind[
+	var< name="andThen", +protected >,
+	fn< name="andThen" >( f, g ){ fn<>(){ f(), g() } }
+]
+--------------------------------------------------------------------------------
+
