@@ -20,7 +20,9 @@ It took me a while to come up with GSON - an extension to JSON that I felt worke
 
 There were two goals. Firstly I wanted to be able to map any JSON term easily into its GNX equivalent. Secondly I wanted to be able to naturally represent any GNX term in JSON + as few extensions as I could. The important word here is "natural", meaning that I wanted to avoid special encoding tricks.
 
-My eventual design had several extensions. Firstly I added a new compound form to JSON in order to represent MNX elements. This would be an unescaped element name followed by key=value attributes in angle-brackets, rather like an HTML tag, followed by the children in brackets. Either of the attribute part and children part may be omitted (but not both).
+My eventual design had several extensions. My starting place was actually JSON-C because that adds in comments. Plenty of developers regard the lack of comments as an omission. JSON-C is a backward-compatible extension to JSON whose sole purpose is adding comments to JSON.
+
+My first addition was a MNX elements. This needed a new compound form in JSON. It would be an unescaped element name followed by key=value attributes in angle-brackets, rather like an HTML tag, followed by the children in brackets. Either of the attribute part and children part may be omitted (but not both).
 
 --------------------------------------------------------------------------------
 ELEMENT_NAME< ( NAME = STRING ),... >[ EXPR,... ]

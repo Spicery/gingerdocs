@@ -1,5 +1,5 @@
-﻿GSON: Gingerised JSON
-=====================
+﻿The GSON Specification: Gingerised JSON
+=======================================
 :Author:    Stephen Leach
 :Email:     stephen.leach@steelypip.com
 Created, July 2011
@@ -11,7 +11,9 @@ GSON is a strict superset of JSON that is convenient for writing GNX. It also in
 
 The purpose of GSON is twofold. Firstly it directly supports JSON expressions in Ginger. Secondly it is a more compact and friendly way of writing both MNX elements and GNX code. It can represent, in a natural way, any MNX element or GNX expression. 
 
-In order to avoid clever encoding tricks, I added a few extensions to JSON to create MNX elements and GNX values. The main extension allows GSON to represent arbitrary MNX elements but there are several minor extensions to cover frequent patterns such as function application.
+In order to avoid clever encoding tricks, I added a few extensions to JSON to create MNX elements and GNX values. The main extension allows GSON to represent arbitrary MNX elements but there are several minor extensions to cover frequent patterns such as function application. 
+
+Read the link:gson_background.html[Background to GSON] to learn more where it came from.
 
 Tokenisation
 ------------
@@ -72,94 +74,127 @@ Names may only start with letters, ideograms, and the underscore character. They
 Sign Tokens
 ~~~~~~~~~~~
 
-The
-
-Grammar and Tokenisation
-------------------------
-
-The grammar looks something like this. Note that OBJECT is generalised to become a MAP, corresponding to the Ginger map syntax, and that both ":" and "=" are acceptable ways of denoting a maplet within braces.
-
+Sign tokens are made up from a single sign character. The permissible set of sign characters are:
 --------------------------------------------------------------------------------
-	EXPR ::= PRIMITIVE | COMPOUND
-	PRIMITIVE ::= STRING | NUMBER | VARIABLE
-	COMPOUND ::= APPLY | SEQ | LAMBDA | ARRAY | MAP  | ELEMENT
-	APPLY ::= EXPR SEQ
-	SEQ ::= ( EXPR, ... )
-	ARRAY ::= [ EXPR, ... ]
-	LAMBDA ::= NAME ATTRS SEQ? { EXPR, ... }
-	MAP ::= { ((EXPR : EXPR)|(NAME=EXPR)), ... }
-	ELEMENT ::= NAME ATTRS? ARRAY | NAME ATTRS
-	ATTRS ::= < ( NAME = STRING ), ... >
+,:=<>()[]{}
 --------------------------------------------------------------------------------
+In the future, sign tokens may include multi-character signs.
 
-The basic tokens of the grammar strings, numbers, names and variables. Strings and numbers are the same as JSON strings and numbers. Names are restricted to XML names because GNX is a strict subset of XML. Variables however currently follow the same rules as names as this is purely a limitation in the implementation.
-
-Also note that GSON supports // and /*...*/ comments, unlike JSON. It simply throws these comments away during tokenisation. Plenty of developers regard that as an omission e.g. JSON-C is an extension to JSON whose sole purpose is adding comments to JSON.
-
-
-Background
-----------
-
-I was idly looking at JSON the other day and wondering whether or not there was a connection with GNX, the simplified XML I use as an abstract syntax tree. After some experimentation, I decided that it was worth defining an extension to JSON; the alternative would be to define an encoding in JSON but that isn't very useful.
-
-If you don't know JSON take a look at http://www.json.org/ which is a really nice one-page introduction to it. In essence, JSON is a kind of S-expression notation for languages with C-syntax. It support three kinds of atomic values: strings, numbers and named constants (true, false, null). And it supports two compound types: an array and "object", which is actually a map from strings to values.
-
---------------------------------------------------------------------------------
-EXPR ::= PRIMITIVE | COMPOUND 
-PRIMITIVE ::= STRING | NUMBER | NAMED_CONSTANT
-COMPOUND ::= ARRAY | OBJECT 
-ARRAY ::= [ EXPR,... ]
-OBJECT ::= { (STRING : EXPR) ,... }
---------------------------------------------------------------------------------
-
-It took me a while to come up with GSON - an extension to JSON that I felt worked. There are lots of possible choices and quite a few of them look viable. 
-
-There were two goals. Firstly I wanted to be able to map any JSON term easily into its GNX equivalent. Secondly I wanted to be able to naturally represent any GNX term in JSON + as few extensions as I could. The important word here is "natural", meaning that I wanted to avoid special encoding tricks.
-
-My eventual design had several extensions. Firstly I added a new compound form to JSON in order to represent MNX elements. This would be an unescaped element name followed by key=value attributes in angle-brackets, rather like an HTML tag, followed by the children in brackets. Either of the attribute part and children part may be omitted (but not both).
-
---------------------------------------------------------------------------------
-ELEMENT_NAME< ( NAME = STRING ),... >[ EXPR,... ]
-ELEMENT_NAME< ( NAME = STRING ),... >		        // No children.
-ELEMENT_NAME[ EXPR,... ]                            // No attributes.
---------------------------------------------------------------------------------
-
-Here's an example:
-
---------------------------------------------------------------------------------
-Ginger:		if x then 1 else 2 endif
-GSON:		if[ x, 1, 2 ]
-GNX:		<if><id name="x"/><constant type="int" value="1"/><constant type="int" value="2"/></if>
---------------------------------------------------------------------------------
-
-The second decision was to generalise the JSON Object to support arbitrary maps. This meant generalising the ":" syntax to support general expressions on both sides. 
-
-Thirdly, I generalised the small set of JSON named constants into variables. This has the side-effect that that GSON references true, false and absent via variables rather than literals. i.e.
-
---------------------------------------------------------------------------------
-GSON:		true
-GNX:		<id name="true"/>
-and NOT:	<constant type="bool" value="true"/>
---------------------------------------------------------------------------------
-
-It may be a good idea to add in a way of writing literal constants in the future, perhaps by adding the '#' character to access GNX system constants and functions. e.g. +#newList+ becomes +<sysfn name="newList"/>+.
-
-Fourthly I added parentheses for function applications. It is preferable to write f(x,y) as +app[ f, seq[ x, y ] ]+. This also included prefix parentheses. These are simply shorthand for "seq" so that +(x, y)+ is simply shorthand for
-
---------------------------------------------------------------------------------
-GSON:	( x, y )
-GNX:	seq[ x, y ]
---------------------------------------------------------------------------------
-
-Lastly I added a shorthand for writing lambda functions. In GNX, a lambda function is written as +fn< ATTRIBUTES >[ ARGS, BODY ]+. To make the body stand out a little more, and to bring it into line with JavaScript, we are allowed to write this as below.
-
---------------------------------------------------------------------------------
-fn< ATTRIBUTES >( ARG, ... ){ EXPR, ... }
-fn< ATTRIBUTES >{ EXPR, ... }                 // No arguments = ().
---------------------------------------------------------------------------------
-
-Example
+Grammar
 -------
+
+The grammar is as follows. Note that JSON OBJECT is generalised to become a MAP, corresponding to the Ginger map syntax, and that both ":" and "=" are acceptable ways of denoting a maplet within braces.
+
+--------------------------------------------------------------------------------
+EXPR       ::= PRIMITIVE | COMPOUND
+PRIMITIVE  ::= STRING | NUMBER | VARIABLE
+VARIABLE   ::= NAME
+COMPOUND   ::= APPLY | SEQ | LAMBDA | ARRAY | MAP  | ELEMENT
+APPLY      ::= EXPR SEQ
+SEQ        ::= '(' EXPR, ... ')'
+ARRAY      ::= [ EXPR, ... ]
+LAMBDA     ::= NAME ATTRS SEQ? { EXPR, ... }
+MAP        ::= { ((EXPR : EXPR)|(NAME=EXPR)), ... }
+ELEMENT    ::= NAME ATTRS? ARRAY | NAME ATTRS
+ATTRS      ::= < ( NAME = STRING ), ... >
+--------------------------------------------------------------------------------
+
+Note that the following forms are reserved for future use.
+--------------------------------------------------------------------------------
+NAME( EXPR,... ){ EXPR,... }       		// Under consideration for lambdas.
+NAME{ EXPR, ... }						// Under consideration for lambdas.
+NAME ATTRS? ( EXPR,... )[ EXPR,... ]	// Unused
+NAME ATTRS ATTRS+                       // Unused
+--------------------------------------------------------------------------------
+
+
+Variables
+~~~~~~~~~
+
+Variables are represented by standalone names. They will be translated into
+the following GNX 
+
+********************************************************************************
++<id name="*NAME*">+.
+********************************************************************************
+
+TIP: Variables generalise JSON's true, false and null. This does mean that there
+	is no direct support for literals in GSON. In the future all GNX 
+	named constants and functions may be given literal support e.g. #true.
+	
+
+NOTE: In GNX, variables may have any name whatsoever. 
+	In the future we will have to support with this either by allowing
+	escaped characters inside names or by allowing name 
+	quotation. The exact mechanism will be decided in the future.
+
+Elements
+~~~~~~~~
+
+Elements have three parts: a name, an optional set of name=value attributes, and an optional list of children. Note that at least one of the two optional parts must be present (otherwise the name will be treated as a variable.)
+
+These are transformed into a GNX element in the obvious way.
+	* The name becomes the name of the GNX element.
+	* The attributes become the attributes of the GNX element.
+	* The children are recursively transformed into GNX expressions and the results become the children of the GNX element. Order is preserved.
+	
+.Example
+--------------------------------------------------------------------------------
+GSON:	
+	if< declarative="true">[ flag1, 1, if[ flag2, 0, 1 ] ]
+	
+GNX :   
+	<if declarative="true">
+		<id name="flag1"/>
+		<constant type="int" value="1"/>
+		<if>
+			<id name="flag2"/>
+			<constant type="int" value="0"/>
+			<constant type="int" value="1"/>
+		</if>
+	</if>
+--------------------------------------------------------------------------------
+
+Sequences
+~~~~~~~~~
+
+A sequence of expressions enclosed in parentheses is automatically transformed into a GNX sequence.
+
+* The result is a GNX element with name "seq".
+* Each of the child expressions are transformed into GN expressions and
+  added in order to the GNX element.
+
+.Example
+--------------------------------------------------------------------------------
+GSON:	
+	( 1, true, fn<>{} )
+	
+GNX:
+	<seq>
+		<constant type="int" value="1"/>
+		<id name="true"/>
+		<fn>
+			<seq/>
+			<seq/>
+		</fn>
+	</seq>
+--------------------------------------------------------------------------------
+
+Function Applications
+~~~~~~~~~~~~~~~~~~~~~
+
+_To be done_
+
+
+Lambda Functions
+~~~~~~~~~~~~~~~~
+
+_To be done_
+
+
+
+Extended Example
+----------------
 
 As an example, consider the following Ginger expression:
 
