@@ -99,14 +99,6 @@ ELEMENT    ::= NAME ATTRS? ARRAY | NAME ATTRS
 ATTRS      ::= < ( NAME = STRING ), ... >
 --------------------------------------------------------------------------------
 
-Note that the following forms are reserved for future use.
---------------------------------------------------------------------------------
-NAME( EXPR,... ){ EXPR,... }       		// Under consideration for lambdas.
-NAME{ EXPR, ... }						// Under consideration for lambdas.
-NAME ATTRS? ( EXPR,... )[ EXPR,... ]	// Unused
-NAME ATTRS ATTRS+                       // Unused
---------------------------------------------------------------------------------
-
 
 Variables
 ~~~~~~~~~
@@ -183,14 +175,98 @@ GNX:
 Function Applications
 ~~~~~~~~~~~~~~~~~~~~~
 
-_To be done_
+Function applications are written in prefix form i.e. +f(x)+. They are automatically transformed into GNX +app+ elements.
+
+.Example
+--------------------------------------------------------------------------------
+GSON:	
+	calculate_index( 1, true, [ "cat", "dog" ] )
+	
+GNX:
+	<app>
+		<id name="calculate_index"/>
+		<seq>
+			<constant type="int" value="1"/>
+			<id name="true"/>
+			<list>
+				<constant type="string" value="cat"/>
+				<constant type="string" value="dog"/>
+			</list>
+		</seq>
+	</app>
+--------------------------------------------------------------------------------
+
+
 
 
 Lambda Functions
 ~~~~~~~~~~~~~~~~
 
-_To be done_
+Lambda functions have a short syntax. In GNX they are an element with the name +fn+, possibly some attributes, and two children that are a pattern element and an expression element respectively. It is reasonably simple to write this out in full, simply using GSON element syntax - but it can be a little clumsy in GSON. 
 
+Here's an example of a lambda function that simply swaps its arguments. 
+--------------------------------------------------------------------------------
+GSON
+	fn[ ( x, y ), ( y, x ) ]
+--------------------------------------------------------------------------------
+
+The short form uses "naked" attributes, such as +<>+ or +<name="swap">+ followed by an argument-list in paretheses then followed by an expression-list in braces. 
+--------------------------------------------------------------------------------
+GSON
+	<>( x, y ){ y, x }
+GNX
+	<fn>
+		<seq>
+			<id name="x"/>
+			<id name="y"/>
+		</seq>
+		<seq>
+			<id name="y"/>
+			<id name="x"/>
+		</seq>
+	</fn>	
+--------------------------------------------------------------------------------
+
+The argument-lists may be omitted altogether. In this case the argument-list is assumed to be +()+.
+--------------------------------------------------------------------------------
+GSON
+	<>{ f(), g() }
+GNX
+	<fn>
+		<seq/>
+		<seq>
+			<app>
+				<id name="f"/>
+				<seq/>
+			</app>
+			<app>
+				<id name="g"/>
+				<seq/>
+			</app>
+		</seq>
+	</fn>	
+--------------------------------------------------------------------------------
+
+
+
+
+The argument-lists may be repeated, to express curry'd lambda expressions. Here's the K combinator as an example.
+
+--------------------------------------------------------------------------------
+GSON
+	< name="K" >( x )( y ){ x }
+GNX
+	<fn>
+		<seq>
+			<id name="x"/>
+			<id name="y"/>
+		</seq>
+		<seq>
+			<id name="y"/>
+			<id name="x"/>
+		</seq>
+	</fn>	
+--------------------------------------------------------------------------------
 
 
 Extended Example
@@ -235,7 +311,7 @@ In GSON, it appears as shown below. As you can see, GSON is just as machine frie
 
 --------------------------------------------------------------------------------
 bind[
-	var< name="andThen", +protected >,
+	var< name="andThen", protected="true" >,
 	fn< name="andThen" >( f, g ){ fn<>(){ f(), g() } }
 ]
 --------------------------------------------------------------------------------
