@@ -2,11 +2,6 @@
 Aspirations and Design Principles for the  :mod:`Ginger`  Language, Interpreter and Virtual Machine
 ====================================================================================================
 
-This document needs a lot of attention – its balance of emphasis 
-is not quite right any more. In particular the significance of 
-the toolchain model is not here. But as an initial cut it's worth 
-sharing. 
-
 Aspirations
 ===========
 
@@ -23,9 +18,9 @@ the breaks.
 
 :mod:`Ginger` is also designed to be powerful enough 
 for substantial professional programming projects. We have 
-made sure that even though it works elegantly as a scripting language, 
-it can also be compiled reasonably well, permits rich type annotations, 
-and an advanced package system. 
+ensured that it works elegantly as a scripting language, can
+also be compiled reasonably well, permits rich type 
+annotations and has an advanced package system.
 
 The most similar well-known language is probably Common LISP 
 & CLOS. But :mod:`Ginger` has a rich Algol-like external 
@@ -202,20 +197,20 @@ following common mistake.
 .. code-block:: text
 
     if ( this.test() )   
-        this.doFirstThing();  
-        this.doSecondThing();    // Supposed to be inside the if.
+        this.FirstThing();  
+        this.SecondThing();    // Supposed to be inside the if.
 
 Common guards against this mistake by arranging that keywords 
 such as `if` have their textual scope delimited by a matching 
 closing keyword – in this case `endif`. This is how it might look 
 in Common. 
 
-.. code-block:: text
+.. code-block:: common
 
-    if this.test() then          // Cryptic brackets replaced by “then”  
-        this.doFirstThing();  
-        this.doSecondThing();    // Much harder to make the mistake.  
-    endif
+    if this.test() then          // Cryptic brackets replaced by "then"  
+        this.FirstThing();  
+        this.SecondThing();      // Much harder to make the mistake.  
+    endif;
 
 Here's a list of our goals. 
 
@@ -250,7 +245,7 @@ Here's a list of our goals.
 
 * Common: The common syntax will support programming in the 
   ASCII character set by default but will include Unicode alternatives. 
-  We see the Unicode alternatives as the prefered option and 
+  We see the Unicode alternatives as the preferred option and 
   when writing in Unicode becomes commonplace we may deprecate 
   the ASCII versions. A :mod:`Ginger` IDE should support 
   Unicode. 
