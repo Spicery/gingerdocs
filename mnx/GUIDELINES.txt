@@ -1,8 +1,0 @@
-MinX: Minimal XML, a File Format of the Ginger Toolchain Pipeline
------------------------------------------------------------------
-
-* 	This section is intended to be the reference for the MinX
-	-	an internal stage of the Ginger pipeline. 
-
-* 	Readers of this section are likely to be trying to
-  	- 	Customise the Ginger IDE, hence they need to understand the formats in depth.
