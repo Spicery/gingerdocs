@@ -1,0 +1,22 @@
+define append( x, y ) =>> 
+    if x.isPair then 
+        newPair( x.head, x.tail @append y ) 
+    else 
+        y 
+    endif 
+enddefine; 
+
+define rev( x ) =>>
+    if x.isPair then 
+        x.tail.rev @append [ x.head ] 
+    else  
+        [] 
+    endif 
+enddefine; 
+
+define upto( n ) =>> 
+    [ for i from 1 to n do i endfor ] 
+enddefine; 
+
+10.upto.rev;
+
