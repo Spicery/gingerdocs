@@ -1,0 +1,31 @@
+[1] Chapter 1: About Ginger
+
+[1.1] What is Ginger
+
+Ginger is a modern programming system that is built on top of a general purpose virtual machine. It comes with a modern programming language and library so that you can use to  write your own applications. But the whole system is designed to be open, so you can extend or replace almost every part of the system. 
+
+Why did we create Ginger when there are so many programming systems already? Because we love programming and love making neat, simple programs. But other systems have all kind of complications that aren't really necessary or strange corner cases that are supposed to be convenient but just make things ugly.
+
+In this introduction to Ginger, we will write our examples in what we call 'Common'. We designed Common to be a neat modern language that is easy to remember and accident-resistant. But you don't have to use it. We also provide a Javascript-inspired syntax too, if you prefer. And in future versions of Ginger we will add more - it's quite easy to add new ones. (Why did we make Ginger so flexible? Because one of the things we wanted to get away from was the idea that there was a single right answer.)
+
+[1.2] Hello World
+
+So what does Common look like? Here's a simple 'hello, world!' example. It shows quite a few useful features. I have added line numbers for easy reference.
+
+	Line 1		# Prints a cheery message to the console.
+	Line 2		define hello() =>>
+	Line 3			println( "Hello, world!" )
+	Line 4		enddefine
+
+On Line 1 we write an end-of-line comment which is introduced with a hash symbol followed by a space. 
+
+On Line 2 we introduce a function called 'hello'. Function definitions start with the keyword 'define' and are closed with the matching keyword 'enddefine'. This pairing of opening and closing keywords is used in many places in Common. 
+
+The function head is separated from the function body by an '=>>'. There are several places where this double-headed arrow is used in Common and it always signals that a function is being defined. 
+
+On Line 3 we define the function body as calling the 'println' function on a literal string. The name 'println' is a contraction of 'PRINT then add a LiNe' and the function is part of the standard library (ginger.std) . Programmers do not usually import the standard library because it is available by default. 
+
+String literals use double-quotes, just like C/C++/C#, Java, Javascript and so on. Single quotes are reserved for symbol literals, which you will meet later on, but for now you can think of as a different kind of string.
+
+On Line 4 we close the function with the 'enddefine' keyword. If you are working interactively you can abbreviate any keyword that starts with the prefix 'end' to just 'end'. This includes 'enddefine', 'endfn', 'endif', 'endfor'.
+
