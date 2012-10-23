@@ -21,6 +21,12 @@ Install RudeCGI library
     $ tar zxf rudecgi-5.0.0.tar.gz
     $ pushd rudecgi-5.0.0; ./configure; sudo make && make install; popd
 
+Install rlwrap library
+----------------------
+.. code-block:: bash
+
+  $ sudo apt-get install rlwrap
+
 Install optional extras
 -----------------------
 .. code-block:: bash
