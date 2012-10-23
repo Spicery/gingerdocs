@@ -15,7 +15,7 @@ Revised, May 2011
 GinX Overview
 -------------
 
-The idea behind GinX (\*.gnx) is to provide a representation of Ginger code that is neutral. But neutral we mean that it should be both human-readable and machine-friendly. Hence it should be easy for people with some computing background to understand the logic behind it, and easy for people to review but not necessarily write. It must also be easy for them to create programs, in their programming language of choice, that can read, transform and generate GinX. And it should be reasonably inexpensive to process, without that being an overriding consideration.
+The idea behind GinX (\*.gnx) is to provide a representation of Ginger code that is neutral. By neutral we mean that it should be both human-readable and machine-friendly. Hence it should be easy for people with some computing background to understand the logic behind it, and easy for people to review but not necessarily write. It must also be easy for them to create programs, in their programming language of choice, that can read, transform and generate GinX. And it should be reasonably inexpensive to process, without that being an overriding consideration.
 
 To balance these opposed concerns we borrowed from Lisp, especially Scheme. We selected a simplified subset of XML, called MinX. MinX is loosely based on s-expressions, which made programming very straightforward. We then designed the elements around Lisp-style primitives. This gave us a very clean design because we did not have to make concessions to programming convenience - because this is a representation that is essentially only written by machine, not people. 
 
@@ -35,7 +35,7 @@ e.g.
 
 .. code-block:: text
 
-    <bind source="hello.spi">
+    <bind source="hello.common">
         <var name="helloWorld" protected="true/>
         <fn> ... </fn>
     </bind>
@@ -106,6 +106,8 @@ Syntax
 		APP                 ### function application
 		CONDITIONAL         ### if/unless
 		LOOP                ### for loops
+		LIST 				### list expressions
+		VECTOR				### vector expressions
     
 
 Constants
@@ -114,7 +116,8 @@ Constants
 Description
 ~~~~~~~~~~~
 
-Constants are characterised by having a value attribute. Constants always
+Constants are characterised by having element name 'constant' and 'type' 
+and 'value' attributes. Constants always
 represent a single IMMUTABLE value. N.B. The compiler is free to share 
 instances of these constants which are equal to each other. 
 
@@ -124,36 +127,41 @@ Syntax
 .. code-block:: text
 
 	CONSTANT ::=
-		<absent value="absent"/>            ### The absent singleton
-		<bool value=("true"|"false")/>      ### Booleans
-		<int value=TEXT/>                   ### +/- arbitrary precision
-		<float value=TEXT/>                 ### We might unify numbers?
-		<string value=TEXT/>                ### Immutable strings
-		<symbol value=TEXT/>                ### Symbols
-		<char value=TEXT/>                  ### A single character
-		<list value="empty"/>               ### Empty list, immutable
-		<vector value="empty"/>             ### Empty vector, immutable
-		<sysfn value=TEXT/>                 ### Named procedure
-		<sysclass value=TEXT>               ### Named class
+		<constant type="absent" value="absent"/>              ### The absent singleton
+		<constant type="bool" value=("true"|"false")/>        ### Booleans
+		<constant type="indeterminate" value="indeterminate"> ### The indeterminate singleton
+		<constant type="int" value=TEXT/>                     ### +/- arbitrary precision
+		<constant type="float" value=TEXT/>                   ### We might unify numbers?
+		<constant type="string" value=TEXT/>                  ### Immutable strings
+		<constant type="symbol" value=TEXT/>                  ### Symbols
+		<constant type="char" value=TEXT/>                    ### A single character
+		<constant type="sysfn" value=TEXT/>                   ### Named procedure
+		<constant type="sysclass" value=TEXT>                 ### Named class
+		<constant type="undefined" value="undefined">         ### The undefined singleton
 
+		
     
 Examples
 ~~~~~~~~
 
 .. code-block:: xml
 
-	<int value="123"/>
-	<float value="1.2"/>
-	<string value="qwertyuiop"/>    
-	<char value="A"/>
-	<sysfn value="+"/>
+	<constant type="int" value="123"/>
+	<constant type="float" value="1.2"/>
+	<constant type="string" value="qwertyuiop"/>    
+	<constant type="char" value="A"/>
+	<constant type="sysfn" value="+"/>
     
 N.B. Character sequences are multi-valued constants. They are represented as
 a sequence of characters.
 
 .. code-block:: xml
 
-	<seq><char value="a"/><char value="b"/><char value="c"/></seq>
+	<seq>
+		<constant type="char" value="a"/>
+		<constant type="char" value="b"/>
+		<constant type="char" value="c"/>
+	</seq>
     
 
 Available Named Procedures
@@ -389,9 +397,9 @@ e.g.
 .. code-block:: text
 
 	<sysapp name="newList">
-		<int value="1"/>
-		<int value="2"/>
-		<int value="3"/>
+		<constant type="int" value="1"/>
+		<constant type="int" value="2"/>
+		<constant type="int" value="3"/>
 	</sysapp>
     
 
@@ -437,6 +445,36 @@ Syntax
 		<from> PATTERN FROM_EXPR TO_EXPR </from>
 		<in> PATTERN EXPR </in>
 
+
+List Expressions
+----------------
+
+Description
+~~~~~~~~~~~
+
+Lists are implemented as singly linked chains. The list syntax is a shorthand for calling the 'newList' function. The lists that are constructed are guaranteed to be immutable and may or may not share. The empty list 'nil' is guaranteed to be unique.
+
+Syntax
+~~~~~~
+
+.. code-block:: text
+
+	LIST ::= <list> EXPR* </list>
+
+Vector Expressions
+----------------
+
+Description
+~~~~~~~~~~~
+
+Vectors are implemented as contiguous arrays. The vector syntax is a shorthand for calling the 'newVector' function. The vectors that are constructed are guaranteed to be immutable and may or may not share. 
+
+Syntax
+~~~~~~
+
+.. code-block:: text
+
+	VECTOR ::= <vector> EXPR* </vector>
 
 
 Declarations and Patterns 
@@ -550,7 +588,7 @@ Examples
 	### parsed as pattern-variables within a pattern, taking on the
 	### default protection of the var/val.
 	var x = 99;
-	<bind><var name="x"/><int value="99"/></bind>
+	<bind><var name="x"/><constant type="int" value="99"/></bind>
 		
 	### The identifiers can given overrides for protection or type.
 	val [ x, var y, z : bool ] = f();
