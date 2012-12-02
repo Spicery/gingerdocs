@@ -2,7 +2,9 @@
 
 This is an attempt to articulate the design rules that we have employed in the development of the Spice language.  The rules are more like guidelines than laws, as spelt out in the ../MetaDesignRules.
 
+== One Rule to Rule Them All ==
 
+  * Standards are local not global.
 
 == General ==
 
