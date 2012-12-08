@@ -4,7 +4,9 @@ This is an attempt to articulate the design rules that we have employed in the d
 
 == One Rule to Rule Them All ==
 
-  * Standards are local not global.
+  * Standards are local not global. By this we mean that standards are based on
+  consensus and that individuals and teams must be free to depart from the
+  common basis without incurring an impractical management penalty. 
 
 == General ==
 

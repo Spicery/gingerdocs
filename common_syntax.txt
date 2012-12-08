@@ -29,62 +29,77 @@ Moar (test) examples
 Formal description
 ------------------
 
+Use http://railroad.my28msec.com/rr/ui to produce a railroad diagram.
+
 .. code-block:: antlr
 
-    Package =
-        'package' PackageName ';' {Import} Statements 'endpackage' .
+    Package ::=
+        'package' PackageName ';' Import* TopLevelForms 'endpackage'
         
-    Import =
-        'import' {ImportQualifier} [Tags] from PackageName [ 'alias' AliasName ] [ 'into' Tags ] ';' .
+    Import ::=
+        'import' ImportQualifier* Tags? from PackageName ( 'alias' AliasName )? ( 'into' Tags )? ';'
 
-    ImportQualifier =
+    ImportQualifier ::=
         'pervasive' |
         'nonpervasive' |
         'qualified' |
-        'unqualified' .
+        'unqualified'
         
-    Tags = 
-        '(' ')' |
-        '(' Tag {',' Tag} ')' .
+    Tags ::= '(' ( Tag ( ',' Tag )* )? ')'
 
-    Statements =
-        Statement { ';' Statements } .
+    TopLevelForms ::= ( Declaration | Statement ) ( ';' TopLevelForms )*
 
-    Statement =
+    Declaration ::=
+        Definition |
         Query |
-        Expr .
+        RecordclassDeclaration
 
-    Query =
+    Definition ::=
+        'define' ApplyPattern '=>>' Statements 'enddefine'
+
+    RecordclassDeclaration ::=
+        'recordclass' Identifier
+            ( 'slot' Identifier ';' )*
+        'endrecordclass' 
+
+    Statements ::=
+        Statement ( ';' Statements )*
+
+    Statement ::=
+        Query |
+        Expr
+
+    Query ::=
         Pattern ( 
             ':=' Expr |
             'in' Expr |
             FromByTo
-        ) .
+        )
         
-    Pattern =
+    Pattern ::=
         Literal |
-        [ [ 'var' | 'val' ] Tags ] Identifier |
+        ( ( 'var' | 'val' )? Tags )? Identifier |
         Pattern ( (','|';') Pattern )+  |
         '(' Pattern? ')' |
         '[' Pattern? ']' |
         '{' Pattern? '}' |
-        '{%' Pattern? '%}' |
-        ApplyPattern .
+        '[%' Pattern? '%]' |
+        ApplyPattern
 
-    ApplyPattern =
-        Expr '(' Pattern? ')' |
-        Pattern ( '.'|'@') ( Identifier | '(' Expr ')' ) Pattern .
+    ApplyPattern ::=
+        Identifier '(' Pattern? ')' |
+        Pattern ( '.'|'@') ( Identifier | '(' Expr ')' ) Pattern
 
-    FromByTo =
-        'from' Expr ['by' Expr ] ['to' Expr] |
-        'by' Expr ['to' Expr] |
+    FromByTo ::=
+        'from' Expr ('by' Expr )? ('to' Expr)? |
+        'by' Expr ('to' Expr)? |
         'to' Expr .
 
-    Expr = 
-        PrimaryExpr { InfixOperator Expr } .
+    Expr ::=
+        PrimaryExpr ( InfixOperator Expr )*
         
 
-    PrimaryExpr = 
+    PrimaryExpr ::=
         AtomicExpr |
         AssignExpr |
         ApplyExpr |
@@ -92,80 +107,82 @@ Formal description
         ListExpr |
         VectorExpr |
         ConditionalExpr |
-        LoopExpr  .
+        LoopExpr
 
-    AtomicExpr =
+    AtomicExpr ::=
         Literal |
         Identifier |
-        '(' Statements? ')' .
+        '(' Statements? ')'
 
-    Literal =
+    Literal ::=
         'absent' |
         ( 'true' | 'false' ) |
         Number |
         CharacterConstant |
-        String .
+        String
         
-    AssignExpr = 
-        Expr '->' TargetExpr .
+    AssignExpr ::=
+        Expr '=::' TargetExpr |
+        TargetExpr '::=' Expr
         
-    TargetExpr = 
+    TargetExpr ::=
         Identifier |
         ApplyExpr |
-        ConditionalTarget .
+        ConditionalTarget
         
-    ConditionalTarget =
+    ConditionalTarget ::=
         'if' CoreConditionalTarget 'endif' |
-        'unless' CoreConditionalTarget 'endunless' .
+        'unless' CoreConditionalTarget 'endunless'
 
-    CoreConditionalTarget =
+    CoreConditionalTarget ::=
         Expr then TargetExpr MoreConditionalTarget* 'else' TargetExpr .
 
-    MoreConditionalTarget =
+    MoreConditionalTarget ::=
         ( 'elseif' | 'elseunless' ) Expr then TargetExpr .
         
-    ApplyExpr =
+    ApplyExpr ::=
         AtomicExpr '(' Statements? ')' |
         PrimaryExpr ( '.' | '@' ) AtomicExpr PrimaryExpr .
         
 
-    LambdaExpr =
-        'fn' AppExpr '=>' Statements 'endfn' .
+    LambdaExpr ::=
+        'fn' AppExpr '=>>' Statements 'endfn' 
 
-    ListExpr =
-        '[' Expr* ( '|' Expr )? ']' .
+    ListExpr ::=
+        '[' Expr* ( '|' Expr )? ']'
 
-    VectorExpr = 
-        '{' Expr '}' .
+    VectorExpr ::=
+        '{' Expr '}'
 
-    ConditionalExpr =
+    ConditionalExpr ::=
         'if' CoreConditional 'endif' |
-        'unless' CoreConditional 'endunless' .
+        'unless' CoreConditional 'endunless'
 
-    CoreConditional =
-        Expr then Statements MoreConditional* [ 'else' Statements ] .
+    CoreConditional ::=
+        Expr then Statements MoreConditional* ( 'else' Statements )?
 
-    MoreConditional =
-        ( 'elseif' | 'elseunless' ) Expr then Statements .
+    MoreConditional ::=
+        ( 'elseif' | 'elseunless' ) Expr then Statements
 
-    LoopExpr =
-        'for' Query 'do' Statements 'endfor' .
+    LoopExpr ::=
+        'for' Query 'do' Statements 'endfor'
 
 
-    Number =
-        digit+ ( '.' digit+ ) .
+    Number ::=
+        digit+ ( '.' digit+ )
 
-    String = 
-        '"' QuotedCharacter* '"' .
+    String ::=
+        '"' QuotedCharacter* '"'
 
-    CharacterConstant =
-        "'" QuotedCharacter "'" .
+    CharacterConstant ::=
+        "'" QuotedCharacter "'"
         
-    QuotedCharacter =
+    QuotedCharacter ::=
         printing_character |
         '\\' ( 'n' | 'r' | 's' | 't' | 'v' ) |
         '\\&' HTMLEntity ';' |  
-        '\\(' Expr ')' .
+        '\\(' Expr ')'
 
-    InfixOperator = ',' | '+' | '-' | '*' | '/' .
+    InfixOperator ::= ',' | '+' | '-' | '*' | '/'
+
 

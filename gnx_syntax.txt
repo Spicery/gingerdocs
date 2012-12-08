@@ -419,13 +419,22 @@ Syntax
 		<if> ( IF_PART THEN_PART )*  [ELSE_PART] </if>
 		<and> EXPR* </and>
 		<or> EXPR* </or>
-		<abs-and> EXPR* </abs-and>                          ### &&
-		<abs-or> EXPR* </abs-or>                            ### ||
+		<absand> EXPR* </absand>                          ### &&
+		<absor> EXPR* </absor>                            ### ||
 		
 	IF_PART ::= EXPR
 	THEN_PART ::= EXPR
 	ELSE_PART ::= EXPR
 
+.. code-block:: text
+
+	SWITCH ::=
+		<switch> VALUE_PART ( CASE_VALUE CASE_BODY )* [ ELSE_PART ] </switch>
+
+	VALUE_PART ::= EXPR
+	CASE_VALUE ::= EXPR 
+	CASE_BODY  ::= EXPR
+	ELSE_PART  ::= EXPR
 
 
 For Loops
