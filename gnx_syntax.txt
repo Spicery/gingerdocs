@@ -213,14 +213,13 @@ not necessarily bound to identifiers in Ginger.
 
 	<sysclass value="Absent"/>          ### class for absent
 	<sysclass value="Bool"/>            ### class for true & false
-	<sysclass value="SmallInt"/>        ### class for 'small' integers
-	<sysclass value="Float"/>           ### class for floats
+	<sysclass value="Small"/>           ### class for 'small' integers
+	<sysclass value="Double"/>          ### class for doubles
 	<sysclass value="String"/>          ### class for strings
 	<sysclass value="Char"/>            ### class for characters
 	<sysclass value="Nil"/>             ### class for nil
 	<sysclass value="Pair"/>            ### class for list pairs
 	<sysclass value="Vector"/>          ### class for vectors
-	<sysclass value="Fn"/>              ### class for function objects
 	<sysclass value="Class"/>           ### class for classes
 
 Note that classes are not exactly he same as types. All function objects share
