@@ -84,6 +84,7 @@ Use http://railroad.my28msec.com/rr/ui to produce a railroad diagram.
         '[' Pattern? ']' |
         '{' Pattern? '}' |
         '[%' Pattern? '%]' |
+        '\(' Expression ')' |
         ApplyPattern
 
     ApplyPattern ::=
