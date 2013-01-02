@@ -450,7 +450,7 @@ Syntax
 		
 	QUERY ::= 
 		<bind> PATTERN EXPR </bind>
-		<from> PATTERN FROM_EXPR TO_EXPR </from>
+		<from> PATTERN FROM_EXPR [ BY_EXPR [ TO_EXPR ] ] </from>
 		<in> PATTERN EXPR </in>
 
 
