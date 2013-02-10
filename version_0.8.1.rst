@@ -24,9 +24,9 @@ User Configurable File-Extension-to-Parser Mapping
 The file2gnx tool is now responsible for managing the mapping from file
 extensions through to the parsing tool. This is now fully configurable by
 the user via the settings file 'parser-mapping.mnx'. The search for settings
-file is [XDG base directory specification][xdg] compliant.
+file is `XDG base directory specification`__ compliant.
 
-[xdg]: http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+.. __: http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 
 file2gnx searches the below path for 'parser-mapping.mnx' files. The
 first matching entry wins.

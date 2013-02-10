@@ -46,22 +46,22 @@ install-as-is:
 uninstall:
 	rm -rf $(INSTALLDIR)/html
 
-prebuild: instruction_set.txt sysfns.txt
+prebuild: instruction_set.rst sysfns.rst
 
-instruction_set.txt:
+instruction_set.rst:
 	# Adding in the symlinks to the autodocs. 
 	# NOTE THE CHANGE IN FILE EXTENSION - to be discussed with GJH.
-	ln -s $(AUTODOCS)/instruction_set.rst instruction_set.txt
+	ln -s $(AUTODOCS)/instruction_set.rst instruction_set.rst
 
-sysfns.txt:
+sysfns.rst:
 	# Adding in the symlinks to the autodocs. 
 	# NOTE THE CHANGE IN FILE EXTENSION - to be discussed with GJH.
-	ln -s $(AUTODOCS)/sysfns.rst sysfns.txt
+	ln -s $(AUTODOCS)/sysfns.rst sysfns.rst
 
 clean:
 	-rm -rf $(BUILDDIR)/*
-	-rm -f instruction_set.txt
-	-rm -f sysfns.txt
+	-rm -f instruction_set.rst
+	-rm -f sysfns.rst
 
 html: prebuild
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
