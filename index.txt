@@ -26,7 +26,6 @@ Contents
    Configurable Parser, LinX to MinX <lnx2mnx>
    Minimal XML, MinX <mnx_syntax>
    The Ginger Toolchain <toolchain>
-   The Ginger VM Instruction Set <instruction_set>
 
    
 
@@ -48,7 +47,8 @@ Low-Level Implementation
    :maxdepth: 1
 
    How Iterators Work <iterators>
-   The Ginger VM Instructions <instructions>
+   The Ginger VM Instruction Set <instruction_set>
+   Ginger System Functions <sysfns>
 
 Indices and tables
 ==================

@@ -46,15 +46,22 @@ install-as-is:
 uninstall:
 	rm -rf $(INSTALLDIR)/html
 
-prebuild: instruction_set.rst
+prebuild: instruction_set.txt sysfns.txt
 
-instruction_set.rst:
-	# Adding in the symlinks to the autodocs.
-	ln -s $(GINGER_DEV_SRC)/autodocs/instruction_set.rst .
+instruction_set.txt:
+	# Adding in the symlinks to the autodocs. 
+	# NOTE THE CHANGE IN FILE EXTENSION - to be discussed with GJH.
+	ln -s $(GINGER_DEV_SRC)/autodocs/_build/instruction_set.rst instruction_set.txt
+
+sysfns.txt:
+	# Adding in the symlinks to the autodocs. 
+	# NOTE THE CHANGE IN FILE EXTENSION - to be discussed with GJH.
+	ln -s $(GINGER_DEV_SRC)/autodocs/_build/sysfns.rst sysfns.txt
 
 clean:
 	-rm -rf $(BUILDDIR)/*
-	-rm -f instruction_set.rst
+	-rm -f instruction_set.txt
+	-rm -f sysfns.txt
 
 html: prebuild
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
