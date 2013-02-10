@@ -7,7 +7,7 @@ SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = _build
 INSTALLDIR    = /usr/local/share/ginger
-GINGER_DEV_SRC = ../ginger
+AUTODOCS      = $(INSTALLDIR)/autodocs
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
@@ -51,12 +51,12 @@ prebuild: instruction_set.txt sysfns.txt
 instruction_set.txt:
 	# Adding in the symlinks to the autodocs. 
 	# NOTE THE CHANGE IN FILE EXTENSION - to be discussed with GJH.
-	ln -s $(GINGER_DEV_SRC)/autodocs/_build/instruction_set.rst instruction_set.txt
+	ln -s $(AUTODOCS)/instruction_set.rst instruction_set.txt
 
 sysfns.txt:
 	# Adding in the symlinks to the autodocs. 
 	# NOTE THE CHANGE IN FILE EXTENSION - to be discussed with GJH.
-	ln -s $(GINGER_DEV_SRC)/autodocs/_build/sysfns.rst sysfns.txt
+	ln -s $(AUTODOCS)/sysfns.rst sysfns.txt
 
 clean:
 	-rm -rf $(BUILDDIR)/*
