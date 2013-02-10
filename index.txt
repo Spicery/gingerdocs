@@ -26,6 +26,7 @@ Contents
    Configurable Parser, LinX to MinX <lnx2mnx>
    Minimal XML, MinX <mnx_syntax>
    The Ginger Toolchain <toolchain>
+   The Ginger VM Instruction Set <instruction_set>
 
    
 
