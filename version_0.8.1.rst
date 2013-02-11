@@ -31,11 +31,11 @@ file is `XDG base directory specification`__ compliant.
 file2gnx searches the below path for 'parser-mapping.mnx' files. The
 first matching entry wins.
 
-    [1] $XDG_CONFIG_HOME/ginger
-    [2] if $XDG_CONFIG_HOME does not exist fall back to $HOME/.config/ginger
-    [3] For folder FOLDER in the colon-separated path $XDG_CONFIG_PATH 
+    1.  $XDG_CONFIG_HOME/ginger
+    2.  if $XDG_CONFIG_HOME does not exist fall back to $HOME/.config/ginger
+    3.  For folder FOLDER in the colon-separated path $XDG_CONFIG_PATH 
         search FOLDER/ginger
-    [4] If $XDG_CONFIG_PATH is not defined fall back to /etc/ginger
+    4.  If $XDG_CONFIG_PATH is not defined fall back to /etc/ginger
 
 
 Pass Multiple, Comma-Separated Options with -O Option

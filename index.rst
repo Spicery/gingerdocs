@@ -35,10 +35,10 @@ Design Rationales
 .. toctree::
    :maxdepth: 2
 
-   ginger_aspirations.txt
-   ginger_loops.txt
-   gson_background.txt
-   gson.txt
+   ginger_aspirations.rst
+   ginger_loops.rst
+   gson_background.rst
+   gson.rst
 
 Low-Level Implementation
 ------------------------
