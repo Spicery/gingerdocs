@@ -5,9 +5,7 @@ GinX: XML Transport Format for Ginger
 
 Created, June 2010
 
-Revised, August 2010
-
-Revised, May 2011
+Revised, August 2010, May 2011, Feb 2013
 
 
 .. note:: Reader, please note that this is very much a work-in-progress. It is being written up as we design the relevant sections in appginger.
@@ -25,11 +23,17 @@ There are disavantages to this approach, of course, such as it being relatively 
 Element and Meta-attributes
 ---------------------------
 
+Comment Attribute
+~~~~~~~~~~~~~~~~~
+Any element may have the optional 'comment' attribute. It is a free-text 
+string intended to provide human-readable text. Its context is the node and 
+all nested nodes.
+
 Source File Attribute
 ~~~~~~~~~~~~~~~~~~~~~
-Any element may have the optional 'source' that describes the source file (or
-other source) of the element. It is a free-text string. It is considered to
-apply to all nested nodes.
+Any element may have the optional 'source' attribute that describes the source 
+file (or other source) of the element. It is a free-text string. It is 
+considered to apply to all nested nodes.
 
 e.g.
 
@@ -250,8 +254,7 @@ Syntax
 			[def.pkg=PACKAGE_NAME | alias=NICKNAME	 ]
 		/>
 
-    
-    
+
 Assignments
 -----------
 
@@ -516,7 +519,7 @@ A PATTERN is any of the following
 
 .. code-block:: text
 
-	PATTERN ::= PATTERN_VAR | PATTERN_SEQ | PATTERN_APP | PATTERN_CONST
+	PATTERN ::= PATTERN_VAR | PATTERN_ANON | PATTERN_SEQ | PATTERN_APP | PATTERN_CONST
 		
 	PATTERN_VAR ::=
 		<var 
@@ -528,6 +531,9 @@ A PATTERN is any of the following
 			 qualifier=ALIAS_NAME ]
 			( (tag0|tag1|..)=TAG_VALUE )* 
 		/>
+
+	PATTERN_ANON ::=
+		<var/>
 
 Comment! Qualifier or alias?
 
