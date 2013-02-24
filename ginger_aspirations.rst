@@ -23,11 +23,12 @@ also be compiled reasonably well, permits rich type
 annotations and has an advanced package system.
 
 The most similar well-known language is probably Common LISP 
-& CLOS. But :mod:`Ginger` has a rich Algol-like external 
+(with CLOS, the Common Lisp Object System). But :mod:`Ginger` 
+has a rich Algol-like external 
 syntax, an XML transport form, and multiple values are a central, 
 well-integrated feature. The way :mod:`Ginger` deals 
-with multiple values is, we think, is what most programmers are 
-going to find special about the language. 
+with multiple values is, we think, is what most programmers will
+find striking about the language.
 
 We hope it will be your “Other Programming Language”. 
 
@@ -49,18 +50,20 @@ General
 
 * Restriction - when restrictions are introduced into the language, 
   it should be possible to relax them without altering the meaning 
-  of programs (e.g. the early discussion of semi-colon elected 
+  of existing programs (e.g. the early discussion of semi-colon elected 
   to demand zero-results and not automatically force zero-results, 
   which meant when we relaxed that rule everything carried on 
   working.) 
 
-* Library procedures have no magic features that user procedures 
-  cannot duplicate. All system features are packaged so that 
+* Library code has no magic features that user procedures 
+  cannot duplicate. 
+
+* All features are packaged so that 
   a programmer can make use of them separately - not as part of 
   some pre-determined task. 
 
-* Patterns in the language should be complete. We strive to fit 
-  language features into memorable patterns and wherever we 
+* Patterns in language andn library features should be complete. We strive 
+  to fit features into memorable patterns and wherever we 
   start a pattern we strive to complete it. Omissions are treated 
   as breaking the pattern and we hate breaking patterns. 
 
@@ -83,14 +86,15 @@ General
   rules "for programmer convenience" that compromise more 
   complex tasks. For example, some scripting languages automatically 
   convert strings to numbers when performing arithmetic - but 
-  this compromises type security. 
+  we see this as a pointless micro-convenience that 
+  just makes it harder to write large, robust programs.
 
 * We say “If one, why not many?” We strive to generalize features 
   to support multiplicity; multiple values, multiple inheritance, 
   multiple dispatch, multiple threads of execution, etc. 
 
 * Symmetry - nothing should be distinguished or privileged 
-  without extraordinary justification. 
+  without extraordinary justification.
 
 * Features shouldn't come with a safety manual. ("Gotcha-free") 
 
@@ -126,6 +130,11 @@ General
   their programming work. So they might be students, web site 
   builders, part-time workers, or full-time programmers with 
   a different main programming language. 
+
+  We want :mod:`Ginger` to be the language people turn to for
+  their own projects. We call this being their "other" programming
+  language. We believe this is the most sincere form of appreciation
+  and its our passionate goal.
 
 * :mod:`Ginger` is scaleable for team programming. 
 
@@ -261,7 +270,7 @@ Semantics
 
 Type Checking
 -------------
-* A true type assertion will never prevent a program from compiling 
+* A valid type assertion will never prevent a program from compiling 
   (the Dollin Principle). 
 
 * An :mod:`Ginger` implementation is not ''required'' 
@@ -301,7 +310,7 @@ Interactive Development Environment (IDE)
 * The programmer is in charge. 
 
 * :mod:`Ginger` IDE may warn but may not obstruct (which 
-  is what we mean by the programmer being in charge). 
+  is one of the things we we mean by the programmer being in charge). 
 
 * A type-error detected at compile-time will not lead to an interaction 
   that forces a programmer to correct it before proceeding to 
@@ -312,10 +321,10 @@ Interactive Development Environment (IDE)
   concepts such as the class hierarchy. 
 
 * The compiler is free to assume it knows the full range of capabilities 
-  and only supply the  minimum set needed. 
+  and only supply the minimum set needed. 
   So the programmer cannot legitimately expect capabilities 
   to be dynamically added on demand. For example, when the compiler 
-  sees ``val x = 99`` it is under no obligation to allocate store to 
+  sees ``val x := 99`` it is under no obligation to allocate store to 
   represent ``x``!! As a consequence, the programmer is not able 
   to force an assignment without a recompilation. 
 
