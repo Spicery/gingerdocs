@@ -1,26 +1,24 @@
-=====================
-Overview of AppGinger
-=====================
+==================
+Overview of Ginger
+==================
 :Author:    Stephen Leach
 :Email:     stephen.leach@steelypip.com
 
 Background
 ----------
 
-Ginger is our next evolution of the Spice project and AppGinger is a virtual machine implemented in C++ that is designed to support the family of Spice language efficiently. It is a re-engineering of appmetro, an prototype interpreter in which I tried to exploit GCC's support for TILs and was surprised that it had much better performance than I anticipated.
+Ginger is our next evolution of the Spice project. Ginger itself is a intended to be a rigorous but friendly programming language and toolset. It includes a syntax-neutral programming language, a virtual machine implemented in C++ that is designed to support the family of Spice language efficiently, and a collection of supporting tools.
 
-Spice has many features that are challenging to support efficiently in existing virtual machines: pervasive multiple returns, multiple-dispatch, multiple-inheritance, auto-loading and auto-conversion, dynamic virtual machines, implicit forcing and last but not least fully dynamic typing.
+Spice has many features that are challenging to support efficiently in existing virtual machines: pervasive multiple values, multiple-dispatch, multiple-inheritance, auto-loading and auto-conversion, dynamic virtual machines, implicit forcing and last but not least fully dynamic typing.
 
-Special Features of the AppGinger Virtual Machine
+The virtual machine is a re-engineering of a prototype interpreter that I wrote on holiday while I was experimenting with GCC's support for FORTH-like threaded interpreters. But the toolset is designed so that writing alternative VM implementations is quite straightforward - and we hope to exploit that to enable embedding Ginger into lots of other systems.
+
+
+Special Features of the Ginger Language and Tools
 -------------------------------------------------
 
-One Logical Instruction Set, Multiple Implementations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The virtual machine has a single CISC-style instruction set. Each instruction consists of an instruction-word followed by zero-or-more data words (words are the size of a long int). However there are three quite different implementations of the core engine with differing performance/portability tradeoffs. Adding new implementations is relatively simple e.g. the planned debugger will be implemented by an engine which allows hooks to be inserted into the code. [Status: done]
-
-Syntax Agnostic
-~~~~~~~~~~~~~~~
+Syntax Neutral
+~~~~~~~~~~~~~~
 
 Apart from performance, one of the interesting aspects of the virtual machine is that the input is an easy-to-generate subset of XML. For example the equivalent of Pop-11's ``if f( 0 ) then p else q endif( false )`` would be:
 
@@ -38,7 +36,7 @@ Apart from performance, one of the interesting aspects of the virtual machine is
         <bool value="false" />
     </app>
 
-The aim is to make the choice of programming syntax a personal decision and making the interpreter language agnostic is one step towards that. [Status: done]
+The aim is to make the choice of programming syntax a personal decision and making the interpreter language neutral is one step towards that. [Status: done]
 
 Pattern Matching
 ~~~~~~~~~~~~~~~~
@@ -54,6 +52,11 @@ Lastly, we intend to build in support for explicit-delays with implicit-forcing.
 
 Fairly obviously this needs pervasive support at the lowest level. I have implemented this once before (in JSpice) and so have reasonable expectations that it can be implemented in such a way that there is no impact when it is not used. That means it is an affordable technique to include. [Status: planned]
 
+One Logical Instruction Set, Multiple Implementations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The virtual machine has a single CISC-style instruction set. Each instruction consists of an instruction-word followed by zero-or-more data words (words are the size of a long int). However there are three quite different implementations of the core engine with differing performance/portability tradeoffs. Adding new implementations is relatively simple e.g. the planned debugger will be implemented by an engine which allows hooks to be inserted into the code. [Status: done]
+
 Development Status (Immature!)
 ------------------------------
 
@@ -68,9 +71,9 @@ Development Status (Immature!)
   * Strings (8-bit only)
   * Lists and vectors
   * No classes
-  * No garbage collector
-  * No packages
-  * No full lexical binding
+  * Garbage collector implemented, includes weak refs and weak maps.
+  * Basic packages working
+  * Full lexical binding
 
 Recent News
 -----------
