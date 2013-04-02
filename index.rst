@@ -58,6 +58,7 @@ Release Notes
 
    Version 0.8 <version_0.8>
    Version 0.8.1 <version_0.8.1>
+   Version 0.8.2 <version_0.8.2>
 
 Indices and tables
 ==================

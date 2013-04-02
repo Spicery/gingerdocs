@@ -3,7 +3,7 @@ Ginger Version 0.8.1
 
 Shell and Help Commands added to Ginger interpreter via new Tool
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The ginger intepreter now specially intercepts certain inputs and treats 
+The ginger interpreter now specially intercepts certain inputs and treats 
 them as commands. These
 
 Unix shell command - any input starting with an exclamation mark is now
