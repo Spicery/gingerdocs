@@ -3,41 +3,59 @@ Ginger Version 0.8.2
 
 Curry'd Function Definitions Supported
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Both Common syntax and C-style syntax support "Currying", which means writing a definitions as a chain of function applications like this:
 
-TODO:
+    # Common.
     define K( x )( y ) =>> x enddefine;
 
-Binding to Multiple Variables Implemented
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //  C-style.
+    function K( x )( y ) { return x; }
 
-TODO:
+This will be very familiar to people used to functional programming, where it is the normal way of writing multiple arguments. It can be employed to write very compact and elegant code.
+
+
+Binding/Assigning to Multiple Variables Implemented
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Common and C-style syntax now support binding of multiple variables at the same time. For example:
+
+    # Common.
     ( x, y ) := 'ab';
+
+    # C-style
+    val ( x, y ) = 'ab';
+
+The same applies to assignment e.g.
+
+    var p := _;
+    var q := _;
+    ( p, q ) ::= ( false, true );
 
 Common and C-Style Syntax get literal percentages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A double may be written with a terminating "%". This has the meaning of multiplying the value by 0.01. 
 
-TODO:
-    steve% ginger
-    Ginger: 0.8.2-dev, 2013-04-02, Copyright (c) 2010  Stephen Leach
-    +----------------------------------------------------------------------+
-    | This program comes with ABSOLUTELY NO WARRANTY. It is free software, |
-    | and you are welcome to redistribute it under certain conditions.     |
-    | Use option --help=license for details.                               |
-    +----------------------------------------------------------------------+
     >>> 50%;
     There is one result.
     1.  0.5
 
 
+Dummy Variable Syntax Now Supported
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Both Common and C-style syntax now support anonymous/dummy variables. Any variable whose name begins with an underscore (e.g. _dummy) acts like never-to-be-reused reference to a variable. 
 
-Anonymous Variable Syntax Now Supported
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The main purpose of a dummy variable is primarily to silently discard some unwanted values. The name of a dummy variable is insignificant at runtime but only allowed to assist writing self-commenting code and debugging.
 
-TODO:
-    Q: do we support dummy names?
-    Q: does it work as an update target?
-        Q: in multiple assignment
-    Q: can it be used to push absent?
+The secondary purpose is that, when used for its value, all dummy variables evaluate to absent. 
+
+Example:
+
+        >>> ( alpha, _, beta, _, gamma ) := 'uvwxy';
+        >>> alpha, beta, gamma;
+        There are 3 results.
+        1.  'u'
+        2.  'w'
+        3.  'y'
+
 
 Simple stream i/o
 ~~~~~~~~~~~~~~~~~
@@ -77,65 +95,78 @@ Basic formatted printing via printfln, printfln, stringf
 
 TODO:
 
-gingerInfo() built-in function (cf phpInfo)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+showMeRuntimeInfo() built-in function (cf phpInfo)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The system function "showMeRuntimeInfo" is designed to conveniently print contextual information about the Ginger running environment, working rather like PHP's phpInfo command. It's a blunt instrument that is occasionally just what is needed.
 
-TODO: gingerInfo
+
+    >>> showMeRuntimeInfo();
+    Application Environment
+    -----------------------
+    * Startup mode: Shell
+
+    Main
+    ----
+    * Ginger version: 0.8.2-dev
+    * VM Implementation ID: 1
+    * Garbage collection tracing: disabled
+    * Code generation tracing: disabled
+    * Reading standard input: 0
+    * Level of print detail: 3
+    * Showing welcome banner: disabled
+    * Interactive package: ginger.interactive
+    * Default syntax: cmn
+
+    .... (deleted) ...
 
 
 The Erase and Dup family of built-in functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Two families of 'stack manipulation' functions have been added. The dup-family are useful for duplicating all or some of the arguments they are passed. The erase-family are useful for discarding all or some of the arguments they are passed.
 
-TODO: 
+    dupAll( V1, ..., Vn ) returns ( V1, ... Vn, V1, ... Vn )
+    dupFirst( V1, ..., Vn ) returns ( V1, ... Vn, V1 )
+    dupAllButFirst( V1, ..., Vn ) returns ( V1, ... Vn, V2, ... Vn )
+    dupLast( V1, ..., Vn ) returns ( V1, ... Vn, Vn )
+    dupAllButLast( V1, ..., Vn ) returns ( V1, ... Vn, V1, ... Vn-1 )
+    dupLeading( V1, ..., Vn, k ) returns ( V1, ..., Vn, V1, ... Vk )
+    dupAllButLeading( V1, ..., Vn, k ) returns ( V1, .. Vn, Vk+1 ... Vn )
+    dupTrailing( V1, ..., Vn, k ) returns ( V1, ... Vn, Vn-k+1, ... Vn)
+    dupAllButTrailing( V1, ... Vn, k ) returns ( V1, ... Vn, V1, ... Vn-k )
 
-EXPR.dupAll
-EXPR.dupFirst()
-EXPR.dupAllButFirst()
-EXPR.dupLast()
-EXPR.dupAllButLast()
-EXPR.dupLeading( N )
-EXPR.dupAllButLeading( N )
-EXPR.dupTrailing( N )
-EXPR.dupAllButTrailing( N )
-
-EXPR.eraseAll, 
-EXPR.eraseFirst( N ), 
-EXPR.eraseLast( N ), 
-EXPR.eraseAllButFirst( N ), 
-EXPR.eraseAllButLast( N )
-EXPR.eraseLeading( N )
-EXPR.eraseTrailing( N )
-EXPR.eraseAllButLeading( N )
-EXPR.eraseAllButTrailing( N )
+    eraseAll( V1, ..., Vn ) returns ()
+    eraseFirst( V1, ..., Vn ) returns ( V2, ..., Vn )
+    eraseLast( V1, ..., Vn ) returns ( V1, ..., Vn-1 )
+    eraseAllButFirst( V1, ..., Vn ) returns ( V1 )
+    eraseAllButLast( V1, ..., Vn ) returns ( Vn )
+    eraseLeading( V1, ..., Vn, k ) returns ( Vk+1, ... Vn )
+    eraseTrailing( V1, ..., Vn, k ) returns ( V1, ..., Vn-k )
+    eraseAllButLeading( V1, ..., Vn, k ) returns ( V1, ... Vk )
+    eraseAllButTrailing( V1, ..., Vn, k ) returns ( Vn-k+1, ... Vn )
 
 gvmtest: New Virtual Machine Test Tool
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The gvmtest tool is only intended for testing the implementation of the 
+C++ API to first class GVMs. It allows stack inspection, heap inspection,
+manual code generation and compilation. 
 
-TODO: stack inspection, heap inspection, low level code generation, GNX evaluation. Working towards C++ API & Python module.
+The available commands are listed below:
+
+    <registers/>                     <help topic="registers"/>
+    <peek/>                          <help topic="peek"/>
+    <stack.clear/>                   <help topic="stack.clear"/>
+    <stack.length/>                  <help topic="stack.length"/>
+    <stack/>                         <help topic="stack"/>
+    <heap.crawl/>                    <help topic="heap.crawl"/>
+    <gc/>                            <help topic="gc"/>
+    <compile> GNX </compile>         <help topic="compile"/>
+    <code> INSTRUCTION* </code>      <help topic="code"/>
+
+It is intended that this work contributes usefully towards the C++ API & integration with a Python module.
 
 All Major Features documented
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-All the features listed on the overview.rst page are now expanded in their own articles.
-
-TODO:
-    Add new features:   
-        Coroutines
-        First class VMs
-        Default parameters
-        Bags
-        Priority queues
-        Variadic parameters
-        Partial application
-        Autolocation
-        Autoimports
-        Updaters
-        Alternative returns
-        Rollbacks, Failovers, Panics
-        Lisp Syntax
-        CGI Integration
-        Full Unicode integration
-        Regular expressions
-
+All the features listed on the overview.rst page are now expanded in their own short articles. 
 
 Under the hood
 ~~~~~~~~~~~~~~
