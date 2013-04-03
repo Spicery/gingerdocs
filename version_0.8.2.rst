@@ -59,8 +59,33 @@ Example:
 
 Simple stream i/o
 ~~~~~~~~~~~~~~~~~
+A basic form of character-stream i/o has been added in the form of two new system functions. They both accept strings for FILENAMEs.
 
-TODO: newInputStream, newOutStream
+    input := newInputStream( FILENAME );
+    output := newOutStream( FILENAME );
+
+Input streams can be invoked like functions. Each call returns the next character from the input stream. When the stream is exhausted the special value termin is returned. Input streams are "pushable", meaning that it is possible to dynamically add characters onto the front of the stream.
+
+    * input() returns the next character or termin to signal exhaustion.
+    * input.thisCharInputStream() returns the current character/termin of the input stream.
+    * input.nextCharInputStream() returns the current item and advances to the next item.
+    * input.thisLineInputStream() returns the current line of the input stream, reading up to the next newline character.
+    * input.nextLineInputStream() returns the current line of the input stream and advances to the next line.
+    * input.pushInputStream( ITEM ) updates the input stream so that ITEM is pushed onto the front. The current item becomes the next item and ITEM becomes the current item. Note that the item may be any value whatsoever, including termin. Returning termin, even when pushed, will have the effect of immediately closing the input stream.
+    * input.isClosedInputStream() returns true if the next item would be termin.
+    * input.isOpenInputStream() returns true if the next item would be a character. The opposite of isClosedInputStream.
+    * input.closeInputStream() immediately closes the input stream.
+
+Output streams can be invoked like functions too. Each call accepts a character or string and sends it to the output. If the output stream is applied to termin then the stream is closed.
+
+    * output( ITEM ) If ITEM is a character or a string it is sent immediately to the output stream. If ITEM is termin then the stream is closed.
+    * output.sendOutputStream( ITEM ), same as above.
+    * output.isOpenOutputStream() returns true if the output stream is still accepting items.
+    * output.isClosedOutputStream() returns true if the output stream is no longer accepting items. The opposite of isOpenOutputStream.
+    * output.closeOutputStream() immediately closes the output stream.
+
+Note that both input streams and output streams are tracked by the garbage collector and are automatically closed when they are collected.
+
 
 showMe, renaming and bug fixes of show function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -90,14 +115,26 @@ A default settings.gson file can be generated using
     ginger-admin --settings
 
 
-Basic formatted printing via printfln, printfln, stringf
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Basic formatted printing via printf, printfln, stringf
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The formatted print functions printf, printfln and stringf have been provided. They support the most elementary form of substitution at present: any occurence of '%p' or %s will be substituted by the matching positional parameter.
 
-TODO:
+    FORMAT_STRING.stringf( ARG1, ... ARGn ) returns a string with the format parameters substituted.
+    FORMAT_STRING.printf( ARG1, ... ARGn ) sends a string to the standard output after substitution.
+    FORMAT_STRING.printfln( ARG1, ... ARGn ) sends a string to the standard output after substitution and then sends an additional newline.
+
+Example:
+
+    >>> "Call me %p.".stringf( "Steve" );
+    There is one result.
+    1.  "Call me Steve."
+
+The difference between %p and %s is that %p uses the print format and %s uses the show format.
+
 
 showMeRuntimeInfo() built-in function (cf phpInfo)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The system function "showMeRuntimeInfo" is designed to conveniently print contextual information about the Ginger running environment, working rather like PHP's phpInfo command. It's a blunt instrument that is occasionally just what is needed.
+The system function "showMeRuntimeInfo" is designed to conveniently print contextual information about the Ginger running environment, working rather like PHP's phpInfo command. It's a blunt instrument that is occasionally just what is needed. Here's a truncated example of its output.
 
 
     >>> showMeRuntimeInfo();
@@ -117,7 +154,7 @@ The system function "showMeRuntimeInfo" is designed to conveniently print contex
     * Interactive package: ginger.interactive
     * Default syntax: cmn
 
-    .... (deleted) ...
+    .... (deleted) ....
 
 
 The Erase and Dup family of built-in functions
@@ -170,8 +207,11 @@ All the features listed on the overview.rst page are now expanded in their own s
 
 Under the hood
 ~~~~~~~~~~~~~~
+There are two architectural changes to Ginger in this version. Firstly the C++ Ginger virtual machine API has been significantly advanced, although remains incomplete. This was triggered by the implementation of the gvmtest tool.
 
-Numerous refactorings & bug fixes.
+Secondly, a general interface for managing C++ objects has been added. This was done in order to implement input and output streams. This means that arbitrary C++ classes can be added and manipulated in Ginger and managed by the garbage collector.
+
+In addition there have been numerous refactorings & bug fixes.
     
     *   Refactoring: Eliminating the use of C's printf and related functions 
         in favour of C++ stream i/o.
