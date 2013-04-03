@@ -5,6 +5,8 @@ Curry'd Function Definitions Supported
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Both Common syntax and C-style syntax support "Currying", which means writing a definitions as a chain of function applications like this:
 
+::
+
     # Common.
     define K( x )( y ) =>> x enddefine;
 
@@ -18,6 +20,8 @@ Binding/Assigning to Multiple Variables Implemented
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Common and C-style syntax now support binding of multiple variables at the same time. For example:
 
+::
+
     # Common.
     ( x, y ) := 'ab';
 
@@ -26,6 +30,8 @@ Common and C-style syntax now support binding of multiple variables at the same 
 
 The same applies to assignment e.g.
 
+::
+
     var p := _;
     var q := _;
     ( p, q ) ::= ( false, true );
@@ -33,6 +39,8 @@ The same applies to assignment e.g.
 Common and C-Style Syntax get literal percentages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 A double may be written with a terminating "%". This has the meaning of multiplying the value by 0.01. 
+
+::
 
     >>> 50%;
     There is one result.
@@ -48,6 +56,7 @@ The main purpose of a dummy variable is primarily to silently discard some unwan
 The secondary purpose is that, when used for its value, all dummy variables evaluate to absent. 
 
 Example:
+::
 
         >>> ( alpha, _, beta, _, gamma ) := 'uvwxy';
         >>> alpha, beta, gamma;
@@ -60,6 +69,8 @@ Example:
 Simple stream i/o
 ~~~~~~~~~~~~~~~~~
 A basic form of character-stream i/o has been added in the form of two new system functions. They both accept strings for FILENAMEs.
+
+::
 
     input := newInputStream( FILENAME );
     output := newOutStream( FILENAME );
@@ -103,14 +114,15 @@ Configurable Result Printing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 It is now possible to configure the way results are printed via a new
 user settings file:
+::
 
     ~/.config/ginger/settings.gson
-
 The strings exploit the new, basic formatted print functions.
 
 The format of that file is a limited version of the planned GSON (Ginger Simple Object Notation) format, which is a strict superset of JSON (see http://json.org/).
 
 A default settings.gson file can be generated using 
+::
 
     ginger-admin --settings
 
@@ -118,12 +130,14 @@ A default settings.gson file can be generated using
 Basic formatted printing via printf, printfln, stringf
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The formatted print functions printf, printfln and stringf have been provided. They support the most elementary form of substitution at present: any occurence of '%p' or %s will be substituted by the matching positional parameter.
+::
 
     FORMAT_STRING.stringf( ARG1, ... ARGn ) returns a string with the format parameters substituted.
     FORMAT_STRING.printf( ARG1, ... ARGn ) sends a string to the standard output after substitution.
     FORMAT_STRING.printfln( ARG1, ... ARGn ) sends a string to the standard output after substitution and then sends an additional newline.
 
 Example:
+::
 
     >>> "Call me %p.".stringf( "Steve" );
     There is one result.
@@ -162,6 +176,8 @@ The Erase and Dup family of built-in functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Two families of 'stack manipulation' functions have been added. The dup-family are useful for duplicating all or some of the arguments they are passed. The erase-family are useful for discarding all or some of the arguments they are passed.
 
+::
+
     dupAll( V1, ..., Vn ) returns ( V1, ... Vn, V1, ... Vn )
     dupFirst( V1, ..., Vn ) returns ( V1, ... Vn, V1 )
     dupAllButFirst( V1, ..., Vn ) returns ( V1, ... Vn, V2, ... Vn )
@@ -189,16 +205,17 @@ C++ API to first class GVMs. It allows stack inspection, heap inspection,
 manual code generation and compilation. 
 
 The available commands are listed below:
+::
 
-    <registers/>                     <help topic="registers"/>
-    <peek/>                          <help topic="peek"/>
-    <stack.clear/>                   <help topic="stack.clear"/>
-    <stack.length/>                  <help topic="stack.length"/>
-    <stack/>                         <help topic="stack"/>
-    <heap.crawl/>                    <help topic="heap.crawl"/>
-    <gc/>                            <help topic="gc"/>
-    <compile> GNX </compile>         <help topic="compile"/>
-    <code> INSTRUCTION* </code>      <help topic="code"/>
+    <registers/>
+    <peek/>
+    <stack.clear/>
+    <stack.length/>
+    <stack/>
+    <heap.crawl/>
+    <gc/>
+    <compile> GNX </compile>
+    <code> INSTRUCTION* </code>
 
 It is intended that this work contributes usefully towards the C++ API & integration with a Python module.
 
