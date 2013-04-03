@@ -271,7 +271,7 @@ Semantics
 Type Checking
 -------------
 * A valid type assertion will never prevent a program from compiling 
-  (the Dollin Principle). 
+  (`the Dollin Principle`_). 
 
 * An :mod:`Ginger` implementation is not ''required'' 
   to do any type checking. Of course, one that omits type checking 
@@ -280,6 +280,8 @@ Type Checking
 
 * A :mod:`Ginger` implementation is not ''required'' 
   to perform any type inference. 
+
+.. _`the Dollin Principle`: the_dollin_principle.html
 
 Compilation and Performance
 ---------------------------

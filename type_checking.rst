@@ -13,4 +13,6 @@ Optional Static Type Checking
 -----------------------------
 
 TODO:
-	Should describe the Dollin principle
+	Should describe `the Dollin principle`_
+
+.. _`the Dollin Principle`: the_dollin_principle.html

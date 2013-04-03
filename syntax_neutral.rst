@@ -1,7 +1,7 @@
 Syntax Neutral
 ==============
 
-Apart from performance, one of the interesting aspects of the virtual machine is that the input is an easy-to-generate subset of XML. For example the equivalent of Pop-11's ``if f( 0 ) then p else q endif( false )`` would be:
+Apart from performance, one of the interesting aspects of the Ginger virtual machine is that its input is an easy-to-generate subset of XML. For example the equivalent of Pop-11's ``if f( 0 ) then p else q endif( false )`` would be:
 
 .. code-block:: xml
 

@@ -137,24 +137,25 @@ showMeRuntimeInfo() built-in function (cf phpInfo)
 The system function "showMeRuntimeInfo" is designed to conveniently print contextual information about the Ginger running environment, working rather like PHP's phpInfo command. It's a blunt instrument that is occasionally just what is needed. Here's a truncated example of its output.
 
 
-    >>> showMeRuntimeInfo();
-    Application Environment
-    -----------------------
-    * Startup mode: Shell
 
-    Main
-    ----
-    * Ginger version: 0.8.2-dev
-    * VM Implementation ID: 1
-    * Garbage collection tracing: disabled
-    * Code generation tracing: disabled
-    * Reading standard input: 0
-    * Level of print detail: 3
-    * Showing welcome banner: disabled
-    * Interactive package: ginger.interactive
-    * Default syntax: cmn
-
-    .... (deleted) ....
+# >>> showMeRuntimeInfo();
+# Application Environment
+# -----------------------
+# * Startup mode: Shell
+# 
+# Main
+# ----
+# * Ginger version: 0.8.2-dev
+# * VM Implementation ID: 1
+# * Garbage collection tracing: disabled
+# * Code generation tracing: disabled
+# * Reading standard input: 0
+# * Level of print detail: 3
+# * Showing welcome banner: disabled
+# * Interactive package: ginger.interactive
+# * Default syntax: cmn
+# 
+# .... (deleted) ....
 
 
 The Erase and Dup family of built-in functions

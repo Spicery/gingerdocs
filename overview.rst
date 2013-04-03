@@ -20,7 +20,7 @@ Features of the Ginger Language and Tools
 Here's a list of the features we have already implemented for the GVM project.
 
     * `Pervasive multiple values`_, including loop expressions.
-    * `Dynamic type checking`_.
+    * `Dynamic type checking`_ 
     * `Dynamic arithmetic`_, supporting integers and doubles.
     * `Immutable objects`_ - strings, lists vectors and maps.
     * `XML like elements`_ built-in (immutable only).
@@ -32,15 +32,15 @@ Here's a list of the features we have already implemented for the GVM project.
     * `Multiple Implementations of Single Instruction Set`_
 
 .. _`Pervasive multiple values`: multiple_values.html
-.. _`Dynamic typing`: type_checking.html
+.. _`Dynamic type checking`: type_checking.html
 .. _`Dynamic arithmetic`: arithmetic.html
 .. _`Immutable objects`: quality_immutable.html
 .. _`XML like elements`: elements.html
-.. _`records`: records.rst#user-defined-records
-.. _`vectors`: vectors.rst#user-defined-vectors
+.. _`records`: records.html#user-defined-records
+.. _`vectors`: vectors.html#user-defined-vectors
 .. _`First class functions`: first_class_functions.html
 .. _`lambda expressions`: lambdas.html
-.. _`Basic CGI integration`: cgi.rst
+.. _`Basic CGI integration`: cgi.html
 .. _`Garbage Collection`: garbage_collection.html
 .. _`Syntax Neutral`: syntax_neutral.html
 .. _`Multiple Implementations of Single Instruction Set`: multiple_implementations.html
