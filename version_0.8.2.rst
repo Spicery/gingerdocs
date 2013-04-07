@@ -241,3 +241,4 @@ In addition there have been numerous refactorings & bug fixes.
     *   Added new and more efficient VM call instructions.
     *   Fixed defect in --debug=showcode arising from the data-pool change.
     *   ginger-cli errors in exception catching fixed.
+    *   Now possible to exclude unwanted interpreter engines at compile time.
