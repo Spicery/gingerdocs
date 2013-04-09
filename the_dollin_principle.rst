@@ -1,6 +1,6 @@
 = The Dollin Principle =
 
-The Dollin Principle is a simple statement that tries to capture the idea that type assertions should not affect the run-time behaviour of programs.  It is usually phrased in terms of adding or removing type assertions to a program on a particular set of inputs.  The term was casually coined by the ["ECMAScript"] commitee (["ECMA"] TC 39, if memory serves) after ChrisDollin argued strongly in favour of its adoption in ["ECMAScript"] itself.
+The Dollin Principle is a simple statement that tries to capture the idea that type assertions should not affect the run-time behaviour of programs.  It is usually phrased in terms of adding or removing type assertions to a program on a particular set of inputs.  The term was casually coined by the ECMAScript commitee (ECMA TC 39, if memory serves) after Chris Dollin argued strongly in favour of its adoption in ECMAScript itself.
 
 Phrased in positive form it states that adding a set of true type assertions to  program will not affect its run-time behaviour for the given inputs.  A true type assertion is one that is true for all the given set of inputs.  Phrased negatively, it states that removing a set of type assertions cannot change the run-time behaviour on the given set of inputs.
 
@@ -13,4 +13,4 @@ By contrast, the Unlimited Principle seems to correspond to the idea of type-che
 The Limited version of the Principle doesn't sit as comfortably with the idea of type inference.  One possibility would be to distinguish the absence of a type assertion from the topmost type (say, Object).  In the absence of a type assertion, the inference system would be free to infer supply a narrowable type.  Another approach would be to have an annotation that distinguishes type that can be narrowed from those which cannot (e.g. a postfix annotation "**" to mean may be narrowed.)
 
 ----
-SteveLeach
+Stephen Leach
