@@ -1,7 +1,88 @@
 Vectors
 =======
 
-User Defined Vectors
---------------------
+Vectors are generic 1-dimensional arrays and an important basic type in Ginger. They are compact, fast to index and iterate over.
 
-TODO: Placeholder
+Classes & Constructors
+----------------------
+
+ImmutableVector
+UpdateableVector
+DynamicVector
+	These are the classes associated with the three different flavours
+	of vector. The apply-action of the classes is the corresponding
+	constructor.
+
+[ X1, ..., Xn ] -> V
+newImmutableVector( X1, ... Xn ) -> V
+ImmutableVector( X1, ..., Xn ) -> V
+	Takes N items X1 to Xn and constructs a single immutable vector
+	V of length N with X1 to Xn as its members.
+
+newDynamicVector( X1, ..., Xn ) -> DV
+DynamicVector( X1, ..., Xn ) -> V
+	Takes N items X1 to Xn and constructs a single immutable vector
+	DV of length N with X1 to Xn as its members.
+
+newUpdateableVector( X1, ..., Xn ) -> UV
+UpdateableVector( X1, ..., Xn ) -> V
+	N.B. Updateable vectors not yet implemented!
+	Takes N items X1 to Xn and constructs a single updateable vector
+	UV of length N with X1 to Xn as its members.
+
+
+Recognisers
+-----------
+
+isVector( OBJECT ) -> BOOL
+	Returns true if OBJECT is a vector (immutable, updateable or dynamic),
+	otherwise false.
+
+isImmutableVector( OBJECT ) -> BOOL
+	Returns true if OBJECT is a vector and immutable. Identical to 
+	isVector( v ) and `isImmutableObject`_( OBJECT ).
+
+isUpdateableVector( OBJECT ) -> BOOL
+	N.B. Updateable vectors not yet implemented!
+	Returns true if OBJECT is a vector and updateable. Identical to 
+	isVector( OBJECT ) and `isUpdateableObject`_( OBJECT ).
+
+isDynamicVector( OBJECT ) -> BOOL
+	Returns true if OBJECT is a vector and dynamic. Identical to 
+	isVector( OBJECT ) and `isDynamicObject`_( OBJECT ).
+
+.. _`isImmutableObject`: isImmutableObject.html
+.. _`isUpdateableObject`: isUpdateableObject.html
+.. _`isDynamicObject`: isDynamicObject.html
+
+Accessors, Updaters and Exploders
+---------------------------------
+
+explode( V ) -> ( X1, ..., Xn )
+explode( V ) <- ( X1, ..., Xn )
+explodeVector( N, V ) -> ( X1, ..., Xn )
+explodeVector( N, V ) <- ( X1, ..., Xn )
+	N.B. Updaters not implemented yet.
+	Returns the members of a vector V. In update mode, batch updates
+	all the members of a vector. Updating only applies to updateable
+	and dynamic vectors.
+
+V( N ) -> Xn
+V( N ) <- X
+indexVector( N, V ) -> Xn
+indexVector( N, V ) <- Xn
+index( N, OBJECT ) -> Xn
+index( N, OBJECT ) <- X
+	N.B. Updaters not implemented yet.
+	Returns the Nth member of any vector V. In update mode, it will replace
+	the Nth member of an updateable or dynamic vector with X. Attempting to
+	update an immutable vector will generate a failover.
+
+	Note that indexVector is the apply-action of vectors.
+
+length( V ) -> N
+lengthVector( V ) -> N
+	Returns the length of any vector. `Length`_ is applicable to any 
+	list-like object but lengthVector may only be applied to vectors.
+
+.. _`Length`: length.html

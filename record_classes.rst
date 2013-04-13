@@ -1,9 +1,9 @@
-Records
-=======
+Record Classes
+==============
 In Ginger, records are store that used to define classes whose instances have a fixed set of fields. These are used for both simple records ("structs") whose fields are exposed and also for the implementation of instances of user-defined classes.
 
-User Defined Records
---------------------
+User Defined Record Classes
+---------------------------
 At the time of writing we only support simple record definitions. Each record definition introduces a new class with any number of fields (including 0). But you can't make subclasses of the record.
 
 Example::
