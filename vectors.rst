@@ -67,13 +67,15 @@ explodeVector( N, V ) <- ( X1, ..., Xn )
 	all the members of a vector. Updating only applies to updateable
 	and dynamic vectors.
 
+V[ N ] -> Xn
+V[ N ] <- X
 V( N ) -> Xn
 V( N ) <- X
 indexVector( N, V ) -> Xn
 indexVector( N, V ) <- Xn
-index( N, OBJECT ) -> Xn
-index( N, OBJECT ) <- X
-	N.B. Updaters not implemented yet.
+index( N, V ) -> Xn
+index( N, V ) <- X
+	N.B. Updaters not consistently implemented yet.
 	Returns the Nth member of any vector V. In update mode, it will replace
 	the Nth member of an updateable or dynamic vector with X. Attempting to
 	update an immutable vector will generate a failover.
