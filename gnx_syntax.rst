@@ -5,15 +5,15 @@ GinX: XML Transport Format for Ginger
 
 Created, June 2010
 
-Revised, August 2010, May 2011, Feb 2013
+Revised, August 2010, May 2011, Feb 2013, Apr 2013
 
 
 .. note:: Reader, please note that this is very much a work-in-progress. It is being written up as we design the relevant sections in appginger.
 
-GinX Overview
--------------
+Ginger XML Overview
+-------------------
 
-The idea behind GinX (\*.gnx) is to provide a representation of Ginger code that is neutral. By neutral we mean that it should be both human-readable and machine-friendly. Hence it should be easy for people with some computing background to understand the logic behind it, and easy for people to review but not necessarily write. It must also be easy for them to create programs, in their programming language of choice, that can read, transform and generate GinX. And it should be reasonably inexpensive to process, without that being an overriding consideration.
+The idea behind Ginger XML (\*.gnx) is to provide a representation of Ginger code that is neutral. By neutral we mean that it should be both human-readable and machine-friendly. Hence it should be easy for people with some computing background to understand the logic behind it, and easy for people to review but not necessarily write. It must also be easy for them to create programs, in their programming language of choice, that can read, transform and generate GinX. And it should be reasonably inexpensive to process, without that being an overriding consideration.
 
 To balance these opposed concerns we borrowed from Lisp, especially Scheme. We selected a simplified subset of XML, called MinX. MinX is loosely based on s-expressions, which made programming very straightforward. We then designed the elements around Lisp-style primitives. This gave us a very clean design because we did not have to make concessions to programming convenience - because this is a representation that is essentially only written by machine, not people. 
 
@@ -66,19 +66,45 @@ e.g.
 
 	<app from="23.8" to="23.64"> .... </app>
     
-Context Attribute
+Context Attributes
 ~~~~~~~~~~~~~~~~~
-
-Any element may have the optional context attribute which will be printed
+Any element _may_ have an optional context.* attribute which will be printed
 out to provide additional context. It will typically be a truncated version
 of the spanned text.
 
-Hint Attribute
-~~~~~~~~~~~~~~
+Context - Grammar Role
+......................
+Any element _may_ be decorated with the grammatical role assigned by the parser.
 
-The optional hint attribute will be printed out to provide additional 
-context on an error. As the name suggests, it should be phrased in such a 
-way as to be a hint e.g. "Add type-checking".
+Example::
+	if test then x else y endif ### may be decorated as follows.
+
+	<if context.role="Conditional">
+		<id name="test" context.role="Predicate"/>
+		<id name="x" context.role="Then-part of Conditional"/>
+		<id name="y" context.role="Else-part of Conditional"/>
+	</if>
+
+Context - Parameter Position
+............................
+
+Any expression that is passed as a parameter to a function application _may_ be decorated with its positional value and the name of the function (or description of the function expression) that it is statically called by. 
+
+Arguments on the left hand side of the function are numbered negatively, arguments on the right hand side are numbered positively.
+
+.. code-block:: text
+
+	x.f( y, z ) 	### Original expression.
+
+	<app>
+		<id name="f"/>
+		<seq>
+			<id name="x" context.posn="-1" arg.caller="f"/>
+			<id name="x" context.posn="1" arg.caller="f"/>
+			<id name="x" context.posn="2" arg.caller="f"/>
+		</seq>
+	</app>
+
 
 Statements
 ----------
@@ -124,6 +150,8 @@ Constants are characterised by having element name 'constant' and 'type'
 and 'value' attributes. Constants always
 represent a single IMMUTABLE value. N.B. The compiler is free to share 
 instances of these constants which are equal to each other. 
+
+Note that the "type" attribute doesn't correspond to the class name you may have expected. This is a hangover from early development before the class names were stablised.
 
 Syntax
 ~~~~~~
@@ -174,57 +202,57 @@ Available Named Procedures
 Note that these constants are not necessarily bound to identifiers in Ginger. 
 These constants are intended as direct support for built-in operators (e.g.
 arithmetic) and syntactic forms such as list construction, string interpolation, 
-etc.
+and so on. Here are some examples::
 
-.. code-block:: text
-
-	<sysfn value="+"/>                  ### }
-	<sysfn value="-"/>                  ### }
-	<sysfn value="*"/>                  ### }- standard arithmetic
-	<sysfn value="/"/>                  ### }
-	<sysfn value="**"/>                 ### }
-	<sysfn value="..."/>                ### Equivalent to explode
-	<sysfn value="headList"/>
-	<sysfn value="isEmptyList"/>
-	<sysfn value="newList"/>
-	<sysfn value="newVector"/>
-	<sysfn value="newMap"/>             
-	<sysfn value="newSet"/>
-	<sysfn value="newBag"/>
-	<sysfn value="not"/>                ### Boolean negation
-	<sysfn value="tailList"/>
-	<sysfn value="!!"/>                 ### Absent negation
+	<constant type="sysfn" value="+"/>                  ### }
+	<constant type="sysfn" value="-"/>                  ### }
+	<constant type="sysfn" value="*"/>                  ### }- standard arithmetic
+	<constant type="sysfn" value="/"/>                  ### }
+	<constant type="sysfn" value="head"/>
+	<constant type="sysfn" value="newList"/>
+	<constant type="sysfn" value="newVector"/>
+	<constant type="sysfn" value="newMap"/>             
+	<constant type="sysfn" value="not"/>                ### Boolean negation
+	<constant type="sysfn" value="tail"/>
     
-N.B. There may be implementation-extensions to this list, it is not intended
-to be exhaustive.  
-
-N.B. It is intended that all the members of this list are guaranteed to be
+It is intended that all the members of this list are guaranteed to be
 available from the "std" package. Hence they are functionally equivalent to
 
 .. code-block:: xml
 
-	<id name=NAME pkg="std"/>
+	<id name=NAME def.pkg="ginger.library"/>
 
-See also the 'sysapp' element. 
+
+Furthermore, it is important to note that these constants do not have to be implemented efficiently. Compiler writers are permitted to implement these as lambda forms. For example a system function 'foo' of 1 argument might be implemented like this:
+
+.. code-block:: text
+
+	### permitted possible implementation of unary sysfn called 'foo' 
+	<fn title="foo">
+		<var name=”x”/>
+		<sysapp name="foo">
+			<id name=”x”/>
+		</sysapp>
+	</fn>
+
+In particular it is explicitly permitted that each use of a sysfn _may_ return a different object.
 
 Available Named Classes
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 There is a built-in class for every type of built-in value, although they are
-not necessarily bound to identifiers in Ginger.
+not necessarily bound to identifiers in Ginger. Examples::
 
-.. code-block:: text
-
-	<sysclass value="Absent"/>          ### class for absent
-	<sysclass value="Bool"/>            ### class for true & false
-	<sysclass value="Small"/>           ### class for 'small' integers
-	<sysclass value="Double"/>          ### class for doubles
-	<sysclass value="String"/>          ### class for strings
-	<sysclass value="Char"/>            ### class for characters
-	<sysclass value="Nil"/>             ### class for nil
-	<sysclass value="Pair"/>            ### class for list pairs
-	<sysclass value="Vector"/>          ### class for vectors
-	<sysclass value="Class"/>           ### class for classes
+	<constant type="sysclass" value="Absent"/>          ### class for absent
+	<constant type="sysclass" value="Bool"/>            ### class for true & false
+	<constant type="sysclass" value="Small"/>           ### class for 'small' integers
+	<constant type="sysclass" value="Double"/>          ### class for doubles
+	<constant type="sysclass" value="String"/>          ### class for strings
+	<constant type="sysclass" value="Char"/>            ### class for characters
+	<constant type="sysclass" value="Nil"/>             ### class for nil
+	<constant type="sysclass" value="Pair"/>            ### class for list pairs
+	<constant type="sysclass" value="Vector"/>          ### class for vectors
+	<constant type="sysclass" value="Class"/>           ### class for classes
 
 Note that classes are not exactly he same as types. All function objects share
 the same class but may have entirely different types.
@@ -300,110 +328,37 @@ Syntax
 		<app> EXPR EXPR </app>       
 		<sysapp name=NAME> EXPR* </sysapp> 
                                             
-Comment by kers – it might be useful to distinguish the LHS and RHS arguments to a function call (if only for reporting/debugging).
 
 SysApps
 ~~~~~~~
+SysApp's are invocations of the built-in functions. Each built-in function is named and can be referred to via
 
-REVISE!
+	* <sysapp name=NAME> EXPR* </sysapp>, which compiles into a function call
+	* <constant type="sysfn" name=NAME/>, which will compile into a function object
+	* <id def.pkg="ginger.library" name=NAME/>, which will compile into a variable
+	  that references a function object.
 
-SysApp's are efficient variants of standard function calls. 
-They typically place serious restrictions on the pre-conditions
-and failing to satisfy those preconditions may corrupt the
-system (i.e. is undefined behaviour). This is the place where 
-it is necessary for users to read the small-print 
-on what the restrictions for correct use. N.B. They play the same
-role as Pop-11's fast operations.) 
+Of these three methods, only the direct function call is guaranteed to be efficient. The other two forms are permitted to be relatively inefficient. In support of this, the compiler writer is allowed to make reasonable assumptions to help performance e.g. the call may be inlined, 
+computed at compile-time, overflow checking may be deferred until the end of the parent block, no debug information may be available, the garbage collector may be blocked, and so on. 
 
-In return for , the user entitled to assume the call do their 
-job as efficiently as they can reasonably be made.
-
-In support of this, the devteam is authorised to make reasonable 
-assumptions to help performance e.g. the call may be inlined, 
-computed at compile-time, overflow checking may be deferred 
-until the end of the parent block, no debug information may
-be available, the garbage collector may be blocked, and so on. 
-
-For all the built-in sysfns there is a corresponding safe routine
-(which appear in package 'std'). A correct program must work when
-any 'sysapp' is replaced by an 'app' to the safe routine. e.g.
+Note that it is also guaranteed that direct calls of sysfns will be as efficient as sysapps.
 
 .. code-block:: text
 
-	### Best performance but may be undefined if the 
-	### preconditions are not met.
-	<sysapp name="foo"> ... </sysapp> 
-		
-	### Has well-defined failure mode but will do the same
-	### as the sysapp if the preconditions are met.
-	<app><id name="foo" pkg="sys"/><seq>...</seq></app>
-
-SysApp's are guaranteed to exist for every sysfn and vice
-versa. Unlike sysapp's, sysfns are not guaranteed to be
-efficient but may be implemented behind the scenes as
-an function that invokes the sysapp.
-
-.. code-block:: text
-
-	### permitted possible implementation of sysfn called 'foo' 
-	<fn title="foo">
-		<explode><var name=”x”/></explode>
-		<sysapp name="foo">
-			<explode><id name=”x”/></explode>
-		</sysapp>
-	</fn>
-
-This highlights that the entitlement to efficiency is only
-assured for direct calls.
-    
-
-Such a form may silently be transformed into a relatively 
-inefficient form such as the one below. 
-
-.. code-block:: xml
-
-	<fn>
-		<explode><var name=”x”/></explode>
-		<sysapp name="foo"><explode><id name=”x”/></explode></sysapp>
-	</fn>
-
-However it is guaranteed that direct calls of sysfns will
-be as efficient as sysapps.
-
-.. code-block:: text
-
-	### This form will be treated as identical to
-	### the one below. (The reverse is not true.)
+	### This form will be treated as a sysapp.
 	<app><sysfn value="foo"/> ... </app>
 
-turns into
+Effectively it turns into
 
 .. code-block:: text
 
 	<sysapp name="foo"> ... </sysapp>
 
+See `sysapps in detail`_ for more information.
 
-Examples of SysApp's
-~~~~~~~~~~~~~~~~~~~~
+.. _`sysapps in detail`: sysapp.html
 
-e.g.
 
-``f( x )`` turns into
-
-.. code-block:: text
-
-	<app><id name="f"/><id name="x"/></app>
-    
-``[ 1, 2, 3 ]`` turns into
-
-.. code-block:: text
-
-	<sysapp name="newList">
-		<constant type="int" value="1"/>
-		<constant type="int" value="2"/>
-		<constant type="int" value="3"/>
-	</sysapp>
-    
 
 Conditionals
 ------------
@@ -442,7 +397,7 @@ Syntax
 For Loops
 ---------
 
-Notes: This is work in progress. Easier to understand if declarations come first.
+Notes: This is work in progress. In time the STMNTS will be subsumed into the QUERY itself. That is a step too far at the time of writing. Similarly the plan is to permit top-level queries, whereas right now only bindings are permitted at top level, and if-then-else and switches will also be treated as query-solvers.
 
 Syntax
 ~~~~~~
@@ -535,7 +490,7 @@ A PATTERN is any of the following
 	PATTERN_ANON ::=
 		<var/>
 
-Comment! Qualifier or alias?
+.. note::  Qualifier or alias? We have some terminological confusion from different rounds of discussion being exposed.
 
 .. code-block:: text
 
@@ -549,9 +504,11 @@ Comment! Qualifier or alias?
 		<app> EXPR PATTERN </app>
         
 
+
+.. note:: At the time of writing we have not implemented PATTERN_CONST or PATTERN_APP.
+
 Pattern Variables
 ~~~~~~~~~~~~~~~~~
-
 These are the most basic and familiar types of pattern. They introduce an optionally typed variable. The protected attribute plays the same role as in Pop-11, protecting the variable from assignment (n.b. this is shallow rather than deep protection.)
 
 ``name=NAME`` The "name" attribute is optional. If it is omitted then it is an anonymous variable.
@@ -576,9 +533,8 @@ Note: we also need to cope with forward declarations.
 
 As a Query
 ~~~~~~~~~~
-
-A declaration is a type of query that either fails or succeeds once. 
-In particular this loop would execute once:
+A bind declaration is a type of query that either fails or succeeds once. 
+In particular this loop would execute precisely once:
 
 .. code-block:: text
 
@@ -593,8 +549,7 @@ In particular this loop would execute once:
 
 Examples
 ~~~~~~~~
-        
-		
+
 .. code-block:: text
 
 	### Note that var/val introduces a query in Ginger. The '=' operator
@@ -634,55 +589,6 @@ Examples
 Packages and Imports
 --------------------
 
-Overview
-~~~~~~~~
+.. note:: This section did not reflect the current implementation and needs further discussion. In practice the fetchgnx tool discharges the packages and imports before the Ginger Virtual Machine gets to see them. As a consequence it has been moved aside to `Packages and Imports`_.
 
-The package element introduces a new package. Packages should be named uniquely via URIs. Items within the package are compiled with the new package as the default.
-
-If a package attempts to introduce a pre-existing package, the action taken depends on whether or not appginger is in development-mode (reloaded allowed) or in run-mode (reloading forbidden).
-
-The import element establishes a relationship between two packages. This relationship is used to make top-level variables visible from other packages. 
-
-Syntax
-~~~~~~
-
-.. code-block:: text
-
-	PACKAGE ::=
-		<package url=PACKAGE_URL>
-			IMPORT*
-			STMNT*
-		</package>
-	
-	IMPORT ::=
-		<import 
-			from=PACKAGE_URL
-			( (match0|match1|...)=TAG_VALUE )*
-			[ alias=ALIAS_NAME ]
-			[ qualified=("true"|"false") ]
-			[ protected=("true"|"false") ]
-			( ( into0|into1|...)=TAG_VALUE )*
-		/>
-    
-Package
-~~~~~~~
-The package element introduces a named package. Packages have to be uniquely named and we suggest URLs are used to achieve this. As always, this is advisory.
-
-The top-level variables of the statements within that package are resolved with respect to that package. Resolution is the process of mapping a top-level name into a corresponding, anonymous runtime-record called a variable.
-
-Package are essentially local maps from names to variables. Packages are chained together by imports, so that resolving a name in one package may yield a name in the local map or any imported package.
-
-Imports
-~~~~~~~
-The import element is a named connection between two packages. Once an import is established, resolving a name in the importing package may continue into the imported package. 
-
-The import utilizes tagging to restrict the variables that are searched. Variables that are searched due to an import are said to be exported. The match attributes specifies which variables are exported from the imported package, only those with matching tags may be exported.
-The import is named by the alias attribute. Aliases must be unique within a package. The alias is used to qualify a variable reference e.g. myalias::myvariable. This is also affected by the qualified attribute which specifies whether or not a search in this import must use the alias. 
-
-By default, imports are not qualified.
-
-The protected attribute specifies whether or not the import may be masked by local declarations. If an import is protected then every declaration in the package must be checked to ensure it would not mask (or shadow) an imported variable. By default, imports are not protected.
-The into attribute specifies whether or not the exported variables are re-exported by the importing package. If the into attribute is provided then it specifies which tag(s) they will be re-exported under. If it is not provided then there is no re-export.
-
-
-
+.. _`Packages and Imports`: packages_and_imports.html
