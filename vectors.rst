@@ -6,16 +6,17 @@ Vectors are generic 1-dimensional arrays and an important basic type in Ginger. 
 Classes & Constructors
 ----------------------
 
-ImmutableVector
+Vector
 UpdateableVector
 DynamicVector
+	N.B. Dynamic vectors not yet implemented!
 	These are the classes associated with the three different flavours
 	of vector. The apply-action of the classes is the corresponding
 	constructor.
 
 [ X1, ..., Xn ] -> V
-newImmutableVector( X1, ... Xn ) -> V
-ImmutableVector( X1, ..., Xn ) -> V
+newVector( X1, ... Xn ) -> V
+Vector( X1, ..., Xn ) -> V
 	Takes N items X1 to Xn and constructs a single immutable vector
 	V of length N with X1 to Xn as its members.
 
@@ -35,21 +36,29 @@ Recognisers
 -----------
 
 isVector( OBJECT ) -> BOOL
-	Returns true if OBJECT is a vector (immutable, updateable or dynamic),
-	otherwise false.
-
-isImmutableVector( OBJECT ) -> BOOL
-	Returns true if OBJECT is a vector and immutable. Identical to 
-	isVector( v ) and `isImmutableObject`_( OBJECT ).
+	Returns true if OBJECT is a vector and immutable. Implies
+	`isImmutableObject`( OBJECT ).
 
 isUpdateableVector( OBJECT ) -> BOOL
-	N.B. Updateable vectors not yet implemented!
-	Returns true if OBJECT is a vector and updateable. Identical to 
-	isVector( OBJECT ) and `isUpdateableObject`_( OBJECT ).
+	Returns true if OBJECT is a vector and updateable. Implies
+	`isUpdateableObject`_( OBJECT ).
 
 isDynamicVector( OBJECT ) -> BOOL
-	Returns true if OBJECT is a vector and dynamic. Identical to 
-	isVector( OBJECT ) and `isDynamicObject`_( OBJECT ).
+	N.B. Dynamic vectors not yet implemented!
+	Returns true if OBJECT is a vector and dynamic. Implies 
+	`isUpdateableObject`_( OBJECT ) and `isDynamicObject`_( OBJECT ).
+
+isVectorLike( OBJECT ) -> BOOL
+	Returns true if OBJECT is a vector (immutable, updateable or dynamic),
+	otherwise false. 
+
+isUpdateableVectorLike( OBJECT ) -> BOOL
+	Returns true if OBJECT is an updateable vector (updateable or dynamic),
+	otherwise false. 
+
+isDynamicVectorLike( OBJECT ) -> BOOL
+	Returns true if OBJECT is a dynamic vector and (at the time of writing)
+	this is a synonym for isDynamicVector.
 
 .. _`isImmutableObject`: isImmutableObject.html
 .. _`isUpdateableObject`: isUpdateableObject.html
