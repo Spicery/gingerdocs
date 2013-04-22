@@ -1,5 +1,5 @@
-GinX: XML Transport Format for Ginger
-=====================================
+Ginger XML: Transport Syntax for Ginger
+=======================================
 :Author:    Stephen Leach
 :Email:     stephen.leach@steelypip.com
 
@@ -15,9 +15,9 @@ Ginger XML Overview
 
 The idea behind Ginger XML (\*.gnx) is to provide a representation of Ginger code that is neutral. By neutral we mean that it should be both human-readable and machine-friendly. Hence it should be easy for people with some computing background to understand the logic behind it, and easy for people to review but not necessarily write. It must also be easy for them to create programs, in their programming language of choice, that can read, transform and generate GinX. And it should be reasonably inexpensive to process, without that being an overriding consideration.
 
-To balance these opposed concerns we borrowed from Lisp, especially Scheme. We selected a simplified subset of XML, called MinX. MinX is loosely based on s-expressions, which made programming very straightforward. We then designed the elements around Lisp-style primitives. This gave us a very clean design because we did not have to make concessions to programming convenience - because this is a representation that is essentially only written by machine, not people. 
+To balance these opposed concerns we borrowed from Lisp, especially Scheme. We selected a simplified subset of XML, called Minimal XML or MinX for short. MinX is loosely based on s-expressions, which made programming very straightforward. We then designed the elements around Lisp-style primitives. This gave us a very clean design because we did not have to make concessions to programming convenience - because this is a representation that is essentially only read and written by machines, not people. 
 
-There are disavantages to this approach, of course, such as it being relatively verbose and therefore slowing down compilation. Yet on the whole we believe GinX balances the relevant factors and is both effective and pleasing to use.
+There are disavantages to this approach, of course, such as it being relatively verbose and therefore slowing down compilation. Yet on the whole we believe Ginger XML balances the relevant factors and is both effective and pleasing to use.
 
 
 Element and Meta-attributes
