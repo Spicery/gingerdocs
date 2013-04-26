@@ -5,7 +5,7 @@ Why Multiple Dispatch?
  
 I thought you might appreciate a few notes on multiple (as opposed to single dispatch) in object-oriented programming. In Smalltalk influenced programming languages, methods are written inside classes and take an extra, implicit argument called “this”.
  
-.. code::
+.. code-block:: text
 
 	// Method in a typical Smalltalky language.
 	class Thing {
@@ -20,7 +20,7 @@ This is an especially mediocre way to write method definitions and overrides. It
  
 Since there is a much more obvious way to write method definitions that suffers from none of these problems, I think it is perfectly justified to call the Smalltalk approach broken. Here’s the natural way of writing method introductions:
  
-.. code::
+.. code-block:: text
 
 	// The caret (^) marks the subject.
 	void doit( Thing ^this, int a, string b ) {
@@ -43,7 +43,7 @@ Elegantly we can now dispatch on two arguments.
  
 Is there a downside? Yes, the main reason for the silly method calling syntax x.f(y,z) is so we can avoid endlessly passing in ‘this’. In other words if we assume foo, bar and gort are all methods of Thing then we could write:
  
-.. code::
+.. code-block:: text
 
 	class Thing {
 		void doit( int a, string b ) {
@@ -53,7 +53,7 @@ Is there a downside? Yes, the main reason for the silly method calling syntax x.
  
 And it would be equivalent to
  
-.. code::
+.. code-block:: text
 
 	void doit( Thing ^this, int a, string b ) {
 		this.foo( this.bar( a ), this.gort( b ) );
@@ -61,7 +61,7 @@ And it would be equivalent to
  
 That’s actually quite a nice shortcut. The usual way of getting the benefit of this shortcut is to allow the caret (^) to be used in the code body as a shorthand for ‘this.’. So you can then write:
  
-.. code::
+.. code-block:: text
 
 	void doit( Thing ^this, int a, string b ) {
 		^foo( ^bar( a ), ^gort( b ) );
@@ -73,7 +73,7 @@ The second positive is that the fact that an extra argument is passed in is not 
  
 The third positive is that the compiler does NOT need to type check before it can figure out what is being called. It might not be immediately obvious but when the compiler encounters
  
-.. code::
+.. code-block:: text
 
 	foo( a, b )
  
@@ -81,7 +81,7 @@ how does it know whether or not it is a function or method and whether or not to
  
 We can go one small step further now and permit this shorthand to be used like this in method definitions.
  
-.. code::
+.. code-block:: text
 
 	class Thing {
 		void ^doit( int a, string b ) { … all the goodness & none of the badness… }
