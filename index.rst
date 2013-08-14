@@ -7,7 +7,9 @@
 The Ginger Project
 ==================
 
-The aim of the Ginger Project is to create a modern programming language and its ecosystem of libraries, documentation and supporting tools. The Ginger language draws heavily on the multi-language Poplog environment.
+**This documentation is still very much work in progress**
+
+The aim of the Ginger Project is to create a modern programming language and its ecosystem of libraries, documentation and supporting tools. The Ginger language draws heavily on the multi-language Poplog environment. 
 
 Contents
 --------
@@ -18,14 +20,9 @@ Contents
    A quick overview of the Ginger project <overview>
    Ginger Interpreter, appginger <appginger>
    Getting started <get_started>
-   Ginger XML Syntax, GinX <gnx_syntax>
-   GSON to GinX <gson2gnx>
    The Ginger Common Syntax <common_syntax>
    Patterns and Queries <patterns_and_queries>
-   Lexemes in XML, LinX <lnx>
-   Configurable Parser, LinX to MinX <lnx2mnx>
-   Minimal XML, MinX <mnx_syntax>
-   The Ginger Toolchain <toolchain>
+
 
    
 
@@ -39,6 +36,19 @@ Design Rationales
    ginger_loops.rst
    gson_background.rst
    gson.rst
+
+The Ginger Toolchain
+--------------------
+   
+.. toctree::
+   :maxdepth: 2
+
+   The Ginger Toolchain <toolchain>
+   Ginger XML Syntax, GinX <gnx_syntax>
+   GSON to GinX <gson2gnx>
+   Lexemes in XML, LinX <lnx>
+   Configurable Parser, LinX to MinX <lnx2mnx>
+   Minimal XML, MinX <mnx_syntax>
 
 Low-Level Implementation
 ------------------------
