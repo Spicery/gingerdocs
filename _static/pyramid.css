@@ -14,8 +14,8 @@
 /* -- page layout ----------------------------------------------------------- */
  
 body {
-    font-family: "Nobile", sans-serif;
-    font-size: 100%;
+    font-family: "Calibri", sans-serif;
+    font-size: medium;
     background-color: #393939;
     color: #ffffff;
     margin: 0;
@@ -41,7 +41,7 @@ div.document {
 
 div.header {
     width:100%;
-    background: #f4ad32 url(headerbg.png) repeat-x 0 top;
+    background: #f4ad32 url(headerbg1.png) repeat-x 0 top;
     border-bottom: 2px solid #ffffff;
 }
 
@@ -54,7 +54,7 @@ div.body {
     background-color: #ffffff;
     color: #3E4349;
     padding: 0 30px 30px 30px;
-    font-size: 1em;
+    font-size: medium;
     border: 2px solid #ddd;
     border-right-style: none;
     overflow: auto;
@@ -106,7 +106,7 @@ div.sphinxsidebarwrapper{
  
 div.sphinxsidebar h3,
 div.sphinxsidebar h4 {
-    font-family: "Neuton", sans-serif;
+    font-family: "Gill Sans", sans-serif;
     color: #373839;
     font-size: 1.4em;
     font-weight: normal;
@@ -186,7 +186,7 @@ div.body h3,
 div.body h4,
 div.body h5,
 div.body h6 {
-    font-family: "Neuton", sans-serif;
+    font-family: "Gill Sans", sans-serif;
     background-color: #ffffff;
     font-weight: normal;
     color: #373839;
@@ -268,23 +268,25 @@ pre {
     padding: 10px;
     background-color: #fafafa;
     color: #222;
-    line-height: 1.2em;
+    /*line-height: 1.2em;*/
     border: 2px solid #C6C9CB;
-    font-size: 1.1em;
     margin: 1.5em 0 1.5em 0;
     border-right-style: none;
     border-left-style: none;
+    font-family: "Consolas", monospace; 
+    font-size: 80%;
 }
  
 tt {
     background-color: transparent;
     color: #222;
-    font-size: 1.1em;
-    font-family: monospace;
+    /*font-size: 1.1em;*/
+    font-family: "Consolas", monospace;
+    font-size: 80%;
 }
 
 .viewcode-back {
-    font-family: "Nobile", sans-serif;
+    font-family: "Verdana", sans-serif;
 }
 
 div.viewcode-block:target {
@@ -312,7 +314,7 @@ a:hover em.std-term {
 }
 
 .download {
-    font-family: "Nobile", sans-serif;
+    font-family: "Verdana", sans-serif;
     font-weight: normal;
     font-style: normal;
 }

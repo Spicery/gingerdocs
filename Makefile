@@ -50,12 +50,10 @@ prebuild: instruction_set.rst sysfns.rst
 
 instruction_set.rst:
 	# Adding in the symlinks to the autodocs. 
-	# NOTE THE CHANGE IN FILE EXTENSION - to be discussed with GJH.
 	ln -s $(AUTODOCS)/instruction_set.rst instruction_set.rst
 
 sysfns.rst:
 	# Adding in the symlinks to the autodocs. 
-	# NOTE THE CHANGE IN FILE EXTENSION - to be discussed with GJH.
 	ln -s $(AUTODOCS)/sysfns.rst sysfns.rst
 
 clean:

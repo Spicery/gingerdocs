@@ -23,6 +23,13 @@ Contents
    The Ginger Common Syntax <common_syntax>
    Patterns and Queries <patterns_and_queries>
 
+Built-in Library
+----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   maths.rst
 
    
 
@@ -66,14 +73,18 @@ Release Notes
 .. toctree::
    :maxdepth: 1
 
-   Version 0.8 <version_0.8>
-   Version 0.8.1 <version_0.8.1>
-   Version 0.8.2 <version_0.8.2>
+   Version 0.8 <news/version_0.8>
+   Version 0.8.1 <news/version_0.8.1>
+   Version 0.8.2 <news/version_0.8.2>
+   Version 0.8.3-dev <news/version_0.8.3-dev>
 
 Indices and tables
-==================
+------------------
 
+* `Glossary`_
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. _`Glossary`: glossary.html
 

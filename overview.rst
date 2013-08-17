@@ -36,8 +36,8 @@ Here's a list of the features we have already implemented for the GVM project.
 .. _`Dynamic arithmetic`: arithmetic.html
 .. _`Immutable objects`: quality_immutable.html
 .. _`XML like elements`: elements.html
-.. _`records`: record_classes.html#user-defined-record-classes
-.. _`vectors`: vector_classes.html#user-defined-vector-classes
+.. _`records`: help/record_classes.html#user-defined-record-classes
+.. _`vectors`: help/vector_classes.html#user-defined-vector-classes
 .. _`First class functions`: first_class_functions.html
 .. _`lambda expressions`: lambdas.html
 .. _`Basic CGI integration`: cgi.html
