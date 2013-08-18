@@ -1,0 +1,24 @@
+{% extends "basic/layout.html" %}
+
+{% block header %}
+{%- if logo %}
+<div class="header">
+  <div class="logo">
+    <a href="{{ pathto(master_doc) }}">
+      <img class="logo" src="{{ pathto('_static/' + logo, 1) }}" alt="Logo"/>
+    </a>
+  </div>
+</div>
+{%- endif %}
+{% endblock %}
+
+{%- block sidebarlogo %}{%- endblock %}
+{%- block sidebarsourcelink %}{%- endblock %}
+
+{%- block footer %}
+  <div class="footer">
+   <span class="creativecommons">
+	<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/uk/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/uk/80x15.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Ginger Documentation</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://github.com/Spicery/gingerdocs" property="cc:attributionName" rel="cc:attributionURL">Stephen Leach, Graham Higgins</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/uk/deed.en_US">Creative Commons Attribution-ShareAlike 2.0 UK: England &amp; Wales License</a>.
+   </span>
+  </div>
+{%- endblock %}

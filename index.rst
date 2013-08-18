@@ -15,7 +15,7 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    A quick overview of the Ginger project <overview>
    Ginger Interpreter, appginger <appginger>
@@ -27,7 +27,7 @@ Built-in Library
 ----------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    maths.rst
 
@@ -37,7 +37,7 @@ Design Rationales
 -----------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    ginger_aspirations.rst
    ginger_loops.rst
@@ -48,14 +48,14 @@ The Ginger Toolchain
 --------------------
    
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   The Ginger Toolchain <toolchain>
-   Ginger XML Syntax, GinX <gnx_syntax>
-   GSON to GinX <gson2gnx>
-   Lexemes in XML, LinX <lnx>
-   Configurable Parser, LinX to MinX <lnx2mnx>
-   Minimal XML, MinX <mnx_syntax>
+   The Ginger Toolchain <help/toolchain>
+   Ginger XML Syntax, GinX <formats/gnx_syntax>
+   GSON to GinX <tools/gson2gnx>
+   Lexemes in XML, LinX <formats/lnx>
+   Configurable Parser, LinX to MinX <tools/lnx2mnx>
+   Minimal XML, MinX <formats/mnx_syntax>
 
 Low-Level Implementation
 ------------------------

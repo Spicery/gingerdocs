@@ -9,7 +9,11 @@ Created, July 2011
 Introduction
 ------------
 
-This filter converts link:gson.html[GSON expressions] on the standard input into link:gnx_syntax.html[GNX expressions] on the standard output.
+This filter converts `GSON expressions`_ on the standard input into `GNX expressions`_ on the standard output.
+
+.. _`GSON expressions`: ../formats/gson.html
+.. _`GNX expressions`: ../formats/gnx_syntax.html
+
 
 Usage
 -----
