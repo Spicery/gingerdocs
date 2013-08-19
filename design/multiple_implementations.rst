@@ -13,6 +13,8 @@ Adding a new engine therefore involves making quite a few scattered changes, unf
 
 Each engine has to define two virtual methods. 
 
+.. code-block: C++
+
     const InstructionSet & instructionSet();
     void execute( Ref r, const bool clear_stack = true );
 
@@ -63,6 +65,7 @@ Engine #1
 As described above, this is the default engine for Ginger, offering reasonable performance and good portability. In this implementation an Instruction is a C++ function pointer with the following signature.
 
 .. code-block:: cpp
+
     typedef Ref * SpecialFn( Ref * pc, Machine vm );
     typedef SpecialFn * Special;
 
@@ -84,6 +87,7 @@ Engine #2
 On 32-bit Intel machines, it is often more efficient to use register globals than parameters (due to register starvation). This engine is similar to #1 but puts both the program counter and the machine in register globals. The C++ function pointers therefore have a different signature.
 
 .. code-block:: cpp
+
     Ref *pc;
     Machine vm;
     typedef void SpecialFn( void );

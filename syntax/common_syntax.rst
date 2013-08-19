@@ -4,7 +4,7 @@ Common Syntax
 
 Example of common syntax
 ------------------------
-.. literalinclude:: src/example1.common
+.. literalinclude:: ../src/example1.common
    :lines: 1-53
    :linenos:
    :language: common
@@ -12,16 +12,16 @@ Example of common syntax
 Moar (test) examples
 --------------------
 
-.. literalinclude:: src/helloworld.common
+.. literalinclude:: ../src/helloworld.common
    :linenos:
    :language: common
 
-.. literalinclude:: src/nfib.common
+.. literalinclude:: ../src/nfib.common
    :linenos:
    :language: common
 
 
-.. literalinclude:: src/factorial.common
+.. literalinclude:: ../src/factorial.common
    :linenos:
    :language: common
 

@@ -44,7 +44,7 @@ As usual there have been numerous refactorings:
     * We have eliminated all the compilation warnings on OS X. These were
       caused by the upgrade to XCode 4.6.3.
 
-    * The use of *.inc files to define system functions has been entirely
+    * The use of \*.inc files to define system functions has been entirely
       retired in favour of self-registering definitions.
 
     * The C++ code has finally been moved into its own namespace. This was

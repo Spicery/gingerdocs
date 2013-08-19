@@ -113,16 +113,15 @@ The showMe function has become the default way of printing results.
 Configurable Result Printing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 It is now possible to configure the way results are printed via a new
-user settings file:
-::
+user settings file::
 
     ~/.config/ginger/settings.gson
+
 The strings exploit the new, basic formatted print functions.
 
 The format of that file is a limited version of the planned GSON (Ginger Simple Object Notation) format, which is a strict superset of JSON (see http://json.org/).
 
-A default settings.gson file can be generated using 
-::
+A default settings.gson file can be generated using::
 
     ginger-admin --settings
 

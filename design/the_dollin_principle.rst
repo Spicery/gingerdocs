@@ -13,5 +13,6 @@ By contrast, the unlimited Principle seems to correspond to the idea of type-che
 
 The limited version of the Principle doesn't sit as comfortably with the idea of type inference. One possibility would be to distinguish the absence of a type assertion from the topmost type (say, Object). In the absence of a type assertion, the inference system would be free to infer supply a narrowable type. Another approach would be to have an annotation that distinguishes type that can be narrowed from those which cannot (e.g. a postfix annotation "**" to mean may be narrowed.)
 
-----
+---------------------
+
 Stephen Leach

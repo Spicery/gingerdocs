@@ -67,7 +67,7 @@ e.g.
 	<app from="23.8" to="23.64"> .... </app>
     
 Context Attributes
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 Any element _may_ have an optional context.* attribute which will be printed
 out to provide additional context. It will typically be a truncated version
 of the spanned text.
@@ -76,7 +76,8 @@ Context - Grammar Role
 ......................
 Any element _may_ be decorated with the grammatical role assigned by the parser.
 
-Example::
+.. code-block:: text
+
 	if test then x else y endif ### may be decorated as follows.
 
 	<if context.role="Conditional">
@@ -428,7 +429,7 @@ Syntax
 	LIST ::= <list> EXPR* </list>
 
 Vector Expressions
-----------------
+------------------
 
 Description
 ~~~~~~~~~~~

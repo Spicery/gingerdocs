@@ -21,8 +21,8 @@ Contents
    introduction
    Ginger Interpreter, appginger <appginger>
    Getting started <get_started>
-   The Ginger Common Syntax <common_syntax>
-   Patterns and Queries <patterns_and_queries>
+   The Ginger Common Syntax <syntax/common_syntax>
+   Patterns and Queries <design/patterns_and_queries>
    FAQ <faq_list>
 
 Help Topics
@@ -72,7 +72,7 @@ Low-Level Implementation
 .. toctree::
    :maxdepth: 1
 
-   How Iterators Work <iterators>
+   How Iterators Work <design/iterators>
    The Ginger VM Instruction Set <instruction_set>
    Ginger System Functions <sysfns>
 

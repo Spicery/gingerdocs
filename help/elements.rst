@@ -29,7 +29,7 @@ In what might look like a throwback to the early days of HTML, an unadorned vari
 
 	<table rules=rows frame=lhs> ... </table>
 
-.. _`atomic expression`; ../syntax/atomic_expression.html
+.. _`atomic expression`: ../syntax/atomic_expression.html
 
 You can even dynamically determine the name of the start tag. This is another 'atomic' context which is normally literal but you can supply a general expression in parentheses. You will find the 'close-anything' end-tag useful in this case::
 
@@ -94,6 +94,8 @@ for i in E do .... endfor
 	Iterates over the children of an element in turn.
 
 E[ N ] -> X
+	Same as index( N, E )
+
 index( N, E ) -> X
 	Returns the Nth child of an element.
 
@@ -106,3 +108,4 @@ E.attribute( KEY ) -> VALUE
 length( E ) -> N
 	Returns the number of children of an element.
 
+.. _`atomic expression`: ../syntax/atomic_expression.html
