@@ -23,14 +23,23 @@ Contents
    The Ginger Common Syntax <common_syntax>
    Patterns and Queries <patterns_and_queries>
 
-Built-in Library
-----------------
+Help Topics
+-----------
 
 .. toctree::
+   :glob:
    :maxdepth: 1
 
-   maths.rst
+   help/*
 
+Common Syntax 
+-------------
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   syntax/*
    
 
 Design Rationales
@@ -42,20 +51,18 @@ Design Rationales
    ginger_aspirations.rst
    ginger_loops.rst
    gson_background.rst
-   gson.rst
+   formats/gson.rst
 
 The Ginger Toolchain
 --------------------
    
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   The Ginger Toolchain <help/toolchain>
-   Ginger XML Syntax, GinX <formats/gnx_syntax>
-   GSON to GinX <tools/gson2gnx>
-   Lexemes in XML, LinX <formats/lnx>
-   Configurable Parser, LinX to MinX <tools/lnx2mnx>
-   Minimal XML, MinX <formats/mnx_syntax>
+   help/toolchain
+   tools/*
+   formats/*
 
 Low-Level Implementation
 ------------------------
@@ -85,6 +92,7 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
 
 .. _`Glossary`: glossary.html
 
