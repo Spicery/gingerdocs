@@ -15,7 +15,7 @@ One difference is that Ginger allows you to use the special close-anything tag '
 
 But the main difference from written XML, is that the start and end tags don't introduce a special 'CDATA' context. Instead they contain Ginger code! That's why the previous example contains a quoted string ("Hello, world!") rather than unquoted text. Although this means that they are less useful for writing the body text of an XHTML document, they are very handy for writing templates. (You can read more about this decision under the `design rationale for Element syntax`_.)
 
-.. _`design rationale for Element syntax`: rationale_for_element_syntax.html
+.. _`design rationale for Element syntax`: ../help/rationale_for_element_syntax.html
 
 Start tags have a name and attributes, as you might example. So you can write expressions like this::
 
@@ -29,7 +29,7 @@ In what might look like a throwback to the early days of HTML, an unadorned vari
 
 	<table rules=rows frame=lhs> ... </table>
 
-.. _`atomic expression`; atomic_expression.html
+.. _`atomic expression`; ../syntax/atomic_expression.html
 
 You can even dynamically determine the name of the start tag. This is another 'atomic' context which is normally literal but you can supply a general expression in parentheses. You will find the 'close-anything' end-tag useful in this case::
 
@@ -88,7 +88,7 @@ nameElement( E ) -> OBJECT
 	Return the name of the element. This is normally a `symbol`_ but
 	could in fact be any value.
 
-.. _`symbol`: symbols.html
+.. _`symbol`: ../help/symbols.html
 
 for i in E do .... endfor
 	Iterates over the children of an element in turn.
@@ -101,7 +101,7 @@ E.attribute( KEY ) -> VALUE
 	Returns the attribute of an element associated with a KEY. If not
 	present then it return `absent`_.
 
-.. _`absent`: absent.html
+.. _`absent`: ../std/absent.html
 
 length( E ) -> N
 	Returns the number of children of an element.

@@ -130,7 +130,7 @@ These are transformed into a GNX element in the obvious way.
     
 Example
 
-.. code-block:: gson
+.. code-block:: text
 
     if< declarative="true">[ flag1, 1, if[ flag2, 0, 1 ] ]
     
@@ -157,7 +157,7 @@ A sequence of expressions enclosed in parentheses is automatically transformed i
 
 Example
 
-.. code-block:: gson
+.. code-block:: text
 
     ( 1, true, fn<>{} )
     
@@ -180,7 +180,7 @@ Function applications are written in prefix form i.e. ``f(x)``. They are automat
 
 Example
 
-.. code-block:: gson
+.. code-block:: text
 
     calculate_index( 1, true, [ "cat", "dog" ] )
     
@@ -205,13 +205,13 @@ Lambda functions have a short syntax. In GNX they are an element with the name `
 
 Here's an example of a lambda function that simply swaps its arguments. 
 
-.. code-block:: gson
+.. code-block:: text
 
     fn[ ( x, y ), ( y, x ) ]
 
 The short form uses "naked" attributes, such as +<>+ or +<name="swap">+ followed by an argument-list in paretheses then followed by an expression-list in braces. 
 
-.. code-block:: gson
+.. code-block:: text
 
     <>( x, y ){ y, x }
 
@@ -231,7 +231,7 @@ The short form uses "naked" attributes, such as +<>+ or +<name="swap">+ followed
 
 The argument-lists may be omitted altogether. In this case the argument-list is assumed to be ``()``.
 
-.. code-block:: gson
+.. code-block:: text
 
     <>{ f(), g() }
 
@@ -255,7 +255,7 @@ The argument-lists may be omitted altogether. In this case the argument-list is 
 The argument-lists may be repeated, to express curry'd lambda expressions. Here's the K combinator as an example.
 
 
-.. code-block:: gson
+.. code-block:: text
 
     < name="K" >( x )( y ){ x }
 
@@ -314,7 +314,7 @@ This will expand into the following fairly unreadable GNX code.
 
 In GSON, it appears as shown below. As you can see, GSON is just as machine friendly as GNX but more compact and more readable.
 
-.. code-block:: gson
+.. code-block:: text
 
     bind[
         var< name="andThen", protected="true" >,

@@ -20,3 +20,6 @@ Single Value
 Atomic expressions are restricted to return a single value. This affects character constants and expressions in parentheses. So this would not be allowed::
 
 	<item chars='abc'/>
+
+
+.. _`Common syntax`: ../syntax/common.html

@@ -60,9 +60,9 @@ isDynamicVectorLike( OBJECT ) -> BOOL
 	Returns true if OBJECT is a dynamic vector and (at the time of writing)
 	this is a synonym for isDynamicVector.
 
-.. _`isImmutableObject`: isImmutableObject.html
-.. _`isUpdateableObject`: isUpdateableObject.html
-.. _`isDynamicObject`: isDynamicObject.html
+.. _`isImmutableObject`: ../std/isImmutableObject.html
+.. _`isUpdateableObject`: ../std/isUpdateableObject.html
+.. _`isDynamicObject`: ../std/isDynamicObject.html
 
 Accessors, Updaters and Exploders
 ---------------------------------
@@ -96,4 +96,4 @@ lengthVector( V ) -> N
 	Returns the length of any vector. `Length`_ is applicable to any 
 	list-like object but lengthVector may only be applied to vectors.
 
-.. _`Length`: length.html
+.. _`Length`: ../std/length.html

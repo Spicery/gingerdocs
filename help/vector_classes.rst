@@ -24,10 +24,10 @@ There are four built-in vector classes in
 	* `lists`_, n.b. indexing is not O(1) operation!
 	* `elements`_
 
-.. _`strings`: strings.html
-.. _`vectors`: vectors.html
-.. _`lists`: lists.html
-.. _`elements`: elements.html
+.. _`strings`: ../help/strings.html
+.. _`vectors`: ../help/vectors.html
+.. _`lists`: ../help/lists.html
+.. _`elements`: ../help/elements.html
 
 User Defined Vector Classes
 ---------------------------
