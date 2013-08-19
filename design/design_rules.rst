@@ -1,16 +1,19 @@
-= Design Rules for the Spice Programming Language =
+Design Rules for the Spice Programming Language
+===============================================
 
 This is an attempt to articulate the design rules that we have employed in the development of the Spice language.  The rules are more like guidelines than laws, as spelt out in the ../MetaDesignRules.
 
-== One Rule to Rule Them All ==
+One Rule to Rule Them All
+-------------------------
 
   * Standards are local not global. By this we mean that standards are based on
-  consensus and that individuals and teams must be free to depart from the
-  common basis without incurring an impractical management penalty. 
+    consensus and that individuals and teams must be free to depart from the
+    common basis without incurring an impractical management penalty. 
 
-== General ==
+General
+-------
 
-  * Compositionality - is the grand theme of Spice.  As much as possible we want to be able to build large units by sticking together small units.  This applies to functions, classes, packages and everything else.
+  * Compositionality - is the grand theme of Spice.  As much as possible we want to be able to   build large units by sticking together small units.  This applies to functions, classes, packages and everything else.
   
   * Restriction - when restrictions are introduced into the language, it should be possible to relax them without altering the meaning of programs (e.g. the early discussion of semi-colon elected to demand zero-results and not automatically force zero-results)
   
@@ -41,7 +44,8 @@ This is an attempt to articulate the design rules that we have employed in the d
   * Where convenient, Spice incorporates means for including constants written in other widespread notations.
 
 
-== Spice Programmers ==
+Spice Programmers
+-----------------
 
   * The programmer is always in charge.
 
@@ -51,7 +55,8 @@ This is an attempt to articulate the design rules that we have employed in the d
   
 
 
-== Syntax ==
+Syntax
+------
 
   * On readability
       * Readability is a goal.
@@ -80,20 +85,23 @@ This is an attempt to articulate the design rules that we have employed in the d
 
   * Where it does not conflict with other more pressing concerns, the common syntax shall borrow from other programming languages in order to reduce the effort of cross-training.
 
-== Semantics ==
+Semantics
+---------
   
   * Evaluation order 
       * is specified;
       * should follow reading order (left-to-right) as much as practical.
 
 
-== Type Checking ==
+Type Checking
+-------------
 
   * A true type assertion will never prevent a program from compiling (the DesignNotes/DollinPrinciple)
 
   * An OpenSpice implementation is not ''required'' to do any type checking.  Of course, one that omits type checking would be omitting a chunk of important and useful functionality.  But it would be a perfectly viable implementation.
 
-== Compilation and Performance ==
+Compilation and Performance
+---------------------------
 	
   * We aim to be macro-efficient rather than micro-efficient.  We are only mildly interested in benchmarks that test how efficient code generation is on the small scale.  We are much more interested in the performance of garbage collection, coroutine switching, etc.
   
@@ -106,7 +114,8 @@ This is an attempt to articulate the design rules that we have employed in the d
   * The target execution environment is the desktop computer.
 
   
-== Interactive Development Environment (IDE) ==
+Interactive Development Environment (IDE)
+-----------------------------------------
 
   * Spice IDE warns but does not obstruct (because the programmer is in charge).
 

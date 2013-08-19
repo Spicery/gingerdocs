@@ -22,6 +22,7 @@ Contents
    Getting started <get_started>
    The Ginger Common Syntax <common_syntax>
    Patterns and Queries <patterns_and_queries>
+   FAQ <faq_list>
 
 Help Topics
 -----------
@@ -47,11 +48,10 @@ Design Rationales
 
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   ginger_aspirations.rst
-   ginger_loops.rst
-   gson_background.rst
-   formats/gson.rst
+   formats/gson
+   design/*
 
 The Ginger Toolchain
 --------------------
