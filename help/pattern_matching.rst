@@ -82,17 +82,24 @@ For loops also make good use of higher-level operators such as the parallel oper
 
 Another higher-level operator is query-conjunction '&'. This takes two subqueries and finds all solutions for both. This is a neat way of writing nested loops.
 
+.. code:: common 
+
 	for i from 1 to 10 & j from 1 to 10 do
 		# 100 times around this loop
 	endfor
 
 You can cause an early termination of solutions by using while or until.
 
+.. code:: common 
+
 	for i in list while f( i ) do
 		process( i )
 	endfor
 
 Indeed, there's no special 'while' loop in Ginger! While and until are both query operators.
+
+.. code:: common 
+
 
 	# How to write a while loop in Ginger.
 	for while f( x ) do
@@ -104,6 +111,9 @@ Indeed, there's no special 'while' loop in Ginger! While and until are both quer
 Switches
 ~~~~~~~~
 The switch expression in Ginger also uses pattern matching. This is invoked by using the 'match' keyword rather than 'case'.
+
+.. code:: common 
+
 
 	for i in list do
 		switch i

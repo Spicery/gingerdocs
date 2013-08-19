@@ -1,1 +1,0 @@
-TODO: stub from vectors.rst

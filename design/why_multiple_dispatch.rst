@@ -1,4 +1,6 @@
 Why Multiple Dispatch?
+======================
+
 [Where should this be put? Background / Advocacy]
 
 [Taken from an original letter to Andy Skingsley. Will need to be rewritten so it is more of an article than a personal letter.]

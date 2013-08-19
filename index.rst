@@ -18,6 +18,7 @@ Contents
    :maxdepth: 1
 
    A quick overview of the Ginger project <overview>
+   introduction
    Ginger Interpreter, appginger <appginger>
    Getting started <get_started>
    The Ginger Common Syntax <common_syntax>
@@ -32,6 +33,7 @@ Help Topics
    :maxdepth: 1
 
    help/*
+   std/*
 
 Common Syntax 
 -------------
@@ -88,10 +90,15 @@ Release Notes
 Indices and tables
 ------------------
 
-* `Glossary`_
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. toctree:: 
+   :maxdepth: 1
+
+   glossary
+   references
 
 
 .. _`Glossary`: glossary.html

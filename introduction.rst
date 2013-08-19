@@ -1,6 +1,8 @@
-[1] Chapter 1: About Ginger
+About Ginger
+============
 
-[1.1] What is Ginger
+What is Ginger
+--------------
 
 Ginger is a modern programming system that is built on top of a general purpose virtual machine. It comes with a modern programming language and library so that you can use to  write your own applications. But the whole system is designed to be open, so you can extend or replace almost every part of the system. 
 
@@ -13,11 +15,14 @@ Another key rule is "if one, why not many?". This rule means that anywhere in th
 To understand how we interpreted our design rules you need to know a little about Ginger. 
 
 
-[1.2] Hello World in Common
+Hello World in Common
+---------------------
 
 In this introduction to Ginger, we will write our examples in what we call 'Common'. Ginger supports more than one programming language syntax. But we designed Common to be a neat modern language that is easy to remember and accident-resistant. But you don't have to use it. We also designed a Javascript-inspired syntax too, if you prefer. And in future versions of Ginger we will add more - it's quite easy to add new ones. (Why did we make Ginger so flexible? Because one of the things we wanted to get away from was the idea that there was a single right answer.)
 
 So what does Common look like? Here's a simple 'hello, world!' example. It shows quite a few useful features. I have added line numbers for easy reference.
+
+.. code::
 
 	Line 1		# Prints a cheery message to the console.
 	Line 2		define hello() =>>
