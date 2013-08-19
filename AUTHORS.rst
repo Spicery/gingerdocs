@@ -1,3 +1,5 @@
+:orphan:
+
 AUTHORS.txt for the Ginger Documentation
 ========================================
 
