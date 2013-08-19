@@ -357,7 +357,7 @@ Effectively it turns into
 
 See `sysapps in detail`_ for more information.
 
-.. _`sysapps in detail`: sysapp.html
+.. _`sysapps in detail`: ../help/sysapp.html
 
 
 
@@ -592,4 +592,4 @@ Packages and Imports
 
 .. note:: This section did not reflect the current implementation and needs further discussion. In practice the fetchgnx tool discharges the packages and imports before the Ginger Virtual Machine gets to see them. As a consequence it has been moved aside to `Packages and Imports`_.
 
-.. _`Packages and Imports`: packages_and_imports.html
+.. _`Packages and Imports`: ../help/packages_and_imports.html

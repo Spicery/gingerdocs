@@ -24,4 +24,4 @@ It is important to appreciate that type assertions are exactly and only what the
 
 Ginger subscribes to `the Dollin Principle`_ which says that assertions can only prevent invalid execution, not influence the execution paths. It's an essential ingredient, allowing the seamless, incremental introduction of type assertions into a program. It also requires Ginger to explicitly support so-called "late binding".
 
-.. _`the Dollin Principle`: the_dollin_principle.html
+.. _`the Dollin Principle`: ../design/the_dollin_principle.html

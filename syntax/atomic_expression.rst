@@ -22,4 +22,4 @@ Atomic expressions are restricted to return a single value. This affects charact
 	<item chars='abc'/>
 
 
-.. _`Common syntax`: ../syntax/common.html
+.. _`Common syntax`: ../syntax/common_syntax.html

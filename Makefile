@@ -92,6 +92,9 @@ htmlhelp: prebuild
 	@echo "Build finished; now you can run HTML Help Workshop with the" \
 	      ".hhp project file in $(BUILDDIR)/htmlhelp."
 
+htmlcheck: html
+	linklint -doc _build/errors -root  _build/html/ /@
+
 qthelp: prebuild
 	$(SPHINXBUILD) -b qthelp $(ALLSPHINXOPTS) $(BUILDDIR)/qthelp
 	@echo

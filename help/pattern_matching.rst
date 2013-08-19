@@ -128,7 +128,7 @@ See Also
 
 For a more formal description, read `Patterns and Queries`_. 
 
-.. _`Patterns and Queries`: patterns_and_queries.html
+.. _`Patterns and Queries`: ../design/patterns_and_queries.html
 
 
 Work Implemented to Date (as of version 0.8.2)

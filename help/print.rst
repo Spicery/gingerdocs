@@ -16,7 +16,7 @@ The print and println functions are used to generate readable plain text. If an 
 
 It is important to appreciate that these functions are different from the `showMe functions`_, which provide a textual representation that reveals the structure of a datum. These functions are about writing human friendly text.
 
-.. _`showMe functions`: show.html
+.. _`showMe functions`: ../std/showMe.html
 
 As a consequence, the way an item is printed is determined by a 'natural' mapping to text. Strings, symbols and characters have their contents printed without quotes. Lists & vectors have their contents treated as as unordered & ordered lists respectively, maps as description lists - the precise format depending on context (see below). Elements are treated as XHTML expressions and printed accordingly (also see below). 
 

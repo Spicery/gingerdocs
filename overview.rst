@@ -31,19 +31,19 @@ Here's a list of the features we have already implemented for the GVM project.
     * `Syntax Neutral`_ with two available front-end syntaxes so far.
     * `Multiple Implementations of Single Instruction Set`_
 
-.. _`Pervasive multiple values`: multiple_values.html
-.. _`Dynamic type checking`: type_checking.html
-.. _`Dynamic arithmetic`: arithmetic.html
-.. _`Immutable objects`: quality_immutable.html
-.. _`XML like elements`: elements.html
+.. _`Pervasive multiple values`: help/multiple_values.html
+.. _`Dynamic type checking`: help/type_checking.html
+.. _`Dynamic arithmetic`: help/arithmetic.html
+.. _`Immutable objects`: help/quality_immutable.html
+.. _`XML like elements`: help/elements.html
 .. _`records`: help/record_classes.html#user-defined-record-classes
 .. _`vectors`: help/vector_classes.html#user-defined-vector-classes
-.. _`First class functions`: first_class_functions.html
-.. _`lambda expressions`: lambdas.html
-.. _`Basic CGI integration`: cgi.html
-.. _`Garbage Collection`: garbage_collection.html
-.. _`Syntax Neutral`: syntax_neutral.html
-.. _`Multiple Implementations of Single Instruction Set`: multiple_implementations.html
+.. _`First class functions`: help/first_class_functions.html
+.. _`lambda expressions`: help/lambdas.html
+.. _`Basic CGI integration`: help/cgi.html
+.. _`Garbage Collection`: help/garbage_collection.html
+.. _`Syntax Neutral`: design/syntax_neutral.html
+.. _`Multiple Implementations of Single Instruction Set`: design/multiple_implementations.html
 
 
 Further, Planned Features
@@ -73,15 +73,15 @@ The Ginger project has an extensive roadmap that reflects our ambitions for it a
     * Full CGI Integration
     * Full Unicode integration
     
-.. _`Pattern Matching`: pattern_matching.html
-.. _`Enhancements to the Garbage Collector`: garbage_collection.html#enhancements-to-the-garbage-collector
-.. _`Dynamically Create New Virtual Machines`: dynamic_vms.html
-.. _`Implicit Force`: implicit_force.html
-.. _`Immutable`: quality_immutable.html
-.. _`updateable`: quality_updateable.html
-.. _`dynamic`: quality_dynamic.html
-.. _`Full dynamic arithmetic`: arithmetic.html#full-arithmetic-model
-.. _`Optional static typing`: type_checking.html#optional-static-type-checking
+.. _`Pattern Matching`: help/pattern_matching.html
+.. _`Enhancements to the Garbage Collector`: help/garbage_collection.html#enhancements-to-the-garbage-collector
+.. _`Dynamically Create New Virtual Machines`: help/dynamic_vms.html
+.. _`Implicit Force`: help/implicit_force.html
+.. _`Immutable`: help/quality_immutable.html
+.. _`updateable`: help/quality_updateable.html
+.. _`dynamic`: help/quality_dynamic.html
+.. _`Full dynamic arithmetic`: help/arithmetic.html#full-arithmetic-model
+.. _`Optional static typing`: help/type_checking.html#optional-static-type-checking
 
 Development Status
 ------------------
