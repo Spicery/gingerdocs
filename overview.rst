@@ -21,7 +21,7 @@ Here's a list of the features we have already implemented for the GVM project.
 
     * `Pervasive multiple values`_, including loop expressions.
     * `Dynamic type checking`_ 
-    * `Dynamic arithmetic`_, supporting integers and doubles.
+    * `Full arithmetic`_, supporting integers, big integers, rationals and doubles.
     * `Immutable objects`_ - strings, lists vectors and maps.
     * `XML like elements`_ built-in (immutable only).
     * User-defined `records`_ and `vectors`_.
@@ -33,7 +33,7 @@ Here's a list of the features we have already implemented for the GVM project.
 
 .. _`Pervasive multiple values`: help/multiple_values.html
 .. _`Dynamic type checking`: help/type_checking.html
-.. _`Dynamic arithmetic`: help/arithmetic.html
+.. _`Full arithmetic`: help/mahs.html
 .. _`Immutable objects`: help/quality_immutable.html
 .. _`XML like elements`: help/elements.html
 .. _`records`: help/record_classes.html#user-defined-record-classes
@@ -56,7 +56,7 @@ The Ginger project has an extensive roadmap that reflects our ambitions for it a
     * `Enhancements to the Garbage Collector`_ 
     * `Dynamically Create New Virtual Machines`_
     * `Implicit Force`_
-    * `Full dynamic arithmetic`_, supporting bignums, rationals and complex numbers.
+    * Complex numbers.
     * `Immutable`_, `updateable`_, and `dynamic`_ strings, lists, vectors, elements and maps.
     * `Optional static typing`_, consistent with the Dollin principle.
     * Full object-oriented programming model with multiple inheritance and multiple dispatch.

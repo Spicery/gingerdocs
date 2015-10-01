@@ -15,6 +15,16 @@ What does it mean to say an immutable object has a mutable "component"? This is 
 
 Future Expansions
 -----------------
-A planned extension of the garbage collector is identifying closed groups of immutable objects i.e. groups without any links to other objects. These groups can be safely shared by multiple virtual machine objects, significantly reducing the cost of creation a virtual machine. 
+A planned extension of the garbage collector is identifying deeply immutable objects i.e. groups that can be safely shared by multiple virtual machine objects, significantly reducing the cost of creation a virtual machine. This is vital to make transaction-blocks reasonably efficient.
 
-Immutable objects are also beneficial in the context of heap locking. At strategic points in an application's lifecycle it can be a good idea to compact and then "pin" the extant objects so that they can be scanned but not moved by the garbage collector. Furthermore, only the immutable objects that point to mutable objects need to be scanned: these simply get treated as additional roots.
+Immutable objects are also beneficial in the context of heap locking. At strategic points in an application's lifecycle it can be a good idea to compact and then "pin" the extant objects so that they can be scanned but not moved by the garbage collector. Deeply immutable objects do not need to be scanned at all and immutable objects that point to mutable objects need to be scanned: they are treated as additional roots.
+
+All immutable objects can be interconverted with their updateable and dynamic counterparts.
+
+	upd_object := updateableCopy( obj )
+	dyn_object := dynamicCopy( obj )
+	
+Naturally, it is possible to take a dynamic-copy of a dynamic object, which is the same as a plain copy.
+
+	imm_object := immutableCopy( obj )
+	

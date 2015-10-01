@@ -12,19 +12,25 @@ When you need the ability to freely modify a datastructure, these dynamic object
 Future Expansions
 -----------------
 All dynamic objects will support the temporary and permanent 'freezing' of their contents. When this happens they will typically take advantage of the 
-chill/freeze to reorganise their contents for more efficient access rather than update (although this will be delayed until the first actual access, so
+freeze to reorganise their contents for more efficient access rather than update (although this will be delayed until the first actual access, so
 there is no penalty for precautionary freezing).
 
 	# Temporary freezing
-	chillDynamicObject( obj ) ::= is_chilled
-	is_childed := chillDynamicObject( obj )
+	freezeDynamicObject( obj ) ::= is_frozen
+	is_frozen := freezeDynamicObject( obj )
 
 	# Permanent freezing
-	freezeDynamicObject( obj ) ::= is_frozen
-	is_frozen := freezeDynamicObject( obj ) 
+	permaFreezeDynamicObject( obj ) ::= is_frozen
+	is_frozen := permaFreezeDynamicObject( obj )
+
+Permafrozen objects are recognised by the garbage collector and transaction manager and treated as immutable. This is a very important optimisation. Note that for these purposes, volatile fields (as in C++) cannot be allowed.
 
 And all dynamic objects can be interconverted with their Updateable and Immutable counterparts.
 
 	imm_object := immutableCopy( obj )
 	upd_object := updateableCopy( obj )
+
+Naturally, it is possible to take a dynamic-copy of a dynamic object, which is the same as a plain copy.
+
+	dyn_object := dynamicCopy( obj )
 

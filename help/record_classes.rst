@@ -1,6 +1,6 @@
 Record Classes
 ==============
-In Ginger, records are store that used to define classes whose instances have a fixed set of fields. These are used for both simple records ("structs") whose fields are exposed and also for the implementation of instances of user-defined classes.
+In Ginger, records are store that used to define classes whose instances have a fixed set of fields. These are used for both simple records ("structs") whose fields are exposed and also for the implementation of objects.
 
 User Defined Record Classes
 ---------------------------

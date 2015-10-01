@@ -12,13 +12,43 @@ Maths Functions in Ginger
 
 Number Types
 ------------
-Ginger currently supports three numerical types: simple integers (long), floating point (double) and non-finite values (infinity, -infinity, nullify). In the future more types will be added, especially bignums, rationals and complex numbers.
+Ginger currently supports the following numerical types - in the future complex numbers with be added.
+
+  * "Small" integers: broadly speaking these correspond to the native
+    machine representation of integers, with a couple of bits reserved
+    for tagging. e.g. -1, 0, 1, 2, 77, -23456. These automatically overflow
+    into big-nums.
+
+  * "Bignums", which are integral values of unlimited precision. 
+    e.g. 12345678900. These automatically convert into small integers when
+    needed.
+
+  * Rational numbers, which are the ratio of two integral values called
+    the numerator and the denomiator. e.g. 1/2, -113/355. Strictly speaking, 
+    rationals will be normalised so that the numerator and denominator are 
+    coprime, so that they do not share any prime factors, and the denominator
+    is positive. 
+
+  * Double precision floats: these are the same as the native repesentation
+    of doubles. The clean rules of `transreal arithmetic`_ are used for all
+    double precision arithmetic. All arithmetic is 'total', meaning that it
+    always returns a single, meaningful value - and it is safe and
+    correct to divide by zero, raise zero to the power of zero, etc.
+
+  * Strictly transreal numbers: nullity, +infinity and -infinity. These are
+    cleaned up, safe versions of the floating point NaN and infinities that
+    can be used with integers, rationals and floats. 
+
+Total Arithmetic
+----------------
 
 Arithmetic operators are "total"; this means they always return results and never raise exceptions. This follows the underlying rules of `transreal`_ arithmetic.
 
+Because arithmetic is total, numbers are automatically converted from one type to another as necessary. The general rule is that conversions maximise accuracy. (Note, however, that the "/" operator always returns a float - if that is unsuitable there are alternatives, see div and ./.)
+
 .. _`transreal`: transmaths.html
 
-Because arithmetic is total, numbers are automatically converted from one type to another as necessary. The general rule is that conversions maximise accuracy. (Note, however, that the "/" operator always returns a float - if that it unsuitable there are alternatives, see div and ./.)
+
 
 Working with Non-finite Numbers
 -------------------------------

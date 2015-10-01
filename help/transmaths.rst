@@ -4,8 +4,6 @@ An Introduction to Transreal Numbers
 .. image:: number_line.png
 	:align: center
 
-
-
 The line, shown above is the real number-line, which contains all
 of the *finite numbers*. The big dots ⬤ show the *non-finite numbers*. 
 The extended-real number-line is the real number-line with
@@ -16,7 +14,7 @@ number to the left of zero, on the extended-real number-line, is
 is zero. This definition, which is widely accepted in the world,
 contradicts the teaching of sign in French speaking primary and
 secondary schools, where it is taught that zero is a positive
-number. 
+number.
 
 The *transreal number-line* is the extended-real numberline with nullity. 
 Nullity (𝜱) lies off the extended-real number-line [#nullity]_.
