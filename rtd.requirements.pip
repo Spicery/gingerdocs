@@ -1,3 +1,3 @@
--e git://github.com/Spicery/Ginger-Common-syntax-Pygments-Lexer.git@517ec865fde978f3ca00c708d2e74ea0839bac79#egg=Ginger_Common_syntax_Pygments_Lexer-dev
+-e git://github.com/Spicery/Ginger-Common-syntax-Pygments-Lexer.git#egg=Ginger_Common_syntax_Pygments_Lexer-dev
 Pygments==1.4
--e hg+ssh://hg@bitbucket.org/birkenfeld/sphinx@65e4c29a24e436d5901e1ea1eca12d0c57c10272#egg=Sphinx-dev
+Sphinx
