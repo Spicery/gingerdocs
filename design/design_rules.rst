@@ -77,9 +77,9 @@ Syntax
 
   * No overloading of tokens.
 
-  * the "standard core concrete syntax".
+  * the "common core concrete syntax".
   
-  * macro capability for standard syntax.
+  * macro capability for common syntax.
 
   * Syntax for literal objects generates immutable run-time objects.  This means that the programmer can be assured that literal syntax remains true throughout a program run.  It also follows the rule of fewest capabilities.
 
