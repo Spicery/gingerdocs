@@ -48,7 +48,8 @@ What features does it have?
  * Assignment-once local variables commonly used as default
  * Updaters and ident support abstraction over updating
 
-== Which other programming languages is it like? ==
+Which other programming languages is it like?
+---------------------------------------------
 
 In terms of similarity, the most influential language design efforts are Pop-11, ["Java"], ML, and the awesome Common Lisp Object System (CLOS).  It is a pleasure to acknowledge these works:
 
