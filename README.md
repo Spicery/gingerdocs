@@ -157,7 +157,7 @@ And that is basically everything. You may wish to install these other
 tools that I also have:
 
 	* guile: to get lisp2gnx working
-	* rlwrap (or similar): to provide GNU readline capability for appginger & common2gnx 
+	* rlwrap (or similar): to provide GNU readline capability for gvmtest & common2gnx 
 	* doxygen: to create javadoc-like API documentation (not worth bothering with yet tbh)
 	* Eclipse (or similar e.g. IntelliJ): some kind of Java IDE.
 	* A C++ aware text editor. I use BBEdit on Mac OS X and gedit on Ubuntu.

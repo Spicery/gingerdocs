@@ -21,17 +21,11 @@ Install RudeCGI library
     $ tar zxf rudecgi-5.0.0.tar.gz
     $ pushd rudecgi-5.0.0; ./configure; sudo make && make install; popd
 
-Install rlwrap library
-----------------------
-.. code-block:: bash
-
-  $ sudo apt-get install rlwrap
-
 Install optional extras
 -----------------------
 .. code-block:: bash
 
-    $ sudo apt-get install rlwrap guile-1.8 guile-1.8-dev guile-1.8-doc doxygen
+    $ sudo apt-get install guile-1.8 guile-1.8-dev guile-1.8-doc doxygen
 
 Run a Ginger program
 --------------------

@@ -1,4 +1,4 @@
-$ sudo apt-get install rlwrap guile-1.8 guile-1.8-dev guile-1.8-doc doxygen
+$ sudo apt-get install guile-1.8 guile-1.8-dev guile-1.8-doc doxygen
 $ cd /tmp
 $ wget http://rudeserver.com/cgiparser/download/rudecgi-5.0.0.tar.gz
 $ tar zxf rudecgi-5.0.0.tar.gz
