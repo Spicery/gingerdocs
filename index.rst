@@ -87,6 +87,7 @@ Release Notes
    Version 0.8.2 <news/version_0.8.2>
    Version 0.9 <news/version_0.9>
    Version 0.9.1 <news/version_0.9.1>
+   Version 0.9.2 <news/version_0.9.2>
 
 Indices and tables
 ------------------
