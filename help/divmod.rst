@@ -1,3 +1,5 @@
+div and mod: Built-in functions
+===============================
 TODO: Document divmod properly, in particular the adherence to C++11 rules:
 
 ::

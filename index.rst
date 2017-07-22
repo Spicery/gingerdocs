@@ -24,6 +24,7 @@ Contents
    The Ginger Common Syntax <syntax/common_syntax>
    Patterns and Queries <design/patterns_and_queries>
    FAQ <faq_list>
+   Equality <equality>
 
 Help Topics
 -----------
@@ -82,6 +83,7 @@ Release Notes
 .. toctree::
    :maxdepth: 1
 
+   Original News Update <news/news_naive_reverse>
    Version 0.8 <news/version_0.8>
    Version 0.8.1 <news/version_0.8.1>
    Version 0.8.2 <news/version_0.8.2>
