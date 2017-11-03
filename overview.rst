@@ -51,27 +51,25 @@ Further, Planned Features
 
 The Ginger project has an extensive roadmap that reflects our ambitions for it as a language. Here are some of the key features from the project roadmap that are not yet available. By and large most of these features are designed but require implementation. n.b. If there's a particular feature of interest to you, let us know.
 
-    * Regular expressions
+    * Regular expressions and supporting syntax.
     * `Pattern Matching`_ used pervasively to implement binding and smart loops.
     * `Enhancements to the Garbage Collector`_ 
-    * `Dynamically Create New Virtual Machines`_
+    * `Dynamically Create New Virtual Machines`_ as first class objects.
     * `Implicit Force`_
     * Complex numbers.
     * `Immutable`_, `updateable`_, and `dynamic`_ strings, lists, vectors, elements and maps.
     * `Optional static typing`_, consistent with the Dollin principle.
     * Full object-oriented programming model with multiple inheritance and multiple dispatch.
-    * Coroutines
-    * First class VMs
+    * Coroutines as first class objects.
     * Keyword parameters with default values.
     * Partial application.
-    * Autolocation
-    * Autoimports
-    * Updaters
+    * Auto-loading and auto-importing.
+    * Updaters and deconstructors.
     * Advanced exception handling model with Alternative returns, Rollbacks, Failovers and Panics.
     * An additional Lisp-based front-end syntax.
     * Two further important built-in types: bags and priority queues
-    * Full CGI Integration
-    * Full Unicode integration
+    * Full CGI Integration.
+    * Full Unicode integration.
     
 .. _`Pattern Matching`: help/pattern_matching.html
 .. _`Enhancements to the Garbage Collector`: help/garbage_collection.html#enhancements-to-the-garbage-collector
