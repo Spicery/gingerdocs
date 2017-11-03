@@ -24,10 +24,10 @@ So what does Common look like? Here's a simple 'hello, world!' example. It shows
 
 .. code::
 
-	Line 1		# Prints a cheery message to the console.
-	Line 2		define hello() =>>
-	Line 3			println( "Hello, world!" )
-	Line 4		enddefine
+    Line 1      # Prints a cheery message to the console.
+    Line 2      define hello() =>>
+    Line 3          println( "Hello, world!" )
+    Line 4      enddefine
 
 On Line 1 we write an end-of-line comment which is introduced with a hash symbol followed by a space. 
 
