@@ -3,13 +3,20 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-==================
-The Ginger Project
-==================
+===============================
+The Ginger Programming Language
+===============================
 
-**This documentation is still very much work in progress**
+Ginger is a programming language that is easy to learn, quick to get results and 
+is suitable for both large team projects and small, off-the-cuff scripts.
+We want it to be your other programming language; the one you use when you
+want to have fun and really get things done; the one no one has to pay you to use. 
 
-The aim of the Ginger Project is to create a modern programming language and its ecosystem of libraries, documentation and supporting tools. The Ginger language draws heavily on the multi-language Poplog environment. 
+*Ginger is still in development though, so maybe you would like to join in and 
+help as a tester or a developer. We have a lot to do!*
+
+The aim of the Ginger Project is not just to create the Ginger programming language 
+but also its ecosystem of libraries, documentation and supporting tools.
 
 Contents
 --------
