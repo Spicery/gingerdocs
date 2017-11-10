@@ -63,6 +63,15 @@ Design Rationales
    formats/gson
    design/*
 
+Proposals
+---------
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   proposals/*
+
+
 The Ginger Toolchain
 --------------------
    
@@ -80,9 +89,9 @@ Low-Level Implementation
 .. toctree::
    :maxdepth: 1
 
-   How Iterators Work <design/iterators>
-   The Ginger VM Instruction Set <instruction_set>
-   Ginger System Functions <sysfns>
+   How Iterators Work <implementation/iterators>
+   The Ginger VM Instruction Set <implementation/instruction_set>
+   Multiple implementations  <implementation/multiple_implementations>
 
 Release Notes
 -------------

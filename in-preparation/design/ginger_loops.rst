@@ -2,6 +2,8 @@
 The Design of Loops in Ginger and Java
 ======================================
 
+[This article is now out of date and requires substantial revision]
+
 Overview
 --------
 

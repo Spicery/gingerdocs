@@ -19,7 +19,24 @@ The idea behind GingerXML (\*.gnx) is to provide a representation of Ginger code
 
 To balance these opposed concerns we borrowed from Lisp, especially Scheme. We selected a simplified subset of XML, called Minimal-XML or MinXML, for short. MinXML is loosely based on s-expressions, which made programming very straightforward. We then designed the elements around Lisp-style primitives. This gave us a very clean design because we did not have to make concessions to programming convenience - because this is a representation that is essentially only read and written by machines, not people. 
 
+For example the equivalent of Pop-11's ``if f( 0 ) then p else q endif( false )`` would be:
+
+.. code-block:: xml
+
+    <app>
+       <if>
+             <app>
+                 <id name="f" />
+                 <int value="0" />
+            </app>
+            <id name="p" />
+            <id name="q" />
+        </if>
+        <constant type="bool" value="false" />
+    </app>
+
 There are disavantages to this approach, of course, such as it being relatively verbose and therefore slowing down compilation. Yet on the whole we believe GingerXML balances the relevant factors and is both effective and pleasing to use.
+
 
 ================================================================================
 Element and Meta-attributes

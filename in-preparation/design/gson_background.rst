@@ -3,6 +3,8 @@ The Background to GSON: Gingerised JSON
 Stephen Leach <stephen.leach@steelypip.com>
 :Date: August 2011
 
+[The role of GSON in Ginger is under review. Various statements in this article are out of date.]
+
 How It Started
 --------------
 
