@@ -3,14 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-===============================
-The Ginger Programming Language
-===============================
+=======================================
+The Ginger Programming Language Project
+=======================================
 
 Ginger is a programming language that is easy to learn, quick to get results and 
-is suitable for both large team projects and small, off-the-cuff scripts.
-We want it to be your other programming language; the one you use when you
-want to have fun and really get things done; the one no one has to pay you to use. 
+is suitable for a really wide range of projects - from the small, off-the-cuff scripts
+to large scale team projects. We hope it will become your other programming language; 
+the one you use when you want to have fun or really get things done; the one that no one 
+has to pay you to use. 
 
 *Ginger is still in development though, so maybe you would like to join in and 
 help as a tester or a developer. We have a lot to do!*
@@ -18,20 +19,37 @@ help as a tester or a developer. We have a lot to do!*
 The aim of the Ginger Project is not just to create the Ginger programming language 
 but also its ecosystem of libraries, documentation and supporting tools.
 
-Contents
---------
+Introduction and Getting Started
+--------------------------------
 
 .. toctree::
    :maxdepth: 1
 
-   A quick overview of the Ginger project <overview>
+   
    introduction
-   Ginger Interpreter, appginger <appginger>
    Getting started <get_started>
+   FAQ <faq_list>
+   Overview of the whole Ginger Project <overview>
+   
+Learn to Program in Ginger using the Common Syntax
+--------------------------------------------------
+
+
+
+
+Random Topics
+-------------
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   Ginger Interpreter, appginger <appginger>
    The Ginger Common Syntax <syntax/common_syntax>
    Patterns and Queries <design/patterns_and_queries>
-   FAQ <faq_list>
+
    Equality <equality>
+
 
 Help Topics
 -----------
