@@ -34,5 +34,6 @@ Learning a new programming language takes a lot of time. So people always want c
    Expression-ifs
    Auto-conversion for loading JSON, XML, images etc
    Unicode friendly (not implemented!)
-   
+   Escapes
+   Templates
 
