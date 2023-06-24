@@ -12,7 +12,7 @@ Created, July 2011
 Overview
 --------
 
-MinX stands for “Minimal XML” and that’s pretty much what it is. It is a deliberately cut down XML. It has start and end tags, comments and nothing else. 
+MinX stands for “Minimal XML" and that’s pretty much what it is. It is a deliberately cut down XML. It has start and end tags, comments and nothing else. 
 
 So this is valid MinX
 
@@ -20,7 +20,7 @@ So this is valid MinX
 
     <seq>
         <!-- Just the string -->
-        <constant type=”string” value=”Hello, world!”/>
+        <constant type="string" value="Hello, world!"/>
     </seq>
 
 
@@ -47,13 +47,13 @@ Just to give you a flavour of how MinX encourages you to structure data, the abo
 
 .. code-block:: xml
 
-    <PARTS TITLE= Computer Parts >
+    <PARTS TITLE='Computer Parts' >
        <PART>
-          <ITEM NAME= Motherboard />
-          <MANUFACTURER NAME= ASUS />
-          <MODEL NAME= P3B-F />
-          <COST VALUE= 123.00 />
-          <DESCRIPTION VALUE= &lt;to be done&gt; />
+          <ITEM NAME='Motherboard' />
+          <MANUFACTURER NAME='ASUS' />
+          <MODEL NAME='P3B-F' />
+          <COST VALUE='123.00' />
+          <DESCRIPTION VALUE='&lt;to be done&gt;' />
        </PART>
     </PARTS>
 
@@ -65,7 +65,7 @@ Namespaces complicate the API significantly without adding anything we need at t
 
 Motivation
 ----------
-MinX is our realisation of syntax neutrality. By “syntax neutral” we mean that we have a no-frills data format that can be processed with reasonable ease in a very wide variety of programming languages, can be read by programmers and, at a pinch, written as well. We mean that it is free of features that strongly favour people from one particular background. In other words, we have aimed to make it accessible to a very wide range of people, without bias, to the best of our judgement.
+MinX is our realisation of syntax neutrality. By “syntax neutral" we mean that we have a no-frills data format that can be processed with reasonable ease in a very wide variety of programming languages, can be read by programmers and, at a pinch, written as well. We mean that it is free of features that strongly favour people from one particular background. In other words, we have aimed to make it accessible to a very wide range of people, without bias, to the best of our judgement.
 
 So what was the motivation behind stripping XML down to create MinX? XML was a reasonable basic choice because it is designed to be machine processable, has become very widely known and there are a lot of languages providing XML support out of the box. There were two basic reasons that strongly pushed in the direction of no-frills.
 

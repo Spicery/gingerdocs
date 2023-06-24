@@ -4,8 +4,6 @@ Patterns and Queries in the Common Syntax
 
 Introduction
 ------------
-
-
 The inclusion of literal regular expressions to the Common syntax has added a new kind of pattern matching.  The ``val`` and ``define`` constructs already have their own rather limited pattern-matching capability.  It is natural to investigate whether these two notions of matching can be usefully integrated by some kind of extension.
 
 We want to explore integration for two reasons.  Firstly, we want to create a small, uniform and coherent explanatory model for Spice.  Secondly, we know that programming with pattern-matching is a very powerful technique; one could reasonably argue it is a programming paradigm on a par with OOP or even logic programming.
@@ -18,7 +16,6 @@ This proposal avoids the issues by cunningly avoiding disjunctions and two-way m
 
 Current Support for Pattern Matching and the Analogy with Regular Expressions
 -----------------------------------------------------------------------------
-
 The core language already supports the following patterns when binding arguments, either as the argument of a ``val`` or the formal arguments of a function definition (``define`` or ``fn``).  A pattern is used to match against zero, one or more actual values.
 
 The patterns that are part of the core of Spice are shown below.  In addition, the analogy with regular expressions is illustrated in the right hand column.
@@ -38,7 +35,6 @@ N.B. As the language stands, there is an extra restriction that only one vararg 
 
 Var/Val and Pattern Context
 ---------------------------
-
 An ambitious goal of this proposal is to interpret all declarations as pattern matches (strictly speaking as Queries). To this end we make a subtle reinterpretation of the ``var``/``val`` syntax. To assist with this, we will use the ``:=`` operator rather than ``=``, which is desirable because it frees up ``=`` for use as the equals operator.
 
 We propose that ``var``/``val`` are prefix operators that introduce a new syntactic context call Pattern Context. Inside a pattern context, we interpret references to identifiers as declarations of those identifiers. Here are some examples that illustrate the concept.

@@ -3,28 +3,53 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-==================
-The Ginger Project
-==================
+=======================================
+The Ginger Programming Language Project
+=======================================
 
-**This documentation is still very much work in progress**
+Ginger is a programming language that is easy to learn, quick to get results and 
+is suitable for a really wide range of projects - from the small, off-the-cuff scripts
+to large scale team projects. We hope it will become your other programming language; 
+the one you use when you want to have fun or really get things done; the one that no one 
+has to pay you to use. 
 
-The aim of the Ginger Project is to create a modern programming language and its ecosystem of libraries, documentation and supporting tools. The Ginger language draws heavily on the multi-language Poplog environment. 
+*Ginger is still in development though, so maybe you would like to join in and 
+help as a tester or a developer. We have a lot to do!*
 
-Contents
---------
+The aim of the Ginger Project is not just to create the Ginger programming language 
+but also its ecosystem of libraries, documentation and supporting tools.
+
+Introduction and Getting Started
+--------------------------------
 
 .. toctree::
    :maxdepth: 1
 
-   A quick overview of the Ginger project <overview>
+   
    introduction
-   Ginger Interpreter, appginger <appginger>
    Getting started <get_started>
+   FAQ <faq_list>
+   Overview of the whole Ginger Project <overview>
+   
+Learn to Program in Ginger using the Common Syntax
+--------------------------------------------------
+
+
+
+
+Random Topics
+-------------
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   Ginger Interpreter, appginger <appginger>
    The Ginger Common Syntax <syntax/common_syntax>
    Patterns and Queries <design/patterns_and_queries>
-   FAQ <faq_list>
+
    Equality <equality>
+
 
 Help Topics
 -----------
@@ -56,6 +81,15 @@ Design Rationales
    formats/gson
    design/*
 
+Proposals
+---------
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   proposals/*
+
+
 The Ginger Toolchain
 --------------------
    
@@ -73,9 +107,9 @@ Low-Level Implementation
 .. toctree::
    :maxdepth: 1
 
-   How Iterators Work <design/iterators>
-   The Ginger VM Instruction Set <instruction_set>
-   Ginger System Functions <sysfns>
+   How Iterators Work <implementation/iterators>
+   The Ginger VM Instruction Set <implementation/instruction_set>
+   Multiple implementations  <implementation/multiple_implementations>
 
 Release Notes
 -------------
